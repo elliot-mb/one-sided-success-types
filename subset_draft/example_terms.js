@@ -14,6 +14,10 @@ import {toASTTree} from './aw_ast.js';
  * M, N ::= x | n | n + m | n - m | [M, N] | 
  *          x => M | M(N) | M <= 0 ? N : P 
  * 
+ * 
+ * f => (x => f(v => x(x)(v)))(x => f(v => x(x)(v))) --i can have recursion with the Z combinator
+ * 
+ * 
  * evaluation contexts 
  * (where you can put values to have the term evaluate)
  * E, F ::= [] | (x => M) E | E(N) | E + m | E - m |
@@ -76,6 +80,27 @@ import {toASTTree} from './aw_ast.js';
  *  "optional":false
  * } 
  *
+ * M <= 0 ? N : P
+ * {"type":"ConditionalExpression",
+ *  "start":0,
+ *  "end":14,
+ *  "test":{
+ *      "type":"BinaryExpression",
+ *      "start":<number>,
+ *      "end":<number>,
+ *      "left":{M},
+ *      "operator":"<=",
+ *      "right":{
+ *          "type":"Literal",
+ *          "start":<number>,
+ *          "end":<number>,
+ *          "value":0,
+ *          "raw":"0"}
+ *      },
+ *  "consequent":{N},
+ *  "alternate":{P}
+ * }
+ * 
  * satisfaction
  * 
  */
@@ -90,7 +115,7 @@ import {toASTTree} from './aw_ast.js';
 // testing AST correspondences
 const showProg = (program) => console.log(JSON.stringify(toASTTree(program)));
 
-showProg('(x => x)(0)');
+// showProg('1 <= 0 ? 2 : 3');
 
 /**
  * example terms 
@@ -101,3 +126,27 @@ showProg('(x => x)(0)');
 {(x => x + 1)(4)}
 {(1 - 2) <= 0 ? (x => y => y(x)) : (x => z => z(x)(x))}
 
+// crashing terms
+
+/**
+ * what do we consider ill-typed? (successful typing as OK^c, what 'doesnt evaluate')
+ * - undefined (indicative of nonexistant method call etc.)
+ * - type conversion (usually undesirable)
+ * - type coersion (usually undesirable or inconsistent)
+ * - NaN (usually undesirable indicative of incorrect use of numericalj operator)
+ * - a crash (getting stuck, going wrong)
+ * - divergence
+ */
+
+console.log(1 - (x => x)); //NaN
+console.log(1 + (x => x)); //type conversion (to string)
+console.log((x => x)()); //undefined
+console.log((y => y + 2)([0, 2])) //type conversion (to string)
+console.log((f => (x => f(x(x)))(x => f(x(x))))(y => y)) //call stack size exceeded (divergence)
+
+const Y = f => (x => f(x(x)))(x => f(x(x)));
+const Z = f => (x => f(v => x(x)(v)))(x => f(v => x(x)(v)));
+const add = f => x => y => y <= 0 ? x : (f(x + 1)(y - 1));
+const addFix = Z(add); //recursion is real! 
+
+console.log(addFix(2)(20));
