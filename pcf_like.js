@@ -2,27 +2,7 @@
  * the tiny subset of the language that just includes variables,
  * functions, pairs and two operators (they are infix)
  * 
- * simple grammar
- * where n and m floating point values
- * V, W ::= x | n | [V, W] | x => M
- * M, N ::= x | n | n + m | n - m | [M, N] | 
- *          x => M | M(N) | M <= 0 ? N : P 
- * 
- * evaluation contexts 
- * (where you can put values to have the term evaluate)
- * E, F ::= [] | (x => M) E | E(N) | E + m | E - m |
- *          n + E | n - E | E <= 0 ? N : P 
- * 
- * binary relation on evaluations
- * s <= 0 ? N : P |> N --where s is less than or equal to zero
- * t <= 0 ? N : P |> P --where t is greater than zero
- * n + m |> u --where u is the sum of n and m
- * n - m |> v --where v is n subract m
- * (x => M)V |> M[V/x]
- * 
- * types 
- * A, B ::= number | A x B | A -> B | Ok --all closed values are included in T[[OK]]
- * 
+ * see example_terms.js for spec
  */
 
 
