@@ -21,7 +21,7 @@ import {toASTTree} from './aw_ast.js';
  * 
  * evaluation contexts 
  * (where you can put values to have the term evaluate)
- * E, F ::= [] | (x => M) E | E(N) | E + m | E - m |
+ * E, F ::= [] | (x => M)(E) | E(N) | E + m | E - m |
  *          n + E | n - E | E <= 0 ? N : P 
  * 
  * binary relation on evaluations
@@ -135,8 +135,10 @@ const prettify = (json, whitespace = '') => {  // gives an array of lines to the
                 : `${whitespace}${toKey(i)}${JSON.stringify(value)},`); //stringify handles whether we need quotes
             // : typeof(value) === 'array' 
             //     ? console.log('array')
-                
-    return lines.reduce((acc, x) => `${acc}\r\n${x}`);
+            
+    const blockString = lines.reduce((acc, x) => `${acc}\r\n${x}`).slice(0, -1); //in a block of terms there is a single comma on the end, remove this 
+
+    return blockString;
 };
 
 // showProg('1 <= 0 ? 2 : 3');
@@ -185,7 +187,7 @@ console.log(addFix(2)(20));
  */
 
 const f = './tree_file.json';
-await Bun.write(f, JSON.stringify(toASTTree('f => x => y => y <= 0 ? x : (f(x + 1)(y - 1))')));
+await Bun.write(f, pretifyy(toASTTree('f => x => y => y <= 0 ? x : (f(x + 1)(y - 1))')));
 
 const inspection = toASTTree('x => x');
 console.log(pretifyy(inspection))
