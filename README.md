@@ -26,7 +26,7 @@ It is mentioned in comments, but concretely, a ruleset is defined on a term, whi
 A ruleset is a logical operator (`"ANY"` for OR, `"ALL"` for AND) and, sensibly, a collection of rules. These rules are combined with the logical operator to discern whether a term violates the ruleset. 
 
 Individual rules have the form R, S ::= `{"P": {p: R}}` | `{"F": {f: R}}` \
-where `p` and `f` are special strings. `p` is the name of any *property* on the current object, where objects of the former shape traverse deeper into the field being tested.
+where `p` and `f` are special strings. `p` is the name of any *property* on the current object, where rules of the former shape traverse deeper into the field being tested.
 `f` is the name of a *function* which is used to test the value, type etc. of a base (non-object) value of the current field being tested. With this the structure and validity of the fields of an object can be probed with fine detail. 
 
 To decide what properties to check and rule out, the AST for any term can be written with the `pretty` function to a json (e.g. `tree_file.json`) and inspected by hand.
