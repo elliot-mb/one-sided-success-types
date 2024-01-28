@@ -19,3 +19,14 @@ and `type_subtm.json`. Respectively, they:
 - Map all AST types to a grammar shape 
 - Define rules that forbid terms which the AST type is too general to exclude, that are not in the grammar. These are used to check the grammatical/syntactic correctness of terms.
 - Map all AST types to another map from subterms (in the grammar) to field names. These field names belong to the underlying AST type and are used to traverse the tree grammatically. These will be used extensively in the rules.
+
+The syntax of the `type_require.json` file, hereby *the rulesets*, is the most contrived.
+It is mentioned in comments, but concretely, a ruleset is defined on a term, which belongs to an AST node. This makes sense as the rules are specifically for ruling out certain AST nodes that are not part of the grammar. 
+
+A ruleset is a logical operator (`"ANY"` for OR, `"ALL"` for AND) and, sensibly, a collection of rules. These rules are combined with the logical operator to discern whether a term violates the ruleset. 
+
+Individual rules have the form R, S ::= `{"P": {p: R}}` | `{"F": {f: R}}` \
+where `p` and `f` are special strings. `p` is the name of any *property* on the current object, where objects of the former shape traverse deeper into the field being tested.
+`f` is the name of a *function* which is used to test the value, type etc. of a base (non-object) value of the current field being tested. With this the structure and validity of the fields of an object can be probed with fine detail. 
+
+To decide what properties to check and rule out, the AST for any term can be written with the `pretty` function to a json (e.g. `tree_file.json`) and inspected by hand.
