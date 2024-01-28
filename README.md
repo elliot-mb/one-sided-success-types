@@ -18,7 +18,7 @@ and `type_subtm.json`. Respectively, they:
 
 - Map all AST types to a grammar shape 
 - Define rules that forbid terms which the AST type is too general to exclude, that are not in the grammar. These are used to check the grammatical/syntactic correctness of terms.
-- Map all AST types to another map from subterms (in the grammar) to field names. These field names belong to the underlying AST type and are used to traverse the tree grammatically. These will be used extensively in the rules.
+- Map all AST types to another map from subterms (in the grammar) to field names. These field names belong to the underlying AST type and are used to traverse the tree grammatically. These will be used extensively in the rules for success type inference.
 
 The syntax of the `type_require.json` file, hereby *the rulesets*, is the most contrived.
 It is mentioned in comments, but concretely, a ruleset is defined on a term, which belongs to an AST node. This makes sense as the rules are specifically for ruling out certain AST nodes that are not part of the grammar. 
