@@ -1,0 +1,29 @@
+{
+    "Literal": {
+        "n": ["value"]
+    },
+    "BinaryExpression": {
+        "n": ["left"],
+        "m": ["right"]
+    },
+    "ArrayExpression": {
+        "M": ["elements", "0"],
+        "N": ["elements", "1"]
+    },
+    "ArrowFunctionExpression": {
+        "x": ["params", "0"],
+        "M": ["body"]
+    },
+    "CallExpression": {
+        "M": ["callee"],
+        "N": ["arguments", "0"]
+    },
+    "ConditionalExpression": {
+        "M": ["test", "left"],
+        "N": ["consequent"],
+        "P": ["alternate"]
+    },
+    "Identifier": {
+        "x": ["name"]
+    }
+}

@@ -1,4 +1,4 @@
-import {toASTTree} from './aw_ast.js';
+import {toASTTree, pretty, getSubterm, checkGrammar} from './aw_ast.js';
 
 /**
  * the tiny subset of the language that just includes variables,
@@ -34,7 +34,7 @@ import {toASTTree} from './aw_ast.js';
  * types 
  * A, B ::= number | A x B | A -> B | A^c | Ok | A v B --note the union type
  * 
- * term to ast obj correspondence
+ * term to ast obj correspondence (describes subterm_map.json)
  * 
  * n
  * {"type":"Literal",
@@ -69,8 +69,16 @@ import {toASTTree} from './aw_ast.js';
  *  "generator":false,
  *  "async":false,
  *  "params":[{"type":"Identifier","start":<number>,"end":<number>,"name":"x"}],
- *  "body":{M}
+ *  "body":{M} 
  *  }
+ * 
+ * x
+ * {
+    type: "Identifier",
+    start: <number>,
+    end: <number>,
+    name: "<identifier name e.g. x>",
+   }
  * 
  * M(N)
  * {"type":"CallExpression",
@@ -116,31 +124,6 @@ import {toASTTree} from './aw_ast.js';
 // testing AST correspondences
 const showProg = (program) => console.log(JSON.stringify(toASTTree(program)));
 
-const pretifyy = json => `{\r\n${prettify(json, '  ')}\r\n}`;
-const prettify = (json, whitespace = '') => {  // gives an array of lines to the tree_file
-    const isArr = Array.isArray(json); //a flag to stop us printing object key names if we are an array(array indices)
-    
-    const ks = Object.keys(json);
-    if(ks.length === 0) return [];
-
-    const keys_copy = ks.map(k => `${k}`) ;
-    const toKey = (i) => isArr ? '' : `"${keys_copy[i]}": `; //we can stop outputting keys if we are an array
-
-    const lines = ks //just the lines that show all the nested objects
-        .map(key => json[key]) //the nested objects
-        .map((value, i) => Array.isArray(value) //is this value an array
-            ? [`${whitespace}${toKey(i)}[\r\n`] + prettify(value, whitespace + `  `) + [`\r\n${whitespace}],`]
-            : typeof(value) === 'object' && value !== null
-                ? [`${whitespace}${toKey(i)}{\r\n`] + prettify(value, whitespace + `  `) + [`\r\n${whitespace}},`]
-                : `${whitespace}${toKey(i)}${JSON.stringify(value)},`); //stringify handles whether we need quotes
-            // : typeof(value) === 'array' 
-            //     ? console.log('array')
-            
-    const blockString = lines.reduce((acc, x) => `${acc}\r\n${x}`).slice(0, -1); //in a block of terms there is a single comma on the end, remove this 
-
-    return blockString;
-};
-
 // showProg('1 <= 0 ? 2 : 3');
 
 /**
@@ -164,31 +147,56 @@ const prettify = (json, whitespace = '') => {  // gives an array of lines to the
  * - divergence
  */
 
-console.log(1 - (x => x)); //NaN
-console.log(1 + (x => x)); //type conversion (to string)
-console.log((x => x)()); //undefined
-console.log((y => y + 2)([0, 2])) //type conversion (to string)
-try{
-    console.log((f => (x => f(x(x)))(x => f(x(x))))(y => y)) //call stack size exceeded (divergence)
-}catch(err){
-    console.log(`this term caused a crash: '${err.message}'`)
+const crashTerms = () => {
+    console.log(1 - (x => x)); //NaN
+    console.log(1 + (x => x)); //type conversion (to string)
+    console.log((x => x)()); //undefined
+    console.log((y => y + 2)([0, 2])) //type conversion (to string)
+    try{
+        console.log((f => (x => f(x(x)))(x => f(x(x))))(y => y)) //call stack size exceeded (divergence)
+    }catch(err){
+        console.log(`this term caused a crash: '${err.message}'`)
+    }
 }
 
+const recursion = () => {
+    const Y = f => (x => f(x(x)))(x => f(x(x)));
+    const Z = f => (x => f(v => x(x)(v)))(x => f(v => x(x)(v)));
+    const add = f => x => y => y <= 0 ? x : (f(x + 1)(y - 1));
+    const addFix = Z(add); //recursion is real! 
 
-const Y = f => (x => f(x(x)))(x => f(x(x)));
-const Z = f => (x => f(v => x(x)(v)))(x => f(v => x(x)(v)));
-const add = f => x => y => y <= 0 ? x : (f(x + 1)(y - 1));
-const addFix = Z(add); //recursion is real! 
-
-console.log(addFix(2)(20));
+    console.log(addFix(2)(20));
+}    
 
 /**
  * language checker using ast: are we using the correct subset?
  */
 
-const f = './tree_file.json';
-await Bun.write(f, pretifyy(toASTTree('f => x => y => y <= 0 ? x : (f(x + 1)(y - 1))')));
+const showsTree = async () => {
+    const f = './tree_file.json';
+    await Bun.write(f, pretty(toASTTree('[x => x, y => y <= 0 ? y : 1]')));
+}
 
-const inspection = toASTTree('x => x');
-console.log(pretifyy(inspection))
-console.log(inspection);
+const exploreTerm = () => {
+    const term = toASTTree('x => y => x <= 0 ? 2 : x + y');
+    console.log(getSubterm(getSubterm(getSubterm(term, 'M'), 'M'), 'M')); 
+    //gets the body twice, then M on the ternary  
+}
+
+const grammarCheck = () => {
+    const goodTerm = toASTTree('x => x');
+    checkGrammar(goodTerm);
+    const bigTerm = toASTTree('x => y => x <= 0 ? 2 : x + y');
+    checkGrammar(bigTerm);
+    const ZTerm = toASTTree('(f => (x => f(v => x(x)(v)))(x => f(v => x(x)(v))))');
+    checkGrammar(ZTerm);
+    const twoArgs = toASTTree('x => x(5)(5)');
+    checkGrammar(twoArgs); //passes this when it shouldnt
+    const longIdentifier = toASTTree('identifier <= 0 ? identifier : z');
+    checkGrammar(longIdentifier); //passes when it shouldnt
+    //in summary it does not check that things are the right length
+    
+}
+
+grammarCheck();
+showsTree();

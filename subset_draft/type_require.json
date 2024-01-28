@@ -1,0 +1,53 @@
+{
+    "Literal": {
+        "value": {
+            "satisfies": "ANY", 
+            "rules": [{"F": {"typeof": "number"}}]
+        }
+    },
+    "BinaryExpression": {
+        "operator": {
+            "satisfies": "ANY", 
+            "rules": [
+                {"F": {"equals": "+"}}, 
+                {"F": {"equals": "-"}}
+            ]
+        } 
+    },
+    "ArrayExpression": {
+        "elements": {
+            "satisfies": "ANY", 
+            "rules": [{"P": {"length": {"F": {"equals": 2}}}}]
+        }
+    },
+    "ArrowFunctionExpression": {
+        "params": {
+            "satisfies": "ANY", 
+            "rules": [{"P": {"length": {"F": {"equals": 1}}}}]
+        }
+    },
+    "CallExpression": {
+        "arguments": {
+            "satisfies": "ANY",
+            "rules": [{"P": {"length": {"F": {"equals": 1}}}}]
+        }
+    },
+    "ConditionalExpression": {
+        "test": {
+            "satisfies": "ALL",
+            "rules": [
+                {"P": {"type": {"F": {"equals": "BinaryExpression"}}}},
+                {"P": {"operator": {"F": {"equals": "<="}}}},
+                {"P": {"right": {"P": {"raw": {"F": {"equals": "0"}}}}}}
+            ]
+        }
+    },
+    "Identifier": {
+        "name": {
+            "satisfies": "ANY",
+            "rules": [
+                {"P": {"length": {"F": {"equals": 1}}}}
+            ]
+        }
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "Literal": "n",
+    "BinaryExpression": "n + m | n - m",
+    "ArrayExpression": "[M, N]",
+    "ArrowFunctionExpression": "x => M",
+    "CallExpression": "M(N)",
+    "ConditionalExpression": "M <= 0 ? N : P",
+    "Identifier": "x"
+}
