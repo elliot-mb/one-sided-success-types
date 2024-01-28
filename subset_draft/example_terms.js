@@ -192,7 +192,7 @@ const grammarCheck = () => {
     checkGrammar(ZTerm);
     const twoArgs = toASTTree('x => x(5)(5)');
     checkGrammar(twoArgs); //passes this when it shouldnt
-    const longIdentifier = toASTTree('identifier <= 0 ? identifier : z');
+    const longIdentifier = toASTTree('x <= 0 ? y : z');
     checkGrammar(longIdentifier); //passes when it shouldnt
     //in summary it does not check that things are the right length
     
