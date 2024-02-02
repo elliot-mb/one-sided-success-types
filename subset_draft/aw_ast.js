@@ -8,20 +8,6 @@ const walk = require('acorn-walk');
 const parse = (prog) => acorn.parse(prog, {ecmaVersion: 2023});
 const PROGRAM_T = 'Program';
 
-//just first expression argument is there while we only have single expressions
-export const toASTTree = (program, justFirstExpression = true) => {
-    console.log(`${program} to AST Tree`);
-    let tree = {};
-    walk.full(parse(program), (node) => {
-        if(node.type === PROGRAM_T){
-            tree = node;
-        }
-    });
-
-    if(justFirstExpression) return tree['body'][0]['expression'];
-    return tree;
-}
-
 // writes the tree output as a nicely spaced string
 export const pretty = json => `{\r\n${pret(json, '  ')}\r\n}`;
 const pret = (json, whitespace = '') => {  // gives an array of lines to the tree_file
@@ -57,13 +43,22 @@ const pret = (json, whitespace = '') => {  // gives an array of lines to the tre
 const typeToSubterms = require('./type_subtm.json');
 
 //a map from AST types to grammar shapes 
-const typeToGrammar = require('./type_grmmr.json');
+export const typeToGrammar = require('./type_grmmr.json');
 
 //a map from AST types to maps from specific fields to restrictions they must obey
 //in an effort to express whats permitted in the subset of the language
 //a list of restrictions is disjunctive or conjunctive, based on the symbol 'ANY' or 'ALL' resp.
 //in the 'satisfies' field of the object that holds the restriction list 
 const typeToProperties = require('./type_require.json');
+
+//turns the root node of the term's type to the grammar shape
+// as a string
+export const termShape = (term) => {
+    if(term.type === undefined) throw `getSubterm: term has no 'type' field`;
+    
+    return typeToGrammar[term.type];
+    
+}
 
 //gets a subterm based on a term and the name in the grammar.
 //throws an error if a name is used thats not in the grammar for that term type.
@@ -212,7 +207,21 @@ export const checkGrammar = term => {
     // here, we know the term is written just using the specification in ./type_subtm.json
 }
 
+//just first expression argument is there while we only have single expressions
+export const toASTTree = (program, justFirstExpression = true) => {
+    //console.log(`${program} to AST Tree`);
+    let tree = {};
+    walk.full(parse(program), (node) => {
+        if(node.type === PROGRAM_T){
+            tree = node;
+        }
+    });
 
+    if(justFirstExpression) tree = tree['body'][0]['expression'];
+    checkGrammar(tree);
+
+    return tree;
+}
 
 /**
  * const testToAST = () => {
