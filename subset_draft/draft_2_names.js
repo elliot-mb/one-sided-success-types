@@ -58,7 +58,7 @@ import {toASTTree, pretty, getSubterm, checkGrammar, termShape, typeToGrammar} f
 // regular one-sided implementation BEFORE i implement 
 // the success system (adding extra rules for OK(^c))
 
-//                           single type string    map from type strings to type strings
+//                           single type string   strings[] of type equations
 const TCPair = (type, constr) => ({'type': type, 'constraints': constr});
 //const TCPairAppend = (TCPair) => 
 
@@ -66,53 +66,54 @@ let counter = 0;
 const max = 100;
 const getCounter = () => {counter++; return counter % max;}
 
-const freshVar = Array(max).fill(1).map((v, i) => `X_${i}`);
-const getFreshVar = () => freshVar[getCounter()];
+const freshVar = Array(max).fill(1).map((v, i) => `_${i}`);
+const getFreshVar = (pfix) => `${pfix}${freshVar[getCounter()]}`;
 
 /**
  * regular non-success type checker
  * @param {*} term 
  * @param {*} assms is a json from identifiers (x) to types (strings)
  * 
- * @returns {the type, the constraints}
+ * @returns {the type, the constraints as an array of equation strings}
  */
 const typecheck = (term, assms) => {
     const shape = termShape(term);
     if(shape === 'x'){
-        return TCPair(assms[getSubterm(term, 'x')], {});
+        return TCPair(assms[getSubterm(term, 'x')], []);
+    }
+    if(shape === 'n'){
+        return TCPair('Num', []);
     }
     if(shape === 'n + m | n - m'){
         throw 'implement me!';
     }
-    if(shape === '[M, N]'){
-        throw 'implement me!';
+    if(shape === '[M, N]'){        throw 'implement me!';
     }
     if(shape === 'x => M'){
         const t2 = getSubterm(term, 'M');
+        const T1 = getFreshVar('T');
         const xName = getSubterm(getSubterm(term, 'x'), 'x');
         const newAssms = assms;
-        assms[xName] = 'T_1';
+        newAssms[xName] = T1;
         const T2_C = typecheck(t2, newAssms);
-        return TCPair('T_1 -> T_2', T2_C.constraints);
+        return TCPair(`${T1} -> ${T2_C.type}`, T2_C.constraints);
     }
     if(shape === 'M(N)'){
         const t1 = getSubterm(term, 'M');
         const t2 = getSubterm(term, 'N');
         const T1_C = typecheck(t1, assms);
         const T2_C = typecheck(t2, assms);
-        const X = getFreshVar();
-        return TCPair(X, )
+        const X = getFreshVar('X');
+        
+        return TCPair(X, [...T1_C.constraints, ...T2_C.constraints, `${T1_C.type} = ${T2_C.type} -> ${X}`]);
     }
     if(shape === 'M <= 0 ? N : P'){
-        
-    }
-    if(shape === 'n'){
         
     }
 }
 
 const testTypeCheck = () => {
-    console.log(typecheck(toASTTree('y'), {}));
+    console.log(typecheck(toASTTree('s => y => z => (s(z))(y(z))'), {}));
 }
 
 testTypeCheck();
