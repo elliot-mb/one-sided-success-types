@@ -10,7 +10,7 @@ const PROGRAM_T = 'Program';
 
 //just first expression argument is there while we only have single expressions
 export const toASTTree = (program, justFirstExpression = true) => {
-
+    console.log(`${program} to AST Tree`);
     let tree = {};
     walk.full(parse(program), (node) => {
         if(node.type === PROGRAM_T){
@@ -174,18 +174,20 @@ export const checkTerm = term => {
         if(ruleset[stfy] === undefined) throw `checkTerm: ruleset is missing the 'satisfies' property`;
         const reducer = ruleset[stfy] === sAny ? rAny : rAll;   
         if(ruleset[ruls].length === 0) throw `checkTerm: rulesets must have at least one rule`;
+        const fails = [];
         const isOk = ruleset[ruls]
-            .map(rule => {
+            .map((rule, i) => {
                 try{
                     checkRule(rule, term[field], field);
                 }catch(err){
-                    console.log(err);
+                    //console.log(err);
+                    fails.push(i);
                     return false;
                 }
                 return true; //we need to not crash out in teh case that rAny is selected
             })
             .reduce((acc, x) => reducer(acc)(x));
-        if(!isOk) throw `checkTerm: '${ruleset[stfy]}' rule(s) in ruleset not met`;
+        if(!isOk) throw `checkTerm: '${ruleset[stfy]}' rule(s) in ruleset not met: rule #s [${fails}]`;
 
     });
 }

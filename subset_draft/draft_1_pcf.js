@@ -150,13 +150,14 @@ const showProg = (program) => console.log(JSON.stringify(toASTTree(program)));
 const crashTerms = () => {
     console.log(1 - (x => x)); //NaN
     console.log(1 + (x => x)); //type conversion (to string)
-    console.log((x => x)()); //undefined
+    //console.log((x => x)()); //undefined i dont think this is in the grammar, all function calls need an argument 
     console.log((y => y + 2)([0, 2])) //type conversion (to string)
     try{
         console.log((f => (x => f(x(x)))(x => f(x(x))))(y => y)) //call stack size exceeded (divergence)
     }catch(err){
         console.log(`this term caused a crash: '${err.message}'`)
-    }
+    } 
+    console.log()
 }
 
 const recursion = () => {
@@ -183,6 +184,11 @@ const exploreTerm = () => {
     //gets the body twice, then M on the ternary  
 }
 
+const ignoreError = f => {
+    try{ f() }
+    catch(err){ console.error(`error: ${err}`); }
+}
+
 const grammarCheck = () => {
     const goodTerm = toASTTree('x => x');
     checkGrammar(goodTerm);
@@ -191,12 +197,24 @@ const grammarCheck = () => {
     const ZTerm = toASTTree('(f => (x => f(v => x(x)(v)))(x => f(v => x(x)(v))))');
     checkGrammar(ZTerm);
     const twoArgs = toASTTree('x => x(5)(5)');
-    checkGrammar(twoArgs); //passes this when it shouldnt
-    const longIdentifier = toASTTree('x <= 0 ? y : z');
-    checkGrammar(longIdentifier); //passes when it shouldnt
-    //in summary it does not check that things are the right length
-    
+    checkGrammar(twoArgs); 
+    const iflez = toASTTree('x <= 0 ? y : z');
+    checkGrammar(iflez); 
+    const aNothing = toASTTree('(x => x)()');
+    ignoreError(() => checkGrammar(aNothing)); 
+    const tooManyArgs = toASTTree('(x, y) => x');
+    ignoreError(() => checkGrammar(tooManyArgs));
+    const longIdentifier = toASTTree('bigIdent => bigIdent');
+    ignoreError(() => checkGrammar(longIdentifier));
+    const triple = toASTTree('[x, y, z]');
+    ignoreError(() => checkGrammar(triple));
+    const doublePair = toASTTree('[x, [y, z]]');
+    ignoreError(() => checkGrammar(doublePair));
+    // const funcWord = toASTTree('function id(x) { return x; }');
+    // console.log(funcWord); this passes when it shouldnt
+
+    // ignoreError(() => checkGrammar(funcWord));
 }
 
 grammarCheck();
-showsTree();
+//showsTree();
