@@ -160,15 +160,15 @@ const testTypeVar = () => {
     console.log(cstr.lhs().freeIn());
     console.log(`${cstr.show()} is ${cstr.isLhsEqRhs()}`);
 
-    const T1 = new GenT('T1');
-    const T2 = new GenT('T2');
-    const T3 = new GenT('T3');
-    const T4 = new GenT('T4');
-    const T5 = new GenT('T5');
-    const T6 = new GenT('T6');
-    const X4 = new GenT('X4');
-    const X5 = new GenT('X5');
-    const X6 = new GenT('X6');
+    const T1 = new GenT('H');
+    const T2 = new GenT('I');
+    const T3 = new GenT('C');
+    const T4 = new GenT('J');
+    const T5 = new GenT('K');
+    const T6 = new GenT('L');
+    const X4 = new GenT('M');
+    const X5 = new GenT('B');
+    const X6 = new GenT('A');
     const X5_X6 = new ArrowT(X5, X6, 'none');
     const C1 = new Constraint(T1, new ArrowT(T3, X4, 'none'));
     const C2 = new Constraint(T2, new ArrowT(T3, X5, 'none'));
@@ -176,7 +176,8 @@ const testTypeVar = () => {
     const constrSet = new ConstraintSet([C1, C2, C3]);
     const topType = new ArrowT(T1, new ArrowT(T2, new ArrowT(T3, X6)));
     unify(topType, constrSet);
-    console.log(topType.show());
+    console.log('x => y => z => (x(z))(y(z)) has type : ' + topType.show());
+
 }
 
 testTypeCheck();

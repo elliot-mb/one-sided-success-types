@@ -15,8 +15,6 @@ export class GenT{
     static arrowShape = 'A -> B';
 
     static typeVarsOrCrash = (A, B) => {
-        console.log(A);
-        console.log(B);
         if(A.typeof() !== GenT.type) throw 'typeVarsOrCrash(): A must be a \'typevar\'';
         if(B.typeof() !== GenT.type) throw 'typeVarsOrCrash(): B must be a \'typevar\'';
     }
