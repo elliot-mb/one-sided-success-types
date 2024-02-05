@@ -9,7 +9,10 @@
  */
 
 export class TypeVar{
-    
+    static genShape = 'A';
+    static numShape = 'Num';
+    static arrowShape = 'A -> B';
+
     static areTypeVars = (A, B) => {
         if(A.typeof() !== 'typevar') throw 'Constraint(): A must be a \'typevar\'';
         if(B.typeof() !== 'typevar') throw 'Constraint(): B must be a \'typevar\'';
@@ -20,10 +23,15 @@ export class TypeVar{
 
     constructor(id){
         this.id = id;
+        this.shape = () => TypeVar.genShape;
     }
 
     getId(){
         return this.id;
+    }
+
+    show(){
+        return this.getId();
     }
 
     freeIn(){
@@ -33,17 +41,29 @@ export class TypeVar{
     typeof() {
         return 'typevar';
     }
+
+    equals(C) {
+        if(this.shape() !== C.shape()) return false;
+        if(this.shape() === TypeVar.numShape) return true;
+        if(this.shape() === TypeVar.genShape){
+            return this.getId() === C.getId();
+        }
+        if(this.shape() === TypeVar.arrowShape){
+            return this.getA().equals(C.getA()) && this.getB().equals(C.getB());
+        }
+        return false;
+    }       
 }
 
 export class NumT extends TypeVar{
-    static shape = () => 'Num';
 
     constructor(id){
         super(id);
+        this.shape = () => TypeVar.numShape;
     }
 
     show(){
-        return NumT.shape();
+        return this.shape();
     }
 }
 
@@ -52,13 +72,13 @@ export class NumT extends TypeVar{
 // }
 
 export class ArrowT extends TypeVar{
-    static shape = () => 'A -> B';
 
     constructor(A, B, id){
         super(id);
         TypeVar.areTypeVars(A, B);
         this.A = A;
         this.B = B;
+        this.shape = () => TypeVar.arrowShape;
     }
 
     getA(){

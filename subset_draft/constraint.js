@@ -3,6 +3,16 @@ import {TypeVar} from './typevar.js';
 export class Constraint{
     static typeof = () => 'constraint';
 
+    //checks that, when A is a single type variable, that it's identifier does not appear in FV(B)
+    static fstNotInFreeSnd = (A, B) => {
+        TypeVar.areTypeVars(A, B);
+        const fv = A.freeIn(); //must be a single elem to not be a function
+        const fvs = B.freeIn();
+        if(fv.length > 1) return false; // this is either the second or third case in https://www3.nd.edu/~dchiang/teaching/pl/2019/typerec.html
+        const v = fv[0];
+        return !fvs.map(rV => v === rV).reduce((acc, b) => acc || b, false); 
+    }
+
     /**
      * 
      * @param {type variable A} A 
@@ -19,16 +29,28 @@ export class Constraint{
         return this.A;
     }
 
-    rhs(){
+    rhs(){ 
         return this.B;
+    }
+
+    isLhsEqRhs(){ //in terms of labels and shapes
+        return this.lhs().equals(this.rhs());
     }
 
     /**
      *  S = T
      *  S = X and X not in FV(T)
      */
-    isLhsFreeInRhs(){
-        const 
+    isLhsNotInFreeRhs(){
+        return Constraint.fstNotInFreeSnd(this.A, this.B);
+    }
+
+    isRhsNotInFreeLhs(){
+        return Constraint.fstNotInFreeSnd(this.B, this.A);
+    }
+
+    areRhsLhsArrows(){
+        return this.A.shape() === TypeVar.arrowShape && this.B.shape() === TypeVar.arrowShape;
     }
 
     show(){

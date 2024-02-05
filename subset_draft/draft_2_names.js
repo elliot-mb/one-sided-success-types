@@ -115,21 +115,23 @@ const typecheck = (term, assms) => {
 }
 
 const testTypeCheck = () => {
-    console.log(typecheck(toASTTree('s => y => z => (s(z))(y(z))'), {}));
+    console.log(typecheck(toASTTree('(x => x)(0)'), {}));
 }
 
 const testTypeVar = () => {
     const numA = new NumT('A');
     const numB = new NumT('B');
     const generalA = new TypeVar('E');
+    const generalF = new TypeVar('F');
     console.log(numA.freeIn());
-    const arrA = new ArrowT(numA, numB, 'C');
+    const arrA = new ArrowT(generalF, generalA, 'C');
     console.log(arrA.show());
-    const arrB = new ArrowT(numA, arrA, 'D');
+    const arrB = new ArrowT(generalF, generalF, 'D');
     console.log(arrB.show());
     console.log(arrB.freeIn());
-    const cstr = new Constraint(generalA, arrA);
+    const cstr = new Constraint(arrA, arrB);
     console.log(cstr.rhs().freeIn());
+    console.log(`${cstr.show()} is ${cstr.isLhsEqRhs()}`);
 }
 
 testTypeCheck();
