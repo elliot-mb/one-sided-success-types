@@ -8,7 +8,7 @@
  * 
  */
 
-export class TypeVar{
+export class GenT{
     static genShape = 'A';
     static numShape = 'Num';
     static arrowShape = 'A -> B';
@@ -23,7 +23,7 @@ export class TypeVar{
 
     constructor(id){
         this.id = id;
-        this.shape = () => TypeVar.genShape;
+        this.shape = () => GenT.genShape;
     }
 
     getId(){
@@ -45,22 +45,22 @@ export class TypeVar{
     //recursively goes down the types to match up identifiers/base types
     equals(C) {
         if(this.shape() !== C.shape()) return false;
-        if(this.shape() === TypeVar.numShape) return true;
-        if(this.shape() === TypeVar.genShape){
+        if(this.shape() === GenT.numShape) return true;
+        if(this.shape() === GenT.genShape){
             return this.getId() === C.getId();
         }
-        if(this.shape() === TypeVar.arrowShape){
+        if(this.shape() === GenT.arrowShape){
             return this.getA().equals(C.getA()) && this.getB().equals(C.getB());
         }
         return false;
     }       
 }
 
-export class NumT extends TypeVar{
+export class NumT extends GenT{
 
     constructor(id){
         super(id);
-        this.shape = () => TypeVar.numShape;
+        this.shape = () => GenT.numShape;
     }
 
     show(){
@@ -72,14 +72,14 @@ export class NumT extends TypeVar{
 //     static shape = () => 'A x B';
 // }
 
-export class ArrowT extends TypeVar{
+export class ArrowT extends GenT{
 
     constructor(A, B, id){
         super(id);
-        TypeVar.areTypeVars(A, B);
+        GenT.areTypeVars(A, B);
         this.A = A;
         this.B = B;
-        this.shape = () => TypeVar.arrowShape;
+        this.shape = () => GenT.arrowShape;
     }
 
     getA(){
@@ -91,12 +91,12 @@ export class ArrowT extends TypeVar{
     }
 
     setA(newA){
-        TypeVar.isTypeVar(newA);
+        GenT.isTypeVar(newA);
         this.A = newA;
     }
 
     setB(newB){
-        TypeVar.isTypeVar(newB);
+        GenT.isTypeVar(newB);
         this.B = newB;
     }
 

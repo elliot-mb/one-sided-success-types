@@ -1,11 +1,11 @@
-import {TypeVar} from './typevar.js';
+import {GenT} from './typevar.js';
 
 export class Constraint{
     static typeof = () => 'constraint';
 
     //checks that, when A is a single type variable, that it's identifier does not appear in FV(B)
     static fstNotInFreeSnd = (A, B) => {
-        TypeVar.areTypeVars(A, B);
+        GenT.areTypeVars(A, B);
         const fv = A.freeIn(); //must be a single elem to not be a function
         const fvs = B.freeIn();
         if(fv.length > 1) return false; // this is either the second or third case in https://www3.nd.edu/~dchiang/teaching/pl/2019/typerec.html
@@ -20,7 +20,7 @@ export class Constraint{
      */
 
     constructor(A, B){
-        TypeVar.areTypeVars(A, B);
+        GenT.areTypeVars(A, B);
         this.A = A;
         this.B = B; 
     }
@@ -50,7 +50,7 @@ export class Constraint{
     }
 
     areRhsLhsArrows(){
-        return this.A.shape() === TypeVar.arrowShape && this.B.shape() === TypeVar.arrowShape;
+        return this.A.shape() === GenT.arrowShape && this.B.shape() === GenT.arrowShape;
     }
 
     show(){

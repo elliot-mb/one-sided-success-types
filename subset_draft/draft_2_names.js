@@ -54,7 +54,7 @@
  */
 
 import {toASTTree, pretty, getSubterm, checkGrammar, termShape, typeToGrammar} from './aw_ast.js';
-import {TypeVar, NumT, ArrowT} from './typevar.js';
+import {GenT, NumT, ArrowT} from './typevar.js';
 import {Constraint} from './constraint.js';
 
 // regular one-sided implementation BEFORE i implement 
@@ -114,6 +114,26 @@ const typecheck = (term, assms) => {
     }
 }
 
+const unify = (topType, cnstrnts) => {
+    while(cnstrnts.length > 0){
+        const cnstrnt = cnstrnts.pop();
+        if(cnstrnt.isLhsEqRhs()){}
+        else if(cnstrnt.isLhsNotInFreeRhs()){
+            console.log(`replace ${cnstrnt.lhs().show()} with ${cnstrnt.rhs().show()}`);
+        }
+        else if(cnstrnt.isRhsNotInFreeLhs()){
+            console.log(`replace ${cnstrnt.rhs().show()} with ${cnstrnt.lhs().show()}`)
+        }
+        else if(cnstrnt.areRhsLhsArrows()){
+            console.log(`corrolate ${cnstrnt.rhs().show()} and ${cnstrnt.lhs().show()}`);
+        }else{
+            console.log(`fail`);
+            return topType;
+        }
+    }
+    return topType;
+}
+
 const testTypeCheck = () => {
     console.log(typecheck(toASTTree('(x => x)(0)'), {}));
 }
@@ -121,18 +141,33 @@ const testTypeCheck = () => {
 const testTypeVar = () => {
     const numA = new NumT('A');
     const numB = new NumT('B');
-    const generalA = new TypeVar('E');
-    const generalF = new TypeVar('F');
+    const generalA = new GenT('E');
+    const generalF = new GenT('F');
     console.log(numA.freeIn());
     const arrA = new ArrowT(generalF, generalA, 'C');
     console.log(arrA.show());
     const arrB = new ArrowT(generalF, generalF, 'D');
     console.log(arrA.show());
     console.log(arrA.freeIn());
-    const cstr = new Constraint(arrA, arrB);
+    const cstr = new Constraint(numB, arrB);
     console.log(cstr.lhs().freeIn());
     console.log(`${cstr.show()} is ${cstr.isLhsEqRhs()}`);
+
+    const T1 = new GenT('T1');
+    const T2 = new GenT('T2');
+    const T3 = new GenT('T3');
+    const T4 = new GenT('T4');
+    const T5 = new GenT('T5');
+    const T6 = new GenT('T6');
+    const X4 = new GenT('X4');
+    const X5 = new GenT('X5');
+    const X6 = new GenT('X6');
+    const C1 = new Constraint(T1, new ArrowT(T3, X4, 'none'));
+    const C2 = new Constraint(T2, new ArrowT(T3, X5, 'none'));
+    const C3 = new Constraint(X4, new ArrowT(X5, X6, 'none'));
+ 
+    unify(null, [C1, C2, C3]);
 }
 
 testTypeCheck();
-//testTypeVar();
+testTypeVar();
