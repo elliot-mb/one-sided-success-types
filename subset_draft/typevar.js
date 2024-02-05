@@ -9,16 +9,20 @@
  */
 
 export class GenT{
+    static type = 'typevar';
     static genShape = 'A';
     static numShape = 'Num';
     static arrowShape = 'A -> B';
 
-    static areTypeVars = (A, B) => {
-        if(A.typeof() !== 'typevar') throw 'Constraint(): A must be a \'typevar\'';
-        if(B.typeof() !== 'typevar') throw 'Constraint(): B must be a \'typevar\'';
+    static typeVarsOrCrash = (A, B) => {
+        console.log(A);
+        console.log(B);
+        if(A.typeof() !== GenT.type) throw 'typeVarsOrCrash(): A must be a \'typevar\'';
+        if(B.typeof() !== GenT.type) throw 'typeVarsOrCrash(): B must be a \'typevar\'';
     }
-    static isTypeVar = (A) => {
-        if(A.typeof() !== 'typevar') throw 'Constraint(): A must be a \'typevar\'';
+    static typeVarOrCrash = (A) => {
+        console.log(A);
+        if(A.typeof() !== GenT.type) throw 'typeVarOrCrash(): A must be a \'typevar\'';
     }
 
     constructor(id){
@@ -39,7 +43,19 @@ export class GenT{
     }
 
     typeof() {
-        return 'typevar';
+        return GenT.type;
+    }
+
+    /**
+     * 
+     * @param {the type variable we ought to replace} tA 
+     * @param {the type variable we want to replace the searched-for one with} C 
+     * @returns {a new type variable based swapping out the old for the new}
+     */
+    swapWith(tA, tB){ 
+        GenT.typeVarsOrCrash(tA, tB);
+        if(this.getId() === tA.getId()) return tB;
+        else return this;
     }
 
     //recursively goes down the types to match up identifiers/base types
@@ -66,6 +82,12 @@ export class NumT extends GenT{
     show(){
         return this.shape();
     }
+
+    swapWith(tA, tB){ 
+        GenT.typeVarsOrCrash(tA, tB);
+        if(tB.shape() !== GenT.numShape) throw `swapWith: ${GenT.numShape} type is not a ${tB.shape()} (disjoint types)`;
+        return tB;
+    }
 }
 
 // export class CrossT extends TypeVar{
@@ -76,7 +98,7 @@ export class ArrowT extends GenT{
 
     constructor(A, B, id){
         super(id);
-        GenT.areTypeVars(A, B);
+        GenT.typeVarsOrCrash(A, B);
         this.A = A;
         this.B = B;
         this.shape = () => GenT.arrowShape;
@@ -91,17 +113,32 @@ export class ArrowT extends GenT{
     }
 
     setA(newA){
-        GenT.isTypeVar(newA);
+        GenT.typeVarOrCrash(newA);
         this.A = newA;
     }
 
     setB(newB){
-        GenT.isTypeVar(newB);
+        GenT.typeVarOrCrash(newB);
         this.B = newB;
     }
 
     show(){
-        return `(${this.A.show()}) -> (${this.B.show()})`; //latter brackets are never needed?
+        return `(${this.A.show()}) -> ${this.B.show()}`; //latter brackets are never needed?
+    }
+
+    swapWith(tA, tB){ 
+        GenT.typeVarsOrCrash(tA, tB);
+        if(this.getA().getId() === tA.getId()) {
+            this.A = tB;
+        }
+        if(this.getB().getId() === tA.getId()){
+            this.B = tB;
+        }
+        return new ArrowT(
+            this.getA().swapWith(tA, tB),
+            this.getB().swapWith(tA, tB),
+            this.id
+        ); //searches further down
     }
 
     /**

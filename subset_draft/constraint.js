@@ -1,11 +1,15 @@
 import {GenT} from './typevar.js';
 
 export class Constraint{
-    static typeof = () => 'constraint';
+    static type = 'constraint';
+
+    static constraintOrCrash = (C) => {
+        if(C.typeof() !== Constraint.type) throw 'constraintOrCrash: C has not the typeof() Constraint'
+    }
 
     //checks that, when A is a single type variable, that it's identifier does not appear in FV(B)
     static fstNotInFreeSnd = (A, B) => {
-        GenT.areTypeVars(A, B);
+        GenT.typeVarsOrCrash(A, B);
         const fv = A.freeIn(); //must be a single elem to not be a function
         const fvs = B.freeIn();
         if(fv.length > 1) return false; // this is either the second or third case in https://www3.nd.edu/~dchiang/teaching/pl/2019/typerec.html
@@ -20,7 +24,7 @@ export class Constraint{
      */
 
     constructor(A, B){
-        GenT.areTypeVars(A, B);
+        GenT.typeVarsOrCrash(A, B);
         this.A = A;
         this.B = B; 
     }
@@ -55,6 +59,10 @@ export class Constraint{
 
     show(){
         return `${this.A.show()} = ${this.B.show()}`;
+    }
+
+    typeof(){
+        return Constraint.type;
     }
 
 }

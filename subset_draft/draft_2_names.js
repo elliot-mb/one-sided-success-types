@@ -56,6 +56,7 @@
 import {toASTTree, pretty, getSubterm, checkGrammar, termShape, typeToGrammar} from './aw_ast.js';
 import {GenT, NumT, ArrowT} from './typevar.js';
 import {Constraint} from './constraint.js';
+import {ConstraintSet} from './constraint_set.js';
 
 // regular one-sided implementation BEFORE i implement 
 // the success system (adding extra rules for OK(^c))
@@ -114,18 +115,24 @@ const typecheck = (term, assms) => {
     }
 }
 
-const unify = (topType, cnstrnts) => {
-    while(cnstrnts.length > 0){
-        const cnstrnt = cnstrnts.pop();
-        if(cnstrnt.isLhsEqRhs()){}
-        else if(cnstrnt.isLhsNotInFreeRhs()){
-            console.log(`replace ${cnstrnt.lhs().show()} with ${cnstrnt.rhs().show()}`);
+const unify = (topType, cSet) => {
+    while(!cSet.isEmpty()){
+        const c = cSet.pop();
+        if(c.isLhsEqRhs()){}
+        else if(c.isLhsNotInFreeRhs()){
+            console.log(`replace ${c.lhs().show()} with ${c.rhs().show()}`);
+            topType.swapWith(c.lhs(), c.rhs());
+            cSet.swapWithAll(c.lhs(), c.rhs());
         }
-        else if(cnstrnt.isRhsNotInFreeLhs()){
-            console.log(`replace ${cnstrnt.rhs().show()} with ${cnstrnt.lhs().show()}`)
+        else if(c.isRhsNotInFreeLhs()){
+            console.log(`replace ${c.rhs().show()} with ${c.lhs().show()}`)
+            topType.swapWith(c.rhs(), c.lhs());
+            cSet.swapWithAll(c.rhs(), c.lhs());
         }
-        else if(cnstrnt.areRhsLhsArrows()){
-            console.log(`corrolate ${cnstrnt.rhs().show()} and ${cnstrnt.lhs().show()}`);
+        else if(c.areRhsLhsArrows()){
+            console.log(`corrolate ${c.rhs().show()} and ${c.lhs().show()}`);
+            cSet.add(new Constraint(c.rhs().getA(), c.lhs().getA()));
+            cSet.add(new Constraint(c.rhs().getB(), c.lhs().getB()));
         }else{
             console.log(`fail`);
             return topType;
@@ -162,11 +169,14 @@ const testTypeVar = () => {
     const X4 = new GenT('X4');
     const X5 = new GenT('X5');
     const X6 = new GenT('X6');
+    const X5_X6 = new ArrowT(X5, X6, 'none');
     const C1 = new Constraint(T1, new ArrowT(T3, X4, 'none'));
     const C2 = new Constraint(T2, new ArrowT(T3, X5, 'none'));
     const C3 = new Constraint(X4, new ArrowT(X5, X6, 'none'));
- 
-    unify(null, [C1, C2, C3]);
+    const constrSet = new ConstraintSet([C1, C2, C3]);
+    const topType = new ArrowT(T1, new ArrowT(T2, new ArrowT(T3, X6)));
+    unify(topType, constrSet);
+    console.log(topType.show());
 }
 
 testTypeCheck();
