@@ -121,6 +121,9 @@ export class ArrowT extends GenT{
     }
 
     show(){
+        if(this.A.shape() === GenT.genShape || this.A.shape() === GenT.numShape) {
+            return `${this.A.show()} -> ${this.B.show()}`;
+        }
         return `(${this.A.show()}) -> ${this.B.show()}`; //latter brackets are never needed?
     }
 
