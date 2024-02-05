@@ -160,6 +160,9 @@ const testTypeVar = () => {
     console.log(cstr.lhs().freeIn());
     console.log(`${cstr.show()} is ${cstr.isLhsEqRhs()}`);
 
+//  manually testing the constraint solver with the manually written output from 
+//  the constraint generator (next step is auto generating these with it)
+
     const T1 = new GenT('H');
     const T2 = new GenT('I');
     const T3 = new GenT('C');
