@@ -113,7 +113,7 @@ const typecheck = (term, assms) => {
         const unionConstr = new ConstraintSet([arrowConstr]);
         unionConstr.combine(T1_C.constraints);
         unionConstr.combine(T2_C.constraints);
-        console.log(unionConstr.show());
+        //console.log(unionConstr.show());
         return TCPair(X, unionConstr);
     }
     if(shape === 'M <= 0 ? N : P'){
@@ -193,11 +193,11 @@ const combinedTest = (program) => {
     const tcPair = typecheck(toASTTree(program), new ConstraintSet());
     const principalType = tcPair.type;
     const constraintSet = tcPair.constraints;
-    console.log(`rough type ${principalType.show()}`);
+    //console.log(`rough type ${principalType.show()}`);
     unify(principalType, constraintSet);
     console.log(`${program} : ${tcPair.type.show()}`);
 }
 
 // testTypeCheck();
 // testTypeVar();
-combinedTest('y => x => y(x(0)(0))');
+combinedTest('y => x => x(y(x(y(x))))');
