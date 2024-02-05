@@ -142,7 +142,7 @@ const unify = (topType, cSet) => {
 }
 
 const testTypeCheck = () => {
-    console.log(typecheck(toASTTree('(x => x)(0)'), {}));
+    console.log(typecheck(toASTTree('s => y => z => (s(z))(y(z))'), {}));
 }
 
 const testTypeVar = () => {
