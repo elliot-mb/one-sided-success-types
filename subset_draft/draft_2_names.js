@@ -40,7 +40,7 @@
  * (x => M)V |> M[V/x]
  * 
  * types 
- * A, B ::= number | A x B | A -> B | A^c | Ok 
+ * A, B ::= Num | A x B | A -> B | A^c | Ok 
  * 
  * constant types 
  * Cs = { <= 0 ?: Num -> A -> A -> A,  } --the branches must have the same type 
@@ -54,6 +54,8 @@
  */
 
 import {toASTTree, pretty, getSubterm, checkGrammar, termShape, typeToGrammar} from './aw_ast.js';
+import {TypeVar, NumT, ArrowT} from './typevar.js';
+import {Constraint} from './constraint.js';
 
 // regular one-sided implementation BEFORE i implement 
 // the success system (adding extra rules for OK(^c))
@@ -116,4 +118,19 @@ const testTypeCheck = () => {
     console.log(typecheck(toASTTree('s => y => z => (s(z))(y(z))'), {}));
 }
 
+const testTypeVar = () => {
+    const numA = new NumT('A');
+    const numB = new NumT('B');
+    const generalA = new TypeVar('E');
+    console.log(numA.freeIn());
+    const arrA = new ArrowT(numA, numB, 'C');
+    console.log(arrA.show());
+    const arrB = new ArrowT(numA, arrA, 'D');
+    console.log(arrB.show());
+    console.log(arrB.freeIn());
+    const cstr = new Constraint(generalA, arrA);
+    console.log(cstr.rhs().freeIn());
+}
+
 testTypeCheck();
+testTypeVar();
