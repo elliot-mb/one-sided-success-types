@@ -15,8 +15,16 @@ export class GenT{
     static arrowShape = 'A -> B';
 
     static typeVarsOrCrash = (A, B) => {
-        if(A.typeof() !== GenT.type) throw 'typeVarsOrCrash(): A must be a \'typevar\'';
-        if(B.typeof() !== GenT.type) throw 'typeVarsOrCrash(): B must be a \'typevar\'';
+        try{
+            if(A.typeof() !== GenT.type) throw 'typeVarsOrCrash: A must be a \'typevar\'';
+            if(B.typeof() !== GenT.type) throw 'typeVarsOrCrash: B must be a \'typevar\'';
+        }catch(err){
+            console.log(`typeVarsOrCrash: object dump A`);
+            console.log(A);
+            console.log(`typeVarsOrCrash: object dump B`);
+            console.log(B);
+            throw 'typeVarsOrCrash: A or B was not a typevar: ' + err
+        }
     }
     static typeVarOrCrash = (A) => {
         console.log(A);
@@ -72,7 +80,7 @@ export class GenT{
 
 export class NumT extends GenT{
 
-    constructor(id){
+    constructor(id = 'invalid'){
         super(id);
         this.shape = () => GenT.numShape;
     }
@@ -81,9 +89,10 @@ export class NumT extends GenT{
         return this.shape();
     }
 
+    //you cant subtitute with a number!
     swapWith(tA, tB){ 
         GenT.typeVarsOrCrash(tA, tB);
-        if(tB.shape() !== GenT.numShape) throw `swapWith: ${GenT.numShape} type is not a ${tB.shape()} (disjoint types)`;
+        //if(tB.shape() !== GenT.numShape && tA.getId() === ) throw `swapWith: ${GenT.numShape} type is not a ${tB.show()} : ${tB.shape()} (disjoint types)`;
         return tB;
     }
 }

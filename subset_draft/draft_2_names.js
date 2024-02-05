@@ -68,8 +68,7 @@ const TCPair = (type, constr) => ({'type': type, 'constraints': constr});
 let counter = 0;
 const max = 100;
 const getCounter = () => {counter++; return counter % max;}
-
-const freshVar = Array(max).fill(1).map((v, i) => `_${i}`);
+const freshVar = Array(max).fill(1).map((v, i) => `${i}`);
 const getFreshVar = (pfix) => `${pfix}${freshVar[getCounter()]}`;
 
 /**
@@ -82,33 +81,40 @@ const getFreshVar = (pfix) => `${pfix}${freshVar[getCounter()]}`;
 const typecheck = (term, assms) => {
     const shape = termShape(term);
     if(shape === 'x'){
-        return TCPair(assms[getSubterm(term, 'x')], []);
+        const letter = getSubterm(term, 'x');
+        if(assms[letter] === undefined) throw `typecheck: term of shape ${shape}, variable '${letter}' is free; unbound in function`
+        return TCPair(assms[letter], new ConstraintSet());
     }
     if(shape === 'n'){
-        return TCPair('Num', []);
+        return TCPair(new NumT(), new ConstraintSet());
     }
     if(shape === 'n + m | n - m'){
         throw 'implement me!';
     }
-    if(shape === '[M, N]'){        throw 'implement me!';
+    if(shape === '[M, N]'){        
+        throw 'implement me!';
     }
     if(shape === 'x => M'){
         const t2 = getSubterm(term, 'M');
-        const T1 = getFreshVar('T');
+        const T1 = new GenT(getFreshVar('T'));
         const xName = getSubterm(getSubterm(term, 'x'), 'x');
         const newAssms = assms;
         newAssms[xName] = T1;
         const T2_C = typecheck(t2, newAssms);
-        return TCPair(`${T1} -> ${T2_C.type}`, T2_C.constraints);
+        return TCPair(new ArrowT(T1, T2_C.type), T2_C.constraints);
     }
     if(shape === 'M(N)'){
         const t1 = getSubterm(term, 'M');
         const t2 = getSubterm(term, 'N');
         const T1_C = typecheck(t1, assms);
         const T2_C = typecheck(t2, assms);
-        const X = getFreshVar('X');
-        
-        return TCPair(X, [...T1_C.constraints, ...T2_C.constraints, `${T1_C.type} = ${T2_C.type} -> ${X}`]);
+        const X = new GenT(getFreshVar('X'));
+        const arrowConstr = new Constraint(T1_C.type, new ArrowT(T2_C.type, X));
+        const unionConstr = new ConstraintSet([arrowConstr]);
+        unionConstr.combine(T1_C.constraints);
+        unionConstr.combine(T2_C.constraints);
+        console.log(unionConstr.show());
+        return TCPair(X, unionConstr);
     }
     if(shape === 'M <= 0 ? N : P'){
         
@@ -120,17 +126,17 @@ const unify = (topType, cSet) => {
         const c = cSet.pop();
         if(c.isLhsEqRhs()){}
         else if(c.isLhsNotInFreeRhs()){
-            console.log(`replace ${c.lhs().show()} with ${c.rhs().show()}`);
+            console.log(`1replace ${c.lhs().show()} with ${c.rhs().show()}`);
             topType.swapWith(c.lhs(), c.rhs());
             cSet.swapWithAll(c.lhs(), c.rhs());
         }
         else if(c.isRhsNotInFreeLhs()){
-            console.log(`replace ${c.rhs().show()} with ${c.lhs().show()}`)
+            console.log(`2replace ${c.rhs().show()} with ${c.lhs().show()}`)
             topType.swapWith(c.rhs(), c.lhs());
             cSet.swapWithAll(c.rhs(), c.lhs());
         }
         else if(c.areRhsLhsArrows()){
-            console.log(`corrolate ${c.rhs().show()} and ${c.lhs().show()}`);
+            console.log(`3corrolate ${c.rhs().show()} and ${c.lhs().show()}`);
             cSet.add(new Constraint(c.rhs().getA(), c.lhs().getA()));
             cSet.add(new Constraint(c.rhs().getB(), c.lhs().getB()));
         }else{
@@ -142,7 +148,7 @@ const unify = (topType, cSet) => {
 }
 
 const testTypeCheck = () => {
-    console.log(typecheck(toASTTree('s => y => z => (s(z))(y(z))'), {}));
+    console.log(typecheck(toASTTree('s => y => z => (s(z))(y(z))'), new ConstraintSet()).constraints.show());
 }
 
 const testTypeVar = () => {
@@ -183,5 +189,15 @@ const testTypeVar = () => {
 
 }
 
-testTypeCheck();
-testTypeVar();
+const combinedTest = (program) => {
+    const tcPair = typecheck(toASTTree(program), new ConstraintSet());
+    const principalType = tcPair.type;
+    const constraintSet = tcPair.constraints;
+    console.log(`rough type ${principalType.show()}`);
+    unify(principalType, constraintSet);
+    console.log(`${program} : ${tcPair.type.show()}`);
+}
+
+// testTypeCheck();
+// testTypeVar();
+combinedTest('y => x => y(x(0)(0))');

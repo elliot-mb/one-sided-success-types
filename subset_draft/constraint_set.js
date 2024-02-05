@@ -3,9 +3,8 @@ import {GenT} from './typevar.js';
 
 export class ConstraintSet{
 
-    constructor(constraints){
-        constraints.map(cMaybe => Constraint.constraintOrCrash(cMaybe));
-        if(constraints.length === 0) throw 'ConstraintSet(): must be given more than zero constraints';
+    constructor(constraints = []){
+        if(constraints.length !== 0) constraints.map(cMaybe => Constraint.constraintOrCrash(cMaybe));
         this.cs = constraints;
         this.counter = constraints.length;
     }
@@ -27,10 +26,17 @@ export class ConstraintSet{
         this.counter++;
     }
 
+    //merge two constraint sets
+    combine(CS){
+        while(!CS.isEmpty()){
+            this.add(CS.pop());
+        }
+    }
+
     /**
      * 
-     * @param A in place of  
-     * @param B we put 
+     * @param A in place of this
+     * @param B we put this
      */
     swapWithAll(A, B){
         GenT.typeVarsOrCrash(A, B);
@@ -38,6 +44,10 @@ export class ConstraintSet{
             c.lhs().swapWith(A, B),
             c.rhs().swapWith(A, B)) 
         );
+    }
+
+    show(){
+        return `${this.cs.map(c => c.show()).reduce((acc, str) => `${acc}, ${str}`, '')}`;
     }
 
 }
