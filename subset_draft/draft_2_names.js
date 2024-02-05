@@ -140,7 +140,7 @@ const unify = (topType, cSet) => {
             cSet.add(new Constraint(c.rhs().getA(), c.lhs().getA()));
             cSet.add(new Constraint(c.rhs().getB(), c.lhs().getB()));
         }else{
-            console.log(`fail`);
+            console.error(`unify: fail`);
             return topType;
         }
     }
@@ -200,4 +200,4 @@ const combinedTest = (program) => {
 
 // testTypeCheck();
 // testTypeVar();
-combinedTest('y => x => x(y(x(y(x))))');
+combinedTest('x => x(0)');

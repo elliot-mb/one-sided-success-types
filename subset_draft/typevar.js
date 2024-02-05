@@ -92,7 +92,7 @@ export class NumT extends GenT{
     //you cant subtitute with a number!
     swapWith(tA, tB){ 
         GenT.typeVarsOrCrash(tA, tB);
-        //if(tB.shape() !== GenT.numShape && tA.getId() === ) throw `swapWith: ${GenT.numShape} type is not a ${tB.show()} : ${tB.shape()} (disjoint types)`;
+        if(tB.shape() !== GenT.numShape) throw `swapWith: ${GenT.numShape} type is not a ${tB.show()} : ${tB.shape()} (disjoint types)`;
         return tB;
     }
 }
