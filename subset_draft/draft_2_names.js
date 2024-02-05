@@ -127,12 +127,12 @@ const testTypeVar = () => {
     const arrA = new ArrowT(generalF, generalA, 'C');
     console.log(arrA.show());
     const arrB = new ArrowT(generalF, generalF, 'D');
-    console.log(arrB.show());
-    console.log(arrB.freeIn());
+    console.log(arrA.show());
+    console.log(arrA.freeIn());
     const cstr = new Constraint(arrA, arrB);
-    console.log(cstr.rhs().freeIn());
+    console.log(cstr.lhs().freeIn());
     console.log(`${cstr.show()} is ${cstr.isLhsEqRhs()}`);
 }
 
 testTypeCheck();
-testTypeVar();
+//testTypeVar();

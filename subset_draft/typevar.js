@@ -42,6 +42,7 @@ export class TypeVar{
         return 'typevar';
     }
 
+    //recursively goes down the types to match up identifiers/base types
     equals(C) {
         if(this.shape() !== C.shape()) return false;
         if(this.shape() === TypeVar.numShape) return true;
