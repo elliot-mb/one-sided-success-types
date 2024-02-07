@@ -193,7 +193,8 @@ const testTypeVar = () => {
 
 }
 
-const combinedTest = (program) => {
+const combinedTest = () => {
+    const program = 'f => x => f(f(x))';
     const tcPair = typecheck(toASTTree(program), new ConstraintSet());
     const principalType = tcPair.type;
     const constraintSet = tcPair.constraints;
@@ -219,12 +220,14 @@ const rolloverTest = () => {
 }
 
 const downgradeTest = () => {
-    
+    const r = new Reconstru
+    console.log(`${program} : ${pType.show()}`);
 }
 
 // testTypeCheck();
 // testTypeVar();
-combinedTest('f => x => f(f(x))');
+combinedTest();
+downgradeTest();
 //swapTest();
 //rolloverTest();
 

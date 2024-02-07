@@ -43,7 +43,6 @@ export class Utils{
         }
     }
     static typeVarOrCrash = (A) => {
-        console.log(A);
         if(A.typeof() !== GenT.type) throw 'typeVarOrCrash(): A must be a \'typevar\'';
     }
 
@@ -52,10 +51,9 @@ export class Utils{
         Utils.typeVarOrCrash(T);
         const allUniqueTypes = T.freeIn();
         let freshT = String.fromCharCode(Utils.firstCharCode);
-        for(let i = 0; i < allUniqueTypes; i++){
+        for(let i = 0; i < allUniqueTypes.length; i++){
             T.rename(allUniqueTypes[i], freshT);
             freshT = Utils.nextFreeTypeName(freshT);
         }
-        return T; //with consistently replaced types
     }
 }
