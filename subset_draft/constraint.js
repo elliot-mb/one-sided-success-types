@@ -1,4 +1,5 @@
 import {GenT} from './typevar.js';
+import {Utils} from './utils.js';
 
 export class Constraint{
     static type = 'constraint';
@@ -9,7 +10,7 @@ export class Constraint{
 
     //checks that, when A is a single type variable, that it's identifier does not appear in FV(B)
     static fstNotInFreeSnd = (A, B) => {
-        GenT.typeVarsOrCrash(A, B);
+        Utils.typeVarsOrCrash(A, B);
         const fv = A.freeIn(); //must be a single elem to not be a function
         const fvs = B.freeIn();
         if(fv.length > 1) return false; // this is either the second or third case in https://www3.nd.edu/~dchiang/teaching/pl/2019/typerec.html
@@ -24,7 +25,7 @@ export class Constraint{
      */
 
     constructor(A, B){
-        GenT.typeVarsOrCrash(A, B);
+        Utils.typeVarsOrCrash(A, B);
         this.A = A;
         this.B = B; 
     }
@@ -46,11 +47,11 @@ export class Constraint{
      *  S = X and X not in FV(T)
      */
     isLhsNotInFreeRhs(){
-        return Constraint.fstNotInFreeSnd(this.A, this.B);
+        return Constraint.fstNotInFreeSnd(this.A, this.B) && this.lhs().shape() == GenT.genShape;
     }
 
     isRhsNotInFreeLhs(){
-        return Constraint.fstNotInFreeSnd(this.B, this.A);
+        return Constraint.fstNotInFreeSnd(this.B, this.A) && this.rhs().shape() == GenT.genShape;
     }
 
     areRhsLhsArrows(){
@@ -63,6 +64,15 @@ export class Constraint{
 
     typeof(){
         return Constraint.type;
+    }
+
+    swapWith(tA, tB){
+        Utils.typeVarsOrCrash(tA, tB);
+        console.log(`constraint swap start: ${this.A.show()} = ${this.B.show()}`);
+        this.A = this.A.swapWith(tA, tB);
+        this.B = this.B.swapWith(tA, tB);
+        console.log(`constraint swap end: ${this.A.show()} = ${this.B.show()}`);
+        return this;
     }
 
 }

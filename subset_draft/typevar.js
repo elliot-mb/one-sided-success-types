@@ -1,4 +1,4 @@
-
+import {Utils} from './utils.js';
 
 /**
  * its here we use the grammar for types, which
@@ -13,23 +13,6 @@ export class GenT{
     static genShape = 'A';
     static numShape = 'Num';
     static arrowShape = 'A -> B';
-
-    static typeVarsOrCrash = (A, B) => {
-        try{
-            if(A.typeof() !== GenT.type) throw 'typeVarsOrCrash: A must be a \'typevar\'';
-            if(B.typeof() !== GenT.type) throw 'typeVarsOrCrash: B must be a \'typevar\'';
-        }catch(err){
-            console.log(`typeVarsOrCrash: object dump A`);
-            console.log(A);
-            console.log(`typeVarsOrCrash: object dump B`);
-            console.log(B);
-            throw 'typeVarsOrCrash: A or B was not a typevar: ' + err
-        }
-    }
-    static typeVarOrCrash = (A) => {
-        console.log(A);
-        if(A.typeof() !== GenT.type) throw 'typeVarOrCrash(): A must be a \'typevar\'';
-    }
 
     constructor(id){
         this.id = id;
@@ -59,9 +42,14 @@ export class GenT{
      * @returns {a new type variable based swapping out the old for the new}
      */
     swapWith(tA, tB){ 
-        GenT.typeVarsOrCrash(tA, tB);
+        Utils.typeVarsOrCrash(tA, tB);
+        console.log(`(${this.show()})[${tA.show()}/${tB.show()}] ${this.getId() === tA.getId()}`);
         if(this.getId() === tA.getId()) return tB;
         else return this;
+    }
+
+    rename(oldName, newName){ //rename maintains the shape, so does not return a new object but mutates state instead
+        if(this.getId() === oldName) this.id = newName;
     }
 
     //recursively goes down the types to match up identifiers/base types
@@ -80,8 +68,8 @@ export class GenT{
 
 export class NumT extends GenT{
 
-    constructor(id = 'invalid'){
-        super(id);
+    constructor(){
+        super(GenT.numShape);
         this.shape = () => GenT.numShape;
     }
 
@@ -89,12 +77,17 @@ export class NumT extends GenT{
         return this.shape();
     }
 
+    freeIn(){
+        return []; //nothing free in Num
+    }
+
     //you cant subtitute with a number!
     swapWith(tA, tB){ 
-        GenT.typeVarsOrCrash(tA, tB);
-        if(tB.shape() !== GenT.numShape) throw `swapWith: ${GenT.numShape} type is not a ${tB.show()} : ${tB.shape()} (disjoint types)`;
-        return tB;
+        Utils.typeVarsOrCrash(tA, tB);
+        return this;
     }
+
+    rename(oldName, newName){} //overload basecase in GenT to avoid errors
 }
 
 // export class CrossT extends TypeVar{
@@ -105,7 +98,7 @@ export class ArrowT extends GenT{
 
     constructor(A, B, id){
         super(id);
-        GenT.typeVarsOrCrash(A, B);
+        Utils.typeVarsOrCrash(A, B);
         this.A = A;
         this.B = B;
         this.shape = () => GenT.arrowShape;
@@ -120,12 +113,12 @@ export class ArrowT extends GenT{
     }
 
     setA(newA){
-        GenT.typeVarOrCrash(newA);
+        Utils.typeVarOrCrash(newA);
         this.A = newA;
     }
 
     setB(newB){
-        GenT.typeVarOrCrash(newB);
+        Utils.typeVarOrCrash(newB);
         this.B = newB;
     }
 
@@ -137,18 +130,20 @@ export class ArrowT extends GenT{
     }
 
     swapWith(tA, tB){ 
-        GenT.typeVarsOrCrash(tA, tB);
-        if(this.getA().getId() === tA.getId()) {
-            this.A = tB;
-        }
-        if(this.getB().getId() === tA.getId()){
-            this.B = tB;
-        }
-        return new ArrowT(
-            this.getA().swapWith(tA, tB),
-            this.getB().swapWith(tA, tB),
-            this.id
-        ); //searches further down
+        console.log(`(${this.show()})[${tA.show()}/${tB.show()}]`);
+        Utils.typeVarsOrCrash(tA, tB);
+        // there are exactly no cases where we can replace a Nat/Num with a function type or anything else
+        // pair is the only other disjoint type in the paper 
+        // technically a type variable is not disjoint to a Num, but we never 
+        // have any rules where 
+        this.A = this.A.swapWith(tA, tB);
+        this.B = this.B.swapWith(tA, tB); 
+        return this;
+    }
+
+    rename(oldName, newName){
+        this.A.rename(oldName, newName);
+        this.B.rename(oldName, newName);
     }
 
     /**

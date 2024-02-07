@@ -1,5 +1,6 @@
 import {Constraint} from './constraint.js';
 import {GenT} from './typevar.js';
+import {Utils} from './utils.js';
 
 export class ConstraintSet{
 
@@ -16,8 +17,9 @@ export class ConstraintSet{
     pop(){
         if(!this.isEmpty()){
             this.counter--;
+            return this.cs.pop();
         }
-        return this.cs[this.counter];
+        throw `pop: constraint set is empty`;
     }
 
     add(C){
@@ -38,12 +40,9 @@ export class ConstraintSet{
      * @param A in place of this
      * @param B we put this
      */
-    swapWithAll(A, B){
-        GenT.typeVarsOrCrash(A, B);
-        this.cs.map(c => new Constraint( //swap both sides of all constraints
-            c.lhs().swapWith(A, B),
-            c.rhs().swapWith(A, B)) 
-        );
+    swapWithAll(tA, tB){
+        Utils.typeVarsOrCrash(tA, tB);
+        this.cs.map(c => c.swapWith(tA, tB));
     }
 
     show(){
