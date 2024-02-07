@@ -130,7 +130,7 @@ const rolloverTest = () => {
 
 const downgradeTest = () => {
     const r = new Reconstructor();
-    const program = 'x => y => f => y(f(x))(f(y)(0))';
+    const program = 'x => y => f => y(f(x))';
     console.log(`${program} : ${r.reconstruct(program).show()}`);
 }
 
