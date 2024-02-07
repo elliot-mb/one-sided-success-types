@@ -130,8 +130,11 @@ const rolloverTest = () => {
 
 const downgradeTest = () => {
     const r = new Reconstructor();
-    const program = 'x => y => f => y(f(x))';
-    console.log(`${program} : ${r.reconstruct(program).show()}`);
+    const programR = 'a => b => c => d => e => e(b(d(a)(a))(c(a)(b)))';
+    console.log(`${programR} : ${r.reconstruct(programR).show()}`);
+    const s = new Reconstructor();
+    const programS = '(x => x)(0)';
+    console.log(`${programS} : ${s.reconstruct(programS).show()}`);
 }
 
 // testTypeCheck();
