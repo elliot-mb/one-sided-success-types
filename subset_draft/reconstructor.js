@@ -91,7 +91,11 @@ export class Reconstructor{
                 cSet.add(new Constraint(c.rhs().getA(), c.lhs().getA()));
                 cSet.add(new Constraint(c.rhs().getB(), c.lhs().getB()));
             }else{
-                throw `Reconstructor.unify: failed to unify with constraint '${c.show()}'`;
+                const l = c.lhs();
+                const r = c.rhs();
+                Utils.downgradeTypes(l);
+                Utils.downgradeTypes(r);
+                throw `Reconstructor.unify: failed to unify with constraint '${new Constraint(l, r).show()}'`;
             }
         }
         return topType;
