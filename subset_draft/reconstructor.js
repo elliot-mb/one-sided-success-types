@@ -31,10 +31,10 @@ export class Reconstructor{
         if(shape === 'x'){
             let letter = getSubterm(term, 'x');
             if(assms[letter] === undefined) throw `typecheck: term of shape ${shape}, variable '${letter}' is free; unbound in function`
-            return TCPair(assms[letter], new ConstraintSet());
+            return Reconstructor.TCPair(assms[letter], new ConstraintSet());
         }
         if(shape === 'n'){
-            return TCPair(new NumT(), new ConstraintSet());
+            return Reconstructor.TCPair(new NumT(), new ConstraintSet());
         }
         if(shape === 'n + m | n - m'){
             throw 'implement me!';
@@ -44,25 +44,25 @@ export class Reconstructor{
         }
         if(shape === 'x => M'){
             const t2 = getSubterm(term, 'M');
-            let T1 = new GenT(getFreshVar('T'));
+            let T1 = new GenT(this.getFreshVar('T'));
             const xName = getSubterm(getSubterm(term, 'x'), 'x');
             const newAssms = assms;
             newAssms[xName] = T1;
-            const T2_C = typecheck(t2, newAssms);
-            return TCPair(new ArrowT(T1, T2_C.type), T2_C.constraints);
+            const T2_C = this.typecheck(t2, newAssms);
+            return Reconstructor.TCPair(new ArrowT(T1, T2_C.type), T2_C.constraints);
         }
         if(shape === 'M(N)'){
             const t1 = getSubterm(term, 'M');
             const t2 = getSubterm(term, 'N');
-            const T1_C = typecheck(t1, assms);
-            const T2_C = typecheck(t2, assms);
-            let X = new GenT(getFreshVar('X'));
+            const T1_C = this.typecheck(t1, assms);
+            const T2_C = this.typecheck(t2, assms);
+            let X = new GenT(this.getFreshVar('X'));
             const arrowConstr = new Constraint(T1_C.type, new ArrowT(T2_C.type, X));
             const unionConstr = new ConstraintSet([arrowConstr]);
             unionConstr.combine(T1_C.constraints);
             unionConstr.combine(T2_C.constraints);
             //console.log(unionConstr.show());
-            return TCPair(X, unionConstr);
+            return Reconstructor.TCPair(X, unionConstr);
         }
         if(shape === 'M <= 0 ? N : P'){
             throw 'implement me!';
@@ -91,18 +91,19 @@ export class Reconstructor{
                 cSet.add(new Constraint(c.rhs().getA(), c.lhs().getA()));
                 cSet.add(new Constraint(c.rhs().getB(), c.lhs().getB()));
             }else{
-                console.error(`unify: fail`);
-                return topType;
+                throw `Reconstructor.unify: failed to unify with constraint '${c.show()}'`;
             }
         }
         return topType;
     }
 
     reconstruct(program){
-        const tcPair = typecheck(toASTTree(program), new ConstraintSet());
-        const principalType = tcPair.type;
-        const constraintSet = tcPair.constraints;
+        const typeAndConstraints = this.typecheck(toASTTree(program), new ConstraintSet());
+        const roughType = typeAndConstraints.type;
+        const constraintSet = typeAndConstraints.constraints;
         // console.log(`rough type ${principalType.show()}`);
-        return Utils.downgradeTypes(unify(principalType, constraintSet));
+        const unifiedType = this.unify(roughType, constraintSet);
+        Utils.downgradeTypes(unifiedType);
+        return unifiedType;
     }
 }

@@ -53,103 +53,12 @@
  * 
  */
 
-import {toASTTree, pretty, getSubterm, checkGrammar, termShape, typeToGrammar} from './aw_ast.js';
-import {GenT, NumT, ArrowT} from './typevar.js';
-import {Constraint} from './constraint.js';
-import {ConstraintSet} from './constraint_set.js';
-import {Utils} from './utils.js';
-
-// regular one-sided implementation BEFORE i implement 
-// the success system (adding extra rules for OK(^c))
-
-//                           single type string   strings[] of type equations
-const TCPair = (type, constr) => ({'type': type, 'constraints': constr});
-//const TCPairAppend = (TCPair) => 
-
-let counter = 0;
-const max = 100;
-const getCounter = () => {counter++; return counter % max;}
-const freshVar = Array(max).fill(1).map((v, i) => `${i}`);
-const getFreshVar = (pfix) => `${pfix}${freshVar[getCounter()]}`;
-
-/**
- * regular non-success type checker
- * @param {*} term 
- * @param {*} assms is a json from identifiers (x) to types (strings)
- * 
- * @returns {the type, the constraints as an array of equation strings}
- */
-const typecheck = (term, assms) => {
-    const shape = termShape(term);
-    if(shape === 'x'){
-        let letter = getSubterm(term, 'x');
-        if(assms[letter] === undefined) throw `typecheck: term of shape ${shape}, variable '${letter}' is free; unbound in function`
-        return TCPair(assms[letter], new ConstraintSet());
-    }
-    if(shape === 'n'){
-        return TCPair(new NumT(), new ConstraintSet());
-    }
-    if(shape === 'n + m | n - m'){
-        throw 'implement me!';
-    }
-    if(shape === '[M, N]'){        
-        throw 'implement me!';
-    }
-    if(shape === 'x => M'){
-        const t2 = getSubterm(term, 'M');
-        let T1 = new GenT(getFreshVar('T'));
-        const xName = getSubterm(getSubterm(term, 'x'), 'x');
-        const newAssms = assms;
-        newAssms[xName] = T1;
-        const T2_C = typecheck(t2, newAssms);
-        return TCPair(new ArrowT(T1, T2_C.type), T2_C.constraints);
-    }
-    if(shape === 'M(N)'){
-        const t1 = getSubterm(term, 'M');
-        const t2 = getSubterm(term, 'N');
-        const T1_C = typecheck(t1, assms);
-        const T2_C = typecheck(t2, assms);
-        let X = new GenT(getFreshVar('X'));
-        const arrowConstr = new Constraint(T1_C.type, new ArrowT(T2_C.type, X));
-        const unionConstr = new ConstraintSet([arrowConstr]);
-        unionConstr.combine(T1_C.constraints);
-        unionConstr.combine(T2_C.constraints);
-        //console.log(unionConstr.show());
-        return TCPair(X, unionConstr);
-    }
-    if(shape === 'M <= 0 ? N : P'){
-        
-    }
-}
-
-const unify = (topType, cSet) => {
-    while(!cSet.isEmpty()){
-        const c = cSet.pop();
-        console.log(`constraints ${cSet.show()}`)
-        console.log(`this constraint ${c.show()}`);
-        console.log(`replace in ${topType.show()}`);
-        if(c.isLhsEqRhs()){}
-        else if(c.isLhsNotInFreeRhs()){
-            console.log(`1replace ${c.lhs().show()} with ${c.rhs().show()}`);
-            topType = topType.swapWith(c.lhs(), c.rhs());
-            cSet.swapWithAll(c.lhs(), c.rhs());
-        }
-        else if(c.isRhsNotInFreeLhs()){
-            console.log(`2replace ${c.rhs().show()} with ${c.lhs().show()}`)
-            topType = topType.swapWith(c.rhs(), c.lhs());
-            cSet.swapWithAll(c.rhs(), c.lhs());
-        }
-        else if(c.areRhsLhsArrows()){
-            console.log(`3corrolate ${c.rhs().show()} and ${c.lhs().show()}`);
-            cSet.add(new Constraint(c.rhs().getA(), c.lhs().getA()));
-            cSet.add(new Constraint(c.rhs().getB(), c.lhs().getB()));
-        }else{
-            console.error(`unify: fail`);
-            return topType;
-        }
-    }
-    return topType;
-}
+import { toASTTree } from './aw_ast.js';
+import { GenT, NumT, ArrowT } from './typevar.js';
+import { Constraint } from './constraint.js';
+import { ConstraintSet } from './constraint_set.js';
+import { Utils } from './utils.js';
+import { Reconstructor } from './reconstructor.js';
 
 const testTypeCheck = () => {
     console.log(typecheck(toASTTree('s => y => z => (s(z))(y(z))'), new ConstraintSet()).constraints.show());
@@ -170,8 +79,8 @@ const testTypeVar = () => {
     console.log(cstr.lhs().freeIn());
     console.log(`${cstr.show()} is ${cstr.isLhsEqRhs()}`);
 
-//  manually testing the constraint solver with the manually written output from 
-//  the constraint generator (next step is auto generating these with it)
+    //  manually testing the constraint solver with the manually written output from 
+    //  the constraint generator (next step is auto generating these with it)
 
     const T1 = new GenT('H');
     const T2 = new GenT('I');
@@ -194,13 +103,13 @@ const testTypeVar = () => {
 }
 
 const combinedTest = () => {
-    const program = 'f => x => f(f(x))';
-    const tcPair = typecheck(toASTTree(program), new ConstraintSet());
-    const principalType = tcPair.type;
-    const constraintSet = tcPair.constraints;
-    // console.log(`rough type ${principalType.show()}`);
-    const pType = unify(principalType, constraintSet);
-    console.log(`${program} : ${pType.show()}`);
+    // const program = 'f => x => f(f(x))';
+    // const tcPair = typecheck(toASTTree(program), new ConstraintSet());
+    // const principalType = tcPair.type;
+    // const constraintSet = tcPair.constraints;
+    // // console.log(`rough type ${principalType.show()}`);
+    // const pType = unify(principalType, constraintSet);
+    // console.log(`${program} : ${pType.show()}`);
 }
 
 const swapTest = () => {
@@ -212,16 +121,17 @@ const swapTest = () => {
 
 const rolloverTest = () => {
     let t = 'A';
-    for(let i = 0; i < 26 * 26; i++){
+    for (let i = 0; i < 26 * 26; i++) {
         t = Utils.nextFreeTypeName(t);
         console.log(t);
     }
-    
+
 }
 
 const downgradeTest = () => {
-    const r = new Reconstru
-    console.log(`${program} : ${pType.show()}`);
+    const r = new Reconstructor();
+    const program = 'f => x => x(f(f(0(0))))';
+    console.log(`${program} : ${r.reconstruct(program).show()}`);
 }
 
 // testTypeCheck();
