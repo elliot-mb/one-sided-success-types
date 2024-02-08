@@ -43,7 +43,7 @@ export class GenT{
      */
     swapWith(tA, tB){ 
         Utils.typeVarsOrCrash(tA, tB);
-        console.log(`(${this.show()})[${tA.show()}/${tB.show()}] ${this.getId() === tA.getId()}`);
+        //console.log(`(${this.show()})[${tA.show()}/${tB.show()}] ${this.getId() === tA.getId()}`);
         if(this.getId() === tA.getId()) return tB;
         else return this;
     }
@@ -130,7 +130,7 @@ export class ArrowT extends GenT{
     }
 
     swapWith(tA, tB){ 
-        console.log(`(${this.show()})[${tA.show()}/${tB.show()}]`);
+        ////console.log(`(${this.show()})[${tA.show()}/${tB.show()}]`);
         Utils.typeVarsOrCrash(tA, tB);
         // there are exactly no cases where we can replace a Nat/Num with a function type or anything else
         // pair is the only other disjoint type in the paper 

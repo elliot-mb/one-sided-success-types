@@ -1,6 +1,6 @@
 {
     "Literal": "n",
-    "BinaryExpression": "n + m | n - m",
+    "BinaryExpression": "M o N",
     "ArrayExpression": "[M, N]",
     "ArrowFunctionExpression": "x => M",
     "CallExpression": "M(N)",

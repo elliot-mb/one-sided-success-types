@@ -7,7 +7,7 @@
  * V, W ::= x | n | POSSIBLY REMOVE PAIRS [V, W] | x => M (| null | const f = V;) (extension)
  * 
  * terms
- * M, N ::= x | n | n + m | n - m | POSSIBLY REMOVE PAIRS [M, N] | x => M | M(N) | M <= 0 ? N : P (| const f = M; N | null) (extension)
+ * M, N ::= x | n | M + N | M - N | POSSIBLY REMOVE PAIRS [M, N] | x => M | M(N) | M <= 0 ? N : P (| const f = M; N | null) (extension)
  * 
  * 
  * (extension)
@@ -130,17 +130,32 @@ const rolloverTest = () => {
 
 const downgradeTest = () => {
     const r = new Reconstructor();
-    const programR = 'a => b => c => d => e => e(b(d(a)(a))(c(a)(b)))';
-    console.log(`${programR} : ${r.reconstruct(programR).show()}`);
-    const s = new Reconstructor();
-    const programS = '(x => x)(0)';
-    console.log(`${programS} : ${s.reconstruct(programS).show()}`);
+    const programs = ['x => y => (0 + 1 - x(0) <= 0 ? x : y)'];
+    console.log(`${programs[0]} : ${r.reconstruct(programs[0]).show()}`);
+    // const s = new Reconstructor();
+    // const programS = '(x => x)(0)';
+    // console.log(`${programS} : ${s.reconstruct(programS).show()}`);
+}
+
+const bulkTest = () => {
+    const r = new Reconstructor();
+    const programs = [
+        'x => y => (0 + 1 - x(0) <= 0 ? x : y)',
+        'x => x',
+        '2 - 1',
+        'f => x => f(f(x))',
+        'f => g => x => f(g(x))',
+        'x => 0',
+        'x => x(y => y(0))(f => x => f(f(x)))'
+    ];
+    programs.map(p => console.log(`${p} : ${r.reconstruct(p).show()}`));
+
 }
 
 // testTypeCheck();
 // testTypeVar();
-combinedTest();
-downgradeTest();
+//combinedTest();
+//downgradeTest();
 //swapTest();
 //rolloverTest();
-
+bulkTest();

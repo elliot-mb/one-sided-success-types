@@ -3,8 +3,8 @@
         "n": ["value"]
     },
     "BinaryExpression": {
-        "n": ["left"],
-        "m": ["right"]
+        "M": ["left"],
+        "N": ["right"]
     },
     "ArrayExpression": {
         "M": ["elements", "0"],

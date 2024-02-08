@@ -68,10 +68,10 @@ export class Constraint{
 
     swapWith(tA, tB){
         Utils.typeVarsOrCrash(tA, tB);
-        console.log(`constraint swap start: ${this.A.show()} = ${this.B.show()}`);
+        //console.log(`constraint swap start: ${this.A.show()} = ${this.B.show()}`);
         this.A = this.A.swapWith(tA, tB);
         this.B = this.B.swapWith(tA, tB);
-        console.log(`constraint swap end: ${this.A.show()} = ${this.B.show()}`);
+        //console.log(`constraint swap end: ${this.A.show()} = ${this.B.show()}`);
         return this;
     }
 
