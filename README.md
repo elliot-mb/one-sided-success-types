@@ -30,3 +30,16 @@ where `p` and `f` are special strings. `p` is the name of any *property* on the 
 `f` is the name of a *function* which is used to test the value, type etc. of a base (non-object) value of the current field being tested. With this the structure and validity of the fields of an object can be probed with fine detail. 
 
 To decide what properties to check and rule out, the AST for any term can be written with the `pretty` function to a json (e.g. `tree_file.json`) and inspected by hand.
+
+# Type reconstructor 
+
+Examples:
+```
+x => y => (0 + 1 - x(0) <= 0 ? x : y) : (Num -> Num) -> (Num -> Num) -> Num -> Num
+x => x : A -> A
+2 - 1 : Num
+f => x => f(f(x)) : (A -> A) -> A -> A
+f => g => x => f(g(x)) : (A -> B) -> (C -> A) -> C -> B
+x => 0 : A -> Num
+x => x(y => y(0))(f => x => f(f(x))) : (((Num -> A) -> A) -> ((B -> B) -> B -> B) -> C) -> C
+```
