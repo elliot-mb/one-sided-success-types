@@ -223,64 +223,7 @@ export const toASTTree = (program, justFirstExpression = true) => {
     return tree;
 }
 
-/**
- * const testToAST = () => {
-
-    console.log('start');
-
-    const TERM = 'x => x + 2';
-    // const fMap = {
-    //     'Literal': (node, state, c) => {
-    //         console.log(`Literal node is '${node.raw}'`);
-    //         c(node, state);
-    //     },
-    //     'NewExpression': (node, state, c) => {
-    //         console.log(`Ternary node is`)
-    //     },
-    //     'Expression': (node, state, c) => {
-    //         console.log(`Expression node is`);
-    //     }
-    // }
-
-    const fMap = {
-        'Literal': (node, state, c) => {
-            console.log(`${state}Literal node is ${node.raw}`);
-        },
-        'Expression': (node, state, c) => {
-            console.log(`${state}Expression is ${node.type}`);
-            c(node, state + `   `);
-        },
-        'Function': (node, state, c) => {
-            console.log(`${state}Function takes ${JSON.stringify(node.params)}`);
-            //c(node, state + `   `);
-        }
-    }
-
-    // const walker = walk.make(fMap);
-
-    walk.recursive(parse(TERM), ``, fMap, undefined);
-
-    // walk.ancestor()
-
-    let program = {};
-    walk.full(parse('let x = 1;'), (node) => {
-        if(node.type === PROGRAM_T){
-            program = node;
-        }
-    });
-
-    const runtimeType = Math.random() - 0.5 <= 0 ? () => {} : 0;  // this is actually a union type effectively 
-
-    console.log(runtimeType);
-
-    console.log(typeof({}));
-
-    const treePrinter = (treeObj) => {
-        if(treeObj.body !== undefined){
-            
-        }
-    };
-
-
+export const showsTree = async (name, program) => {
+    const f = `./${tree_file}.json`;
+    await Bun.write(f, pretty(toASTTree(program)));
 }
- */

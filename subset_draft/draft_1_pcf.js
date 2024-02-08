@@ -173,9 +173,9 @@ const recursion = () => {
  * language checker using ast: are we using the correct subset?
  */
 
-const showsTree = async () => {
-    const f = './tree_file.json';
-    await Bun.write(f, pretty(toASTTree('[x => x, y => y <= 0 ? y : 1]')));
+const showsTree = async (name, program) => {
+    const f = `./${tree_file}.json`;
+    await Bun.write(f, pretty(toASTTree(program)));
 }
 
 const exploreTerm = () => {
