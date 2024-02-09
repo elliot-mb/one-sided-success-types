@@ -208,7 +208,7 @@ export const checkGrammar = term => {
 }
 
 //just first expression argument is there while we only have single expressions
-export const toASTTree = (program, justFirstExpression = true) => {
+export const toASTTree = (program, justFirstExpression = true, enforceGrammar = true) => {
     //console.log(`${program} to AST Tree`);
     let tree = {};
     walk.full(parse(program), (node) => {
@@ -218,12 +218,12 @@ export const toASTTree = (program, justFirstExpression = true) => {
     });
 
     if(justFirstExpression) tree = tree['body'][0]['expression'];
-    checkGrammar(tree);
+    if(enforceGrammar) checkGrammar(tree);
 
     return tree;
 }
 
 export const showsTree = async (name, program) => {
-    const f = `./${tree_file}.json`;
-    await Bun.write(f, pretty(toASTTree(program)));
+    const f = `./${name}.json`;
+    await Bun.write(f, pretty(toASTTree(program, true, false)));
 }

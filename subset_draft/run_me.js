@@ -59,6 +59,7 @@ import { Constraint } from './constraint.js';
 import { ConstraintSet } from './constraint_set.js';
 import { Utils } from './utils.js';
 import { Reconstructor } from './reconstructor.js';
+import {showsTree} from './aw_ast.js';
 
 const testTypeCheck = () => {
     console.log(typecheck(toASTTree('s => y => z => (s(z))(y(z))'), new ConstraintSet()).constraints.show());
@@ -149,11 +150,13 @@ const bulkTest = () => {
         'x => x(y => y(0))(f => x => f(f(x)))',
         '(x => y => x(1.1) <= 0 ? x : y)(x => x + 1)(y => y)',
         '(z => z)(0 - 1) <= 0 ? x => y => y(x => 0) : z => w => w(w(z))',
-        'z => z(z)'
+        //'z => z(z)'
     ];
     programs.map(p => console.log(`${p} : ${r.reconstruct(p).show()}`));
 
 }
+
+
 
 // testTypeCheck();
 // testTypeVar();
@@ -162,3 +165,17 @@ const bulkTest = () => {
 //swapTest();
 //rolloverTest();
 bulkTest();
+
+showsTree('nullTree', 'null');
+/**
+ * adding 'null' to our language would look like this! 
+ * 
+ * {
+  "type": "Literal",
+  "start": 0,
+  "end": 4,
+  "value": null,
+  "raw": "null"
+}
+ * updating the json files accordingly... its another literal
+ */
