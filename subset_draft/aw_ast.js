@@ -54,7 +54,7 @@ const typeToProperties = require('./AST_require.json');
 //turns the root node of the term's type to the grammar shape
 // as a string
 export const termShape = (term) => {
-    if(term.type === undefined) throw `getSubterm: term has no 'type' field`;
+    if(term.type === undefined) throw `termShape: term has no 'type' field`;
     
     return typeToGrammar[term.type];
     
@@ -66,7 +66,7 @@ export const termShape = (term) => {
 //to the shapes of terms.
 export const getSubterm = (term, subtermName) => {
     if(subtermName === undefined) throw `getSubterm: subtermName was not given`;
-    if(term.type === undefined) throw `getSubterm: term has no 'type' field`;
+    if(term.type === undefined) throw `getSubterm: term has no 'type' field `;
     
     const nameToSubterm = typeToSubterms[term.type]; //shape to subterms
     if(nameToSubterm === undefined) throw `getSubterm: term of 'type' '${term.type}' does not ` + 

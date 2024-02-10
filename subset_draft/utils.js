@@ -54,7 +54,7 @@ export class Utils{
     }
 
     static typeIsOrCrash = (t, is) => {
-        if(t.type === undefined) throw 'typeIsOrCrash: t has no type property';
+        if(t.type === undefined) throw 'typeIsOrCrash: t has no \'type\' property';
         if(t.type !== is) throw `typeIsOrCrash: t.type is not set to ${is}`;
     }
 

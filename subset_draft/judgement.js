@@ -12,10 +12,7 @@ export class EmptyJudgement{
         Utils.termOrCrash(term); 
         this.assms = assms;
         this.term = term;
-    }
-
-    shape(){
-        return termShape(this.term.type);
+        this.shape = termShape(this.term);
     }
 
     variableType(name){
@@ -25,8 +22,13 @@ export class EmptyJudgement{
 
     //returns a new EmptyJudgement with the same assms but on the subterm
     getSubterm(shape){
-        return new EmptyJudgement(this.assms, getSubterm(this.term, shape));
+        return getSubterm(this.term, shape);
     }   
+
+    //tries to return the subterm as an empty judgement but may fail if e.g. we are getting a var name 
+    asSubterm(shape){
+        return new EmptyJudgement(this.getSubterm(shape), this.assms);
+    }
 
     //add a new assm to assms 
     addAssm(name, type){
@@ -35,13 +37,13 @@ export class EmptyJudgement{
     }
 
     show(){
-        return `${JSON.stringify(assms)} ⊢ ${shape()}`;
+        return `${JSON.stringify(this.assms)} ⊢ ${this.shape}`;
     }
 
-    //returns a Judgement 
-    upgrade(ej, type, constrs = new ConstraintSet()){
-        Utils.typeIsOrCrash(ej, EmptyJudgement.type);
-        return new Judgement(this.assms, this.term, type, constrs);
+    //returns a Judgement with its type instantiated, and any immediate constraints 
+    constrain(type, constrs = new ConstraintSet()){
+        //Utils.typeIsOrCrash(ej, EmptyJudgement.type);
+        return new Judgement(this.term, type, this.assms, constrs);
     }
 }
 
@@ -66,7 +68,7 @@ export class Judgement extends EmptyJudgement{
     }
 
     show(){
-        return `${JSON.stringify(assms)} ⊢ ${shape()} : ${this.type.show()} | ${this.constrs.show()}`;
+        return `${JSON.stringify(this.assms)} ⊢ ${this.shape} : ${this.type.show()} | ${this.constrs.show()}`;
     }
 
     //add a single constraint to the set

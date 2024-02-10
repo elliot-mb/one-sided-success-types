@@ -9,6 +9,7 @@ export class ConstraintSet{
         if(constraints.length !== 0) constraints.map(cMaybe => Constraint.constraintOrCrash(cMaybe));
         this.cs = constraints;
         this.counter = constraints.length;
+        this.type = ConstraintSet.type;
     }
 
     isEmpty(){

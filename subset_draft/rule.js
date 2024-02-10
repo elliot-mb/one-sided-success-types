@@ -1,7 +1,7 @@
 export class Rule {
 
-    constructor(shape){
-        this.shape = shape;
+    constructor(concl){
+        
         this.premises = []; //a list of 
     }
 }
