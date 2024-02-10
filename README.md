@@ -47,4 +47,4 @@ x => x(y => y(0))(f => x => f(f(x))) : (((Num -> A) -> A) -> ((B -> B) -> B -> B
 # Development 
 
 A summary of the process of developing the success type system with complements
-for JST (see overleaf).
+for JSS (see overleaf).

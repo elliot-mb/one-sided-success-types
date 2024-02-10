@@ -66,6 +66,11 @@ export class GenT{
     }       
 }
 
+// meaning: all values 
+export class OkT extends GenT{
+
+}
+
 export class NumT extends GenT{
 
     constructor(){

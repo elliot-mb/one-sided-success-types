@@ -27,7 +27,8 @@ export class Constraint{
     constructor(A, B){
         Utils.typeVarsOrCrash(A, B);
         this.A = A;
-        this.B = B; 
+        this.B = B;
+        this.type = Constraint.type; 
     }
 
     lhs(){

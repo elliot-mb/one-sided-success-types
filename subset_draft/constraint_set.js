@@ -3,11 +3,13 @@ import {GenT} from './typevar.js';
 import {Utils} from './utils.js';
 
 export class ConstraintSet{
+    static type = 'constraintset';
 
     constructor(constraints = []){
         if(constraints.length !== 0) constraints.map(cMaybe => Constraint.constraintOrCrash(cMaybe));
         this.cs = constraints;
         this.counter = constraints.length;
+        this.type = ConstraintSet.type;
     }
 
     isEmpty(){
@@ -46,7 +48,7 @@ export class ConstraintSet{
     }
 
     show(){
-        return `${this.cs.map(c => c.show()).reduce((acc, str) => `${acc}, ${str}`, '')}`;
+        return `{${`${this.cs.map(c => c.show()).reduce((acc, str) => `${acc}, ${str}`, '')}`.substring(2)}}`;
     }
 
 }
