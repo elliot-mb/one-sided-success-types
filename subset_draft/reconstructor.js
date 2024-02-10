@@ -1,20 +1,16 @@
 import {Utils} from './utils.js';
 import {toASTTree, getSubterm, termShape} from './aw_ast.js';
-import {GenT, NumT, ArrowT} from './typevar.js';
 import {Constraint} from './constraint.js';
 import {ConstraintSet} from './constraint_set.js';
 import {EmptyJudgement, Judgement} from './judgement.js';
 import {Term} from './term.js';
+import {Rule} from './rule.js';
 
 export class Reconstructor{
 
     constructor(){ //making a new one just resets the variable names (but there are an infinite number anyway)
         this.lastUsedVar = String.fromCharCode(Utils.firstCharCode);
     } 
-
-    //                           single type string   strings[] of type equations
-    static TCPair = (type, constr) => ({'type': type, 'constraints': constr});
-    //const TCPairAppend = (TCPair) => 
 
     rstFreshVar(){
         this.lastUsedVar = String.fromCharCode(Utils.firstCharCode);
@@ -30,67 +26,10 @@ export class Reconstructor{
      * @param {*} EmptyJudgement Γ ⊢ M 
      * @returns {*} Judgement object 
      */
-    typecheck(eJudge){
-        if(eJudge.shape === 'x'){ //CTVar
-            //side condition implicity by existence check in .variableType(...)
-            return eJudge.constrain(eJudge.variableType(eJudge.getSubterm('x')));
-        }
-        if(eJudge.shape === 'n'){ //CTNum
-            //conclusion of the rule ::= assms \types n : Num | {}
-            return eJudge.constrain(new NumT()); 
-        }
-        if(eJudge.shape === 'M o N'){ //CTNumOp
-
-            const premise1 = this.typecheck(eJudge.asSubterm('M'));
-            const premise2 = this.typecheck(eJudge.asSubterm('N'));
-            const conclusn = eJudge.constrain(new GenT(this.getFreshVar('X')));
-
-            conclusn.union(premise1.constrs);
-            conclusn.union(premise2.constrs);
-            conclusn.unionSingle(new Constraint(premise1.type, new NumT()));
-            conclusn.unionSingle(new Constraint(premise2.type, new NumT()));
-            conclusn.unionSingle(new Constraint(conclusn.type, new NumT()));
-
-            return conclusn; //when we add to the constraints we must do this and then return 
-        }
-        if(eJudge.shape === '[M, N]'){        
-            throw 'implement me!';
-        }
-        if(eJudge.shape === 'x => M'){ //CTAbsInf
-            const X = new GenT(this.getFreshVar('X'));
-            const body = eJudge.asSubterm('M');
-            body.addAssm(eJudge.asSubterm('x').getSubterm('x'), X);
-            const premise1 = this.typecheck(body);
-
-            return eJudge.constrain(new ArrowT(X, premise1.type), premise1.constrs);
-        }
-        if(eJudge.shape === 'M(N)'){ //CTApp
-            const X = new GenT(this.getFreshVar('X'));
-            const premise1 = this.typecheck(eJudge.asSubterm('M'));
-            const premise2 = this.typecheck(eJudge.asSubterm('N'));
-            const conclusn = eJudge.constrain(X);
-
-            conclusn.union(premise1.constrs);
-            conclusn.union(premise2.constrs);
-            conclusn.unionSingle(new Constraint(premise1.type, new ArrowT(premise2.type, X)));
-
-            return conclusn;
-        }
-        if(eJudge.shape === 'M <= 0 ? N : P'){ //IfLez
-            const X = new GenT(this.getFreshVar('X'));
-            const premise1 = this.typecheck(eJudge.asSubterm('M'));
-            const premise2 = this.typecheck(eJudge.asSubterm('N'));
-            const premise3 = this.typecheck(eJudge.asSubterm('P'));
-            const conclusn = eJudge.constrain(X);
-
-            conclusn.union(premise1.constrs);
-            conclusn.union(premise2.constrs);
-            conclusn.union(premise3.constrs);
-            conclusn.unionSingle(new Constraint(premise1.type, new NumT()));
-            conclusn.unionSingle(new Constraint(premise2.type, X));
-            conclusn.unionSingle(new Constraint(premise3.type, X));
-            
-            return conclusn;
+    typecheck(empty){
+        const maybeRule = Rule.appliesTo[empty.shape];
+        if(maybeRule !== undefined){
+            return maybeRule(this, empty);
         }
         throw `typecheck: eJudge has an unrecognised shape`;
     }

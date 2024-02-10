@@ -1,7 +1,88 @@
+import {Constraint} from './constraint.js';
+import {GenT, NumT, ArrowT} from './typevar.js';
+
 export class Rule {
 
-    constructor(concl){
-        
-        this.premises = []; //a list of 
+    //static class for all the rules, each with its own shape 
+    //all rules take a reference to the reconstructor (r), EmptyJudgement, and return a Judgement
+
+    static cTVar = (r, empty) => {
+        return empty.constrain(empty.variableType(empty.getSubterm('x')));
     }
+
+    static cTNum = (r, empty) => {
+        return empty.constrain(new NumT()); 
+    }
+
+    static cTNumOp = (r, empty) => { //CTNumOp
+
+        const premise1 = r.typecheck(empty.asSubterm('M'));
+        const premise2 = r.typecheck(empty.asSubterm('N'));
+        const conclusn = empty.constrain(new GenT(r.getFreshVar('X')));
+
+        conclusn.union(premise1.constrs);
+        conclusn.union(premise2.constrs);
+        conclusn.unionSingle(new Constraint(premise1.type, new NumT()));
+        conclusn.unionSingle(new Constraint(premise2.type, new NumT()));
+        conclusn.unionSingle(new Constraint(conclusn.type, new NumT()));
+
+        return conclusn; //when we add to the constraints we must do this and then return 
+    }
+
+    static cTAbsInf = (r, empty) => { //CTAbsInf
+        const X = new GenT(r.getFreshVar('X'));
+        const body = empty.asSubterm('M');
+        body.addAssm(empty.asSubterm('x').getSubterm('x'), X);
+        const premise1 = r.typecheck(body);
+
+        return empty.constrain(new ArrowT(X, premise1.type), premise1.constrs);
+    }
+
+    static cTApp = (r, empty) => { //CTApp
+        const X = new GenT(r.getFreshVar('X'));
+        const premise1 = r.typecheck(empty.asSubterm('M'));
+        const premise2 = r.typecheck(empty.asSubterm('N'));
+        const conclusn = empty.constrain(X);
+
+        conclusn.union(premise1.constrs);
+        conclusn.union(premise2.constrs);
+        conclusn.unionSingle(new Constraint(premise1.type, new ArrowT(premise2.type, X)));
+
+        return conclusn;
+    }
+
+    static cTIfLeZ = (r, empty) => { //IfLez
+        const X = new GenT(r.getFreshVar('X'));
+        const premise1 = r.typecheck(empty.asSubterm('M'));
+        const premise2 = r.typecheck(empty.asSubterm('N'));
+        const premise3 = r.typecheck(empty.asSubterm('P'));
+        const conclusn = empty.constrain(X);
+
+        conclusn.union(premise1.constrs);
+        conclusn.union(premise2.constrs);
+        conclusn.union(premise3.constrs);
+        conclusn.unionSingle(new Constraint(premise1.type, new NumT()));
+        conclusn.unionSingle(new Constraint(premise2.type, X));
+        conclusn.unionSingle(new Constraint(premise3.type, X));
+        
+        return conclusn;
+    }
+
+    static var = 'x';
+    static num = 'n';
+    static op = 'M o N';
+    static abs = 'x => M';
+    static app = 'M(N)';
+    static iflz = 'M <= 0 ? N : P';
+
+    static appliesTo = (() => {
+        const ruleFor = {};
+        ruleFor[Rule.var] = Rule.cTVar;
+        ruleFor[Rule.num] = Rule.cTNum;
+        ruleFor[Rule.op]  = Rule.cTNumOp;
+        ruleFor[Rule.abs] = Rule.cTAbsInf;
+        ruleFor[Rule.app] = Rule.cTApp;
+        ruleFor[Rule.iflz]= Rule.cTIfLeZ;
+        return ruleFor;
+    })();
 }
