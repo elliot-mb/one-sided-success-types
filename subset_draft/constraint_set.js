@@ -48,7 +48,7 @@ export class ConstraintSet{
     }
 
     show(){
-        return `${this.cs.map(c => c.show()).reduce((acc, str) => `${acc}, ${str}`, '')}`;
+        return `{${`${this.cs.map(c => c.show()).reduce((acc, str) => `${acc}, ${str}`, '')}`.substring(2)}}`;
     }
 
 }

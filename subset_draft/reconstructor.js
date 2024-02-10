@@ -31,54 +31,27 @@ export class Reconstructor{
      * @returns {*} Judgement object 
      */
     typecheck(eJudge){
-        //console.log(eJudge.show());
-        //these embody the constraint rules
         if(eJudge.shape === 'x'){ //CTVar
-            // side condition ::= x : T \in assms
-            // conclusion of the rule ::= assms \types x : T | {}
+            //side condition implicity by existence check in .variableType(...)
             return eJudge.constrain(eJudge.variableType(eJudge.getSubterm('x')));
-            
-            // if(assms[letter] === undefined) throw `typecheck: term of shape ${shape}, variable '${letter}' is free; unbound in function`
-            // //conclusion of the rule ::= assms \types x : T | {}
-            // return Reconstructor.TCPair(assms[letter], new ConstraintSet()); 
         }
         if(eJudge.shape === 'n'){ //CTNum
             //conclusion of the rule ::= assms \types n : Num | {}
-            return eJudge.constrain(new NumT());
-
-            //return Reconstructor.TCPair(new NumT(), new ConstraintSet()); 
+            return eJudge.constrain(new NumT()); 
         }
         if(eJudge.shape === 'M o N'){ //CTNumOp
 
             const premise1 = this.typecheck(eJudge.asSubterm('M'));
             const premise2 = this.typecheck(eJudge.asSubterm('N'));
-
             const conclusn = eJudge.constrain(new GenT(this.getFreshVar('X')));
+
             conclusn.union(premise1.constrs);
             conclusn.union(premise2.constrs);
             conclusn.unionSingle(new Constraint(premise1.type, new NumT()));
             conclusn.unionSingle(new Constraint(premise2.type, new NumT()));
             conclusn.unionSingle(new Constraint(conclusn.type, new NumT()));
 
-            return conclusn;
-
-            // //left premise
-            // const t1 = getSubterm(term, 'M');
-            // const T1_C = this.typecheck(t1, assms); //constraints
-            // //right premise
-            // const t2 = getSubterm(term, 'N');
-            // const T2_C = this.typecheck(t2, assms); //constraints
-            // //make conclusion
-            // let X = new GenT(this.getFreshVar('X')); //num constraint
-            // const constrs = new ConstraintSet([
-            //     new Constraint(T1_C.type, new NumT()),
-            //     new Constraint(T2_C.type, new NumT()),
-            //     new Constraint(X, new NumT())
-            // ]);            
-            // constrs.combine(T1_C.constraints);
-            // constrs.combine(T2_C.constraints);
-            // //conclusion | constraints
-            // return Reconstructor.TCPair(X, constrs);
+            return conclusn; //when we add to the constraints we must do this and then return 
         }
         if(eJudge.shape === '[M, N]'){        
             throw 'implement me!';
@@ -90,72 +63,34 @@ export class Reconstructor{
             const premise1 = this.typecheck(body);
 
             return eJudge.constrain(new ArrowT(X, premise1.type), premise1.constrs);
-
-            //premise 
-            // const t2 = getSubterm(term, 'M');
-            // let X = new GenT(this.getFreshVar('X'));
-            // const xName = getSubterm(getSubterm(term, 'x'), 'x'); //add to assms
-            // const newAssms = assms;
-            // newAssms[xName] = X;
-            // //generate constraitns
-            // const T2_C = this.typecheck(t2, newAssms);
-            // //conclusion | constraints 
-            // return Reconstructor.TCPair(new ArrowT(X, T2_C.type), T2_C.constraints);
         }
         if(eJudge.shape === 'M(N)'){ //CTApp
             const X = new GenT(this.getFreshVar('X'));
             const premise1 = this.typecheck(eJudge.asSubterm('M'));
             const premise2 = this.typecheck(eJudge.asSubterm('N'));
-
             const conclusn = eJudge.constrain(X);
+
             conclusn.union(premise1.constrs);
             conclusn.union(premise2.constrs);
             conclusn.unionSingle(new Constraint(premise1.type, new ArrowT(premise2.type, X)));
+
             return conclusn;
-            
-            // const t1 = getSubterm(term, 'M');
-            // const t2 = getSubterm(term, 'N');
-            // const T1_C = this.typecheck(t1, assms);
-            // const T2_C = this.typecheck(t2, assms);
-            // let X = new GenT(this.getFreshVar('X'));
-            // const constrs = new ConstraintSet([
-            //     new Constraint(T1_C.type, new ArrowT(T2_C.type, X))
-            // ]);
-            // constrs.combine(T1_C.constraints);
-            // constrs.combine(T2_C.constraints);
-            // return Reconstructor.TCPair(X, constrs);
         }
         if(eJudge.shape === 'M <= 0 ? N : P'){ //IfLez
             const X = new GenT(this.getFreshVar('X'));
             const premise1 = this.typecheck(eJudge.asSubterm('M'));
             const premise2 = this.typecheck(eJudge.asSubterm('N'));
             const premise3 = this.typecheck(eJudge.asSubterm('P'));
-
             const conclusn = eJudge.constrain(X);
+
             conclusn.union(premise1.constrs);
             conclusn.union(premise2.constrs);
             conclusn.union(premise3.constrs);
             conclusn.unionSingle(new Constraint(premise1.type, new NumT()));
             conclusn.unionSingle(new Constraint(premise2.type, X));
             conclusn.unionSingle(new Constraint(premise3.type, X));
+            
             return conclusn;
-
-            // const t0 = getSubterm(term, 'M');
-            // const t1 = getSubterm(term, 'N');
-            // const t2 = getSubterm(term, 'P');
-            // const X = new GenT(this.getFreshVar('X'));
-            // const T0_C = this.typecheck(t0, assms);
-            // const T1_C = this.typecheck(t1, assms);
-            // const T2_C = this.typecheck(t2, assms);
-            // const constrs = new ConstraintSet([
-            //     new Constraint(T0_C.type, new NumT()),
-            //     new Constraint(T1_C.type, X),
-            //     new Constraint(T2_C.type, X)
-            // ]);
-            // constrs.combine(T0_C.constraints);
-            // constrs.combine(T1_C.constraints);
-            // constrs.combine(T2_C.constraints);
-            // return Reconstructor.TCPair(X, constrs);
         }
         throw `typecheck: eJudge has an unrecognised shape`;
     }
@@ -197,11 +132,11 @@ export class Reconstructor{
         // console.log(toASTTree(program));
         const empty = new EmptyJudgement(toASTTree(program));
         
-        // console.log(empty.show());
+        //console.log(empty.show());
         const full = this.typecheck(empty);
+        //console.log(full.show());
         const roughType = full.type;
         const constraintSet = full.constrs;
-        // ////console.log(`rough type ${principalType.show()}`);
         const unifiedType = this.unify(roughType, constraintSet);
         Utils.downgradeTypes(unifiedType);
         return unifiedType;
