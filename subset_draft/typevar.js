@@ -11,9 +11,10 @@ import {Utils} from './utils.js';
 export class GenT{
     static type = 'typevar';
     static genShape = 'A';
+    static okShape = 'Ok';
     static numShape = 'Num';
     static arrowShape = 'A -> B';
-
+    
     constructor(id){
         this.id = id;
         this.shape = () => GenT.genShape;
@@ -69,6 +70,21 @@ export class GenT{
 // meaning: all values 
 export class OkT extends GenT{
 
+    constructor(){
+        super(GenT.okShape);
+        this.shape = () => GenT.okShape;
+    }
+
+    freeIn(){
+        return []; //nothing free in Ok
+    }
+
+    //you cant subtitute with an Ok!
+    swapWith(tA, tB){ 
+        Utils.typeVarsOrCrash(tA, tB);
+        return this;
+    }
+
 }
 
 export class NumT extends GenT{
@@ -76,10 +92,6 @@ export class NumT extends GenT{
     constructor(){
         super(GenT.numShape);
         this.shape = () => GenT.numShape;
-    }
-
-    show(){
-        return this.shape();
     }
 
     freeIn(){
