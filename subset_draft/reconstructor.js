@@ -3,7 +3,6 @@ import {toASTTree, getSubterm, termShape} from './aw_ast.js';
 import {Constraint} from './constraint.js';
 import {ConstraintSet} from './constraint_set.js';
 import {EmptyJudgement, Judgement} from './judgement.js';
-import {Term} from './term.js';
 import {Rule} from './rule.js';
 
 export class Reconstructor{

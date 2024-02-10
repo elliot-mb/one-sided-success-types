@@ -1,6 +1,5 @@
 import {GenT} from './typevar.js';
 import {typeToGrammar} from './aw_ast.js';
-import {Term} from './term.js';
 
 export class Utils{
 
