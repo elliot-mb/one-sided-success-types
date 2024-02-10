@@ -5,11 +5,11 @@ export class Term{
     static P = 'P';
     static x = 'x';
     static n = 'n'; 
-    static allShapes = {
-        M: M,
-        N: N,
-        P: P,
-        x: x,
-        n: n
-    };
+    // static allShapes = {
+    //     M: M,
+    //     N: N,
+    //     P: P,
+    //     x: x,
+    //     n: n
+    // };
 }

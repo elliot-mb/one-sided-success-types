@@ -8,7 +8,7 @@ export class EmptyJudgement{
 
     static type = 'emptyjudgement';
 
-    constructor(assms, term){
+    constructor(term, assms = {}){
         Utils.termOrCrash(term); 
         this.assms = assms;
         this.term = term;
@@ -57,10 +57,10 @@ export class Judgement extends EmptyJudgement{
      * @param {*} type is the type of term
      * @param {*} constrs constraint set [optional]
      */
-    constructor(assms, term, type, constrs = new ConstraintSet()){
+    constructor(term, type, assms = {}, constrs = new ConstraintSet()){
         Utils.typeVarOrCrash(type);
         Utils.typeIsOrCrash(constrs, ConstraintSet.type);
-        super(assms, term);
+        super(term, assms);
         this.type = type;
         this.constrs = constrs;
     }

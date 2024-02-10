@@ -3,6 +3,7 @@ import {toASTTree, getSubterm, termShape} from './aw_ast.js';
 import {GenT, NumT, ArrowT} from './typevar.js';
 import {Constraint} from './constraint.js';
 import {ConstraintSet} from './constraint_set.js';
+import {EmptyJudgement, Judgement} from './judgement.js';
 
 export class Reconstructor{
 
@@ -145,6 +146,7 @@ export class Reconstructor{
 
     reconstruct(program){
         this.rstFreshVar();
+        const empty = new EmptyJudgement(toASTTree(program));
         const typeAndConstraints = this.typecheck(toASTTree(program), {});
         const roughType = typeAndConstraints.type;
         const constraintSet = typeAndConstraints.constraints;
