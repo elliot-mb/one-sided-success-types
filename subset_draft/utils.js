@@ -1,5 +1,6 @@
 import {GenT} from './typevar.js';
 import {typeToGrammar} from './aw_ast.js';
+import {Term} from './term.js';
 
 export class Utils{
 
@@ -48,9 +49,18 @@ export class Utils{
     }
     static termOrCrash = (M) => {
         if(M.type === undefined) throw 'termOrCrash: M does not have a type property and so does not represent an AST node';
-        const isValidNodeType = Object.keys(typeToGrammar).map(nodeT => M.type === nodeT).reduce((acc, b) => acc || b, false);
-        if(!isValidNodeType) throw 'termOrCrash: M does not have a type property which belongs to the grammar';
+        //const isValidNodeType = Object.keys(typeToGrammar).map(nodeT => M.type === nodeT).reduce((acc, b) => acc || b, false);
+        if(typeToGrammar[M.type] === undefined) throw 'termOrCrash: M does not have a type property which belongs to the grammar';
     }
+
+    static typeIsOrCrash = (t, is) => {
+        if(t.type === undefined) throw 'typeIsOrCrash: t has no type property';
+        if(t.type !== is) throw `typeIsOrCrash: t.type is not set to ${is}`;
+    }
+
+    // static goodShapeOrCrash = (shape) => {
+    //     if(Term.allShapes[shape] === undefined) throw 'goodShapeOrCrash: there is no '
+    // }
 
     //makes type variables more readable (e.g. (T2 -> T2) -> T2 -> T2 becomes (A -> A) -> A -> A)
     static downgradeTypes = (T) => {

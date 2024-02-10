@@ -3,6 +3,7 @@ import {GenT} from './typevar.js';
 import {Utils} from './utils.js';
 
 export class ConstraintSet{
+    static type = 'constraintset';
 
     constructor(constraints = []){
         if(constraints.length !== 0) constraints.map(cMaybe => Constraint.constraintOrCrash(cMaybe));
