@@ -34,12 +34,14 @@ export class Reconstructor{
         const shape = termShape(term);
         //these embody the constraint rules
         if(shape === 'x'){
-            let letter = getSubterm(term, 'x');
+            // side condition ::= x : T \in assms
+            let letter = getSubterm(term, 'x'); // unpacking x : T
             if(assms[letter] === undefined) throw `typecheck: term of shape ${shape}, variable '${letter}' is free; unbound in function`
-            return Reconstructor.TCPair(assms[letter], new ConstraintSet());
+            //conclusion of the rule ::= assms \types x : T | {}
+            return Reconstructor.TCPair(assms[letter], new ConstraintSet()); 
         }
         if(shape === 'n'){
-            return Reconstructor.TCPair(new NumT(), new ConstraintSet());
+            return Reconstructor.TCPair(new NumT(), new ConstraintSet()); //conclusion of the rule ::= assms \types n : Num | {}
         }
         if(shape === 'M o N'){ 
             //creates a lot of constraints
