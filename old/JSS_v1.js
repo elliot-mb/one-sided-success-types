@@ -1,4 +1,4 @@
-import {toASTTree, pretty, getSubterm, checkGrammar} from './aw_ast.js';
+import {toASTTree, pretty, getSubterm, checkGrammar} from '../subset_draft/aw_ast.js';
 
 /**
  * the tiny subset of the language that just includes variables,
