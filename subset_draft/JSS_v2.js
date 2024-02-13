@@ -156,7 +156,9 @@ const bulkTest = () => {
 
 }
 
-
+const nullTest = () => {
+    console.log(toASTTree('null'));
+}
 
 // testTypeCheck();
 // testTypeVar();
@@ -164,7 +166,9 @@ const bulkTest = () => {
 //downgradeTest();
 //swapTest();
 //rolloverTest();
-bulkTest();
+//bulkTest();
+
+nullTest();
 
 //showsTree('nullTree', 'null');
 /**

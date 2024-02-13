@@ -2,7 +2,10 @@
     "Literal": {
         "value": {
             "satisfies": "ANY", 
-            "rules": [{"F": {"typeof": "number"}}]
+            "rules": [
+                {"F": {"typeof": "number"}},
+                {"F": {"equals": null}}
+            ]
         }
     },
     "BinaryExpression": {

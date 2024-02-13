@@ -76,5 +76,5 @@ A, B ::= Num
          A -> B
          @@A^c@@
          @@Ok@@
-         @@object@@
+         @@object@@ --NB this is the type of null
 ```
