@@ -150,7 +150,7 @@ const bulkTest = () => {
         'x => x(y => y(0))(f => x => f(f(x)))',
         '(x => y => x(1.1) <= 0 ? x : y)(x => x + 1)(y => y)',
         '(z => z)(0 - 1) <= 0 ? x => y => y(x => 0) : z => w => w(w(z))',
-        //'z => z(z)'
+        'z => z(z)'
     ];
     programs.map(p => console.log(`${p} : ${r.reconstruct(p).show()}`));
 
@@ -166,9 +166,9 @@ const nullTest = () => {
 //downgradeTest();
 //swapTest();
 //rolloverTest();
-//bulkTest();
+bulkTest();
 
-nullTest();
+//nullTest();
 
 //showsTree('nullTree', 'null');
 /**

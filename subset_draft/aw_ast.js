@@ -120,7 +120,7 @@ const checkRule = (rule, objOrValue, fieldname) => {
         const funcName = funcNames[0];
         const useFunc = funcs[funcName]; //function to use the value and arg with
         const funcArg = funcNameArg[funcName]; //gets the function argument from the pair
-        console.log(funcArg, objOrValue);
+        //console.log(funcArg, objOrValue);
         const isOk = useFunc(objOrValue)(funcArg);
         if(!isOk) throw `checkRule: property violates '${funcName}' check on '${objOrValue}' and '${funcArg}', for '${fieldname}'`;
         return;
@@ -172,7 +172,7 @@ export const checkTerm = term => {
         const fails = [];
         const isOk = ruleset[ruls]
             .map((rule, i) => {
-                console.log('here');
+                //console.log('here');
                 try{
                     checkRule(rule, term[field], field);
                 }catch(err){
