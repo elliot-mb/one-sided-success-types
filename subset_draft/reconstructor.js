@@ -75,13 +75,13 @@ export class Reconstructor{
         const full = this.typecheck(empty);
         //console.log(full.show());
         const roughType = full.type;
-        const constraintSet = full.constrs;
-        try{
-            const unifiedType = this.unify(roughType, constraintSet); 
-            Utils.downgradeTypes(unifiedType);
-            return unifiedType;
-        }catch(err){
-            return new Untypable();
-        }
+        const constrs = full.constrs;
+        //try{
+        const unifiedType = this.unify(roughType, constrs); 
+        Utils.downgradeTypes(unifiedType);
+        return unifiedType;
+        // }catch(err){
+        //     return new Untypable();
+        // }
     }
 }

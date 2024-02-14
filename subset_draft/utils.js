@@ -11,6 +11,11 @@ export class Utils{
         return Utils.rollsover(char) ? 'A' : String.fromCharCode(code + 1);
     }
 
+    static isEmpty(xs){
+        if(xs.length === undefined) throw `isEmpty: xs '${xs}' has no property length`;
+        return xs.length === 0;
+    }
+
     //returns either a string or '#' signifying it has rolled over (we obviously know what it will be?)
     static nextFreeTypeName = (typeName) => {
         if(typeof(typeName) !== 'string') throw 'nextFreeTypeName: typeName must be a string';

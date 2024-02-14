@@ -1,6 +1,8 @@
 import {Constraint} from './constraint.js';
 import {GenT, NumT, ArrowT} from './typevar.js';
 
+
+
 export class Rule {
 
     //static class for all the rules, each with its own shape 
