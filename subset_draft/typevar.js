@@ -8,6 +8,12 @@ import {Utils} from './utils.js';
  * 
  */
 
+export class Untypable{
+    show(){
+        return `Untypable`;
+    }
+}
+
 export class GenT{
     static type = 'typevar';
     static genShape = 'A';
