@@ -32,6 +32,19 @@ export class Ander extends TypedList{
         return this.xs;
     }
 
+    //try to reduce nesting by moivng 'one thing' into this xs when pairs are nested like: This(OR(AND(one thing)))
+    // we pass in something of our own
+    collapse(orOrConstr){
+        if(Utils.isType(orOrConstr, Constraint.type)) return orOrConstr; //it cannot be collapsed, because it is already in an ander
+        const or = orOrConstr; // we know its an or now
+        const ands = or.getAnds();
+        if(ands.length === 0) return null;
+        if(ands.length > 1) return or; //not unit size
+        const and = ands[0] //we know its just one ander in this or
+        const ors = and.getOrs();
+        return ors; 
+    }
+
     add(orOrConstr){
         this.verifyElem(orOrConstr);
         // if(Utils.isType(orOrConstr, Orer.type)){ 
@@ -41,6 +54,12 @@ export class Ander extends TypedList{
         //     this.xs.push(spreadOrs); 
         // }else {
         this.xs.push(orOrConstr);
+        const arrayer = (maybeArray) => maybeArray.length !== undefined ? maybeArray : [maybeArray];
+        this.xs = this.xs
+            .map(x => this.collapse(x))
+            .filter(x => x !== null)
+            .reduce((acc, maybeArray) => [...acc, ...(arrayer(maybeArray))], []);
+        console.log(this.xs);
         //}
     }
 
