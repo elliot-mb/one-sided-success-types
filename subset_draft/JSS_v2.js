@@ -60,6 +60,8 @@ import { ConstraintSet } from './constraint_set.js';
 import { Utils } from './utils.js';
 import { Reconstructor } from './reconstructor.js';
 import {showsTree} from './aw_ast.js';
+import { OrList } from './orlist.js';
+import { AndList } from './andlist.js';
 
 const testTypeCheck = () => {
     console.log(typecheck(toASTTree('s => y => z => (s(z))(y(z))'), new ConstraintSet()).constraints.show());
@@ -160,13 +162,22 @@ const nullTest = () => {
     console.log(toASTTree('null'));
 }
 
+const orSetAndSetTest = () => {
+    const o = new OrList(
+        new AndList(new Constraint(new GenT('A'), new GenT('B')), new Constraint(new GenT('A'), new GenT('B'))),
+        new AndList(new Constraint(new GenT('A'), new GenT('B')), new Constraint(new GenT('A'), new GenT('B'))));
+    console.log(o.show());
+
+}
+
 // testTypeCheck();
 // testTypeVar();
 //combinedTest();
 //downgradeTest();
 //swapTest();
 //rolloverTest();
-bulkTest();
+//bulkTest();
+orSetAndSetTest();
 
 //nullTest();
 

@@ -59,7 +59,7 @@ export class Utils{
 
     static typeIsOrCrash = (t, is) => {
         if(t.type === undefined) throw 'typeIsOrCrash: t has no \'type\' property';
-        if(t.type !== is) throw `typeIsOrCrash: t.type is not set to ${is}`;
+        if(t.type !== is) throw `typeIsOrCrash: t is a '${t.type}' when it needs to be a '${is}'`;
     }
 
     // static goodShapeOrCrash = (shape) => {
