@@ -21,6 +21,8 @@ export class ConstraintSet extends Stack{ //this is a stack because of how we us
      * @param A in place of this
      * @param B we put this
      */
+
+
     swapWithAll(tA, tB){
         Utils.typeVarsOrCrash(tA, tB);
         this.xs.map(x => x.swapWith(tA, tB));
