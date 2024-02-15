@@ -73,7 +73,8 @@ export class Reconstructor{
         
         //console.log(empty.show());
         const full = this.typecheck(empty);
-        //console.log(full.show());
+        console.log(full.show());
+        throw `the end`;
         const roughType = full.type;
         const constrs = full.constrs;
         //try{

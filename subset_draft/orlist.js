@@ -19,4 +19,13 @@ export class OrList extends TypedList{
     show(){
         return `${OrList.type}(${this.showDelegate()})`;
     }
+
+    getOrs(){
+        return this.xs;
+    }
+
+    add(and){
+        this.verifyElem(and);
+        this.xs.push(and);
+    }
 }

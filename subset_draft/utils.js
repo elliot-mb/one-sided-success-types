@@ -16,6 +16,11 @@ export class Utils{
         return xs.length === 0;
     }
 
+    static last(xs){
+        if(Utils.isEmpty(xs)) throw `last: list is empty`;
+        return xs[xs.length - 1];
+    }
+
     //returns either a string or '#' signifying it has rolled over (we obviously know what it will be?)
     static nextFreeTypeName = (typeName) => {
         if(typeof(typeName) !== 'string') throw 'nextFreeTypeName: typeName must be a string';
@@ -57,9 +62,11 @@ export class Utils{
         if(typeToGrammar[M.type] === undefined) throw 'termOrCrash: M does not have a type property which belongs to the grammar';
     }
 
-    static typeIsOrCrash = (t, is) => {
+    static typeIsOrCrash = (t, ...is) => {
         if(t.type === undefined) throw 'typeIsOrCrash: t has no \'type\' property';
-        if(t.type !== is) throw `typeIsOrCrash: t is a '${t.type}' when it needs to be a '${is}'`;
+        const isCorrectType = is.map(x => t.type !== x).reduce((acc, a) => acc || a, false); {
+            if (t.type !== x) throw `typeIsOrCrash: t is a '${t.type}' when it needs to be one of '${is}'`;
+        });
     }
 
     // static goodShapeOrCrash = (shape) => {

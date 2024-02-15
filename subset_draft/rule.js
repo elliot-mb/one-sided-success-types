@@ -1,5 +1,7 @@
 import {Constraint} from './constraint.js';
 import {GenT, NumT, ArrowT} from './typevar.js';
+import {AndList} from './andlist.js';
+import {OrList} from './orlist.js';
 
 
 

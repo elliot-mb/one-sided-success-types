@@ -176,8 +176,8 @@ const orSetAndSetTest = () => {
 //downgradeTest();
 //swapTest();
 //rolloverTest();
-//bulkTest();
-orSetAndSetTest();
+bulkTest();
+//orSetAndSetTest();
 
 //nullTest();
 

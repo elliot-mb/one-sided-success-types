@@ -14,6 +14,11 @@ export class Stack extends TypedList{
         return this.counter === 0;
     }
 
+    peek(){
+        if(this.isEmpty()) throw `peek: ${this.type} is empty`;
+        return this.xs[this.counter - 1];
+    }
+
     pop(){
         if(!this.isEmpty()){
             this.counter--;

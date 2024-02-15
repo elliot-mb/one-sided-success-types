@@ -15,17 +15,22 @@ export class AndList extends TypedList{
     }
 
     verifyElem(x){
-        try{
-            Utils.typeIsOrCrash(x, OrList.type);
-        }catch(err){
-            Utils.typeIsOrCrash(x, Constraint.type);
-        }
+        Utils.typeIsOrCrash(x, OrList.type, Constraint.type);
 
         return x;
     }
 
     show(){
         return `${AndList.type}(${this.showDelegate()})`;
+    }
+
+    getAnds(){
+        return this.xs;
+    }
+
+    add(orOrConstraint){
+        this.verifyElem(orOrConstraint);
+        this.xs.push(orOrConstraint);
     }
 
 }

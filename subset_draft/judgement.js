@@ -2,6 +2,8 @@ import {Utils} from './utils.js';
 import {termShape, getSubterm} from './aw_ast.js';
 import {ConstraintSet} from './constraint_set.js';
 import {Constraint} from './constraint.js';
+import {OrList} from './orlist.js';
+import {AndList} from './andlist.js';
 
 // Γ ⊢ M    (just assumptions and a term)
 export class EmptyJudgement{
@@ -40,8 +42,8 @@ export class EmptyJudgement{
         return `${JSON.stringify(this.assms)} ⊢ ${this.shape}`;
     }
 
-    //returns a Judgement with its type instantiated, and any immediate constraints in an OrSet of AndSets )
-    constrain(type, constrs = new ConstraintSet()){
+    //returns a Judgement with its type instantiated, and any immediate constraints in an OrList of AndLists
+    constrain(type, constrs = new OrList()){
         //Utils.typeIsOrCrash(ej, EmptyJudgement.type);
         return new Judgement(this.term, type, this.assms, constrs);
     }
@@ -57,30 +59,38 @@ export class Judgement extends EmptyJudgement{
      * @param {*} assms is a map from variable names (characters) to type objects
      * @param {*} term 
      * @param {*} type is the type of term
-     * @param {*} constrs constraint set [optional]
+     * @param {*} constrs constraints in and lists in an orlist [optional]
      */
-    constructor(term, type, assms = {}, constrs = new ConstraintSet()){
+    constructor(term, type, assms = {}, constrs = new OrList()){
         Utils.typeVarOrCrash(type);
-        Utils.typeIsOrCrash(constrs, ConstraintSet.type);
+        Utils.typeIsOrCrash(constrs, OrList.type);
         super(term, assms);
         this.type = type;
         this.constrs = constrs;
+    }
+
+    //returns the last andset in the orset: the last elem of constrs
+    lastAndList(){
+        if(Utils.isEmpty(this.constrs.getOrs)) this.constrs.add(new AndList());
+        return Utils.last(this.constrs.getOrs());
     }
 
     show(){
         return `${JSON.stringify(this.assms)} ⊢ ${this.shape} : ${this.type.show()} | ${this.constrs.show()}`;
     }
 
-    //add a single constraint to the set
+    //add a single constraint to the last andset in the orset
     unionSingle(constr){
         Utils.typeIsOrCrash(constr, Constraint.type);
-        this.constrs.combine(new ConstraintSet([constr]));
+        //this.constrs.combine(new ConstraintSet([constr]));
+        
+        this.lastAndList().add(constr);
     }
 
-    //union constraint sets
-    union(constrSet){
-        Utils.typeIsOrCrash(constrSet, ConstraintSet.type);
-        this.constrs.combine(constrSet);
+    //add all the constraints in an andset to the last andset in the orset
+    union(constrs){
+        Utils.typeIsOrCrash(constrs, OrList.type);
+        constrs.getOrs().map(x => this.lastAndList().add(x));
     }
 
 }
