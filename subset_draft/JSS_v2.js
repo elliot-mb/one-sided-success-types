@@ -156,7 +156,7 @@ const bulkTest = () => {
         '(z => z)(0 - 1) <= 0 ? x => y => y(x => 0) : z => w => w(w(z))',
         'z => z(z)'
     ];
-    programs.map(p => console.log(`${p} : ${r.reconstruct(p).map(t => `${t.show()}\n`)} \r\n\r\n`));
+    programs.map(p => console.log(`${p} :\n ${r.reconstruct(p).map(t => `\t${t.show()}\n`)}`));
 
 }
 
