@@ -40,7 +40,7 @@ export class EmptyJudgement{
         return `${JSON.stringify(this.assms)} ⊢ ${this.shape}`;
     }
 
-    //returns a Judgement with its type instantiated, and any immediate constraints 
+    //returns a Judgement with its type instantiated, and any immediate constraints in an OrSet of AndSets )
     constrain(type, constrs = new ConstraintSet()){
         //Utils.typeIsOrCrash(ej, EmptyJudgement.type);
         return new Judgement(this.term, type, this.assms, constrs);
