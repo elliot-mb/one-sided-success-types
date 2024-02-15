@@ -62,16 +62,16 @@ export class Judgement extends EmptyJudgement{
      * @param {*} constrs constraints in and lists in an orlist [optional]
      */
     constructor(term, type, assms = {}, constrs = new OrList()){
+        super(term, assms);
         Utils.typeVarOrCrash(type);
         Utils.typeIsOrCrash(constrs, OrList.type);
-        super(term, assms);
         this.type = type;
         this.constrs = constrs;
+        if(Utils.isEmpty(this.constrs.getOrs())) this.constrs.add(new AndList());
     }
 
     //returns the last andset in the orset: the last elem of constrs
     lastAndList(){
-        if(Utils.isEmpty(this.constrs.getOrs)) this.constrs.add(new AndList());
         return Utils.last(this.constrs.getOrs());
     }
 
@@ -87,10 +87,13 @@ export class Judgement extends EmptyJudgement{
         this.lastAndList().add(constr);
     }
 
-    //add all the constraints in an andset to the last andset in the orset
+    /**
+     * 
+     * @param {*} constraint set (a single andlist full of orlists or constraints)
+     */
     union(constrs){
-        Utils.typeIsOrCrash(constrs, OrList.type);
-        constrs.getOrs().map(x => this.lastAndList().add(x));
+        Utils.typeIsOrCrash(constrs, AndList.type);
+        constrs.getAnds().map(x => this.lastAndList().add(x));
     }
 
 }

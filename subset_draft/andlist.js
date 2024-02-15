@@ -24,7 +24,11 @@ export class AndList extends TypedList{
         return `${AndList.type}(${this.showDelegate()})`;
     }
 
-    getAnds(){
+    /**
+     * 
+     * @returns the OrLists inside the AndList
+     */
+    getOrs(){
         return this.xs;
     }
 

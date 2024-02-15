@@ -16,12 +16,21 @@ export class Utils{
         return xs.length === 0;
     }
 
+    /**
+     * takes a list of bools and returns true if any of them are true 
+     **/
+    static any(bs){
+        return bs.reduce((acc, b) => acc || b, false);
+    }
+
     static last(xs){
         if(Utils.isEmpty(xs)) throw `last: list is empty`;
         return xs[xs.length - 1];
     }
 
-    //returns either a string or '#' signifying it has rolled over (we obviously know what it will be?)
+    /**
+     * returns either a string or '#' signifying it has rolled over (we obviously know what it will be?)
+     * **/
     static nextFreeTypeName = (typeName) => {
         if(typeof(typeName) !== 'string') throw 'nextFreeTypeName: typeName must be a string';
         let newName = `${typeName}`;
@@ -64,9 +73,8 @@ export class Utils{
 
     static typeIsOrCrash = (t, ...is) => {
         if(t.type === undefined) throw 'typeIsOrCrash: t has no \'type\' property';
-        const isCorrectType = is.map(x => t.type !== x).reduce((acc, a) => acc || a, false); {
-            if (t.type !== x) throw `typeIsOrCrash: t is a '${t.type}' when it needs to be one of '${is}'`;
-        });
+        const isCorrectType = Utils.any(is.map(x => t.type === x)); 
+        if (!isCorrectType) throw `typeIsOrCrash: t is a '${t.type}' when it needs to be one of '${is}'`;
     }
 
     // static goodShapeOrCrash = (shape) => {
