@@ -45,7 +45,7 @@ export class Ander extends TypedList{
         const ands = or.getAnds();
         if(ands.length === 0) return null;
         if(ands.length > 1) return or; //not unit size
-        const and = ands[0] //we know its just one ander in this or
+        const and = ands[0] //we know its just one ander in this orer, its a unit so we can bring it up through to 'this' ander
         const ors = and.getOrs();
         return ors; 
     }
