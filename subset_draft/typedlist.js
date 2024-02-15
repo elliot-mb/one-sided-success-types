@@ -17,11 +17,20 @@ export class TypedList{
         return x;
     }
 
+    size(){
+        return this.xs.length;
+    }
+
     //no need to override ever
-    showDelegate(){
+    /**
+     * 
+     * @param {*} joiner what character to join 
+     * @returns 
+     */
+    showDelegate(joiner = ', '){
         const showableElems = Utils.isEmpty(this.xs) ? false : this.xs[0].show !== undefined; // if the latter clause is true then theyre not undefined
-        const looseCommaLength = 2;
-        return `${`${this.xs.map(x => showableElems ? x.show() : `${x}`).reduce((acc, str) => `${acc}, ${str}`, '')}`.substring(looseCommaLength)}`;
+        const accLength = joiner.length;
+        return `${`${this.xs.map(x => showableElems ? x.show() : `${x}`).reduce((acc, str) => `${acc}${joiner}${str}`, '')}`.substring(accLength)}`;
     }
 
     //can be overriden

@@ -1,28 +1,32 @@
-import {AndList} from './andlist.js';
+import {Ander} from './ander.js';
 import {Utils} from './utils.js';
 import {TypedList} from './typedlist.js';
 
-export class OrList extends TypedList{
-    static type = 'orlist';
+export class Orer extends TypedList{
+    static type = 'orer';
 
     constructor(...ands){
         super(ands);
-        this.type = OrList.type;
+        this.type = Orer.type;
+    }
+
+    isEmpty(){
+        return Utils.isEmpty(this.xs);
     }
 
     verifyElem(x){
-        Utils.typeIsOrCrash(x, AndList.type);
+        Utils.typeIsOrCrash(x, Ander.type);
 
         return x;
     }
 
     show(){
-        return `${OrList.type}(${this.showDelegate()})`;
+        return `OR(${this.showDelegate(' v ')})`;
     }
 
     /**
      * 
-     * @returns the AndLists inside the OrList
+     * @returns the Anders inside 
      */
     getAnds(){
         return this.xs;

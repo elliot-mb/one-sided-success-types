@@ -2,8 +2,8 @@ import {Utils} from './utils.js';
 import {termShape, getSubterm} from './aw_ast.js';
 import {ConstraintSet} from './constraint_set.js';
 import {Constraint} from './constraint.js';
-import {OrList} from './orlist.js';
-import {AndList} from './andlist.js';
+import {Orer} from './orer.js';
+import {Ander} from './ander.js';
 
 // Γ ⊢ M    (just assumptions and a term)
 export class EmptyJudgement{
@@ -43,7 +43,7 @@ export class EmptyJudgement{
     }
 
     //returns a Judgement with its type instantiated, and any immediate constraints in an OrList of AndLists
-    constrain(type, constrs = new OrList()){
+    constrain(type, constrs = new Orer()){
         //Utils.typeIsOrCrash(ej, EmptyJudgement.type);
         return new Judgement(this.term, type, this.assms, constrs);
     }
@@ -61,39 +61,42 @@ export class Judgement extends EmptyJudgement{
      * @param {*} type is the type of term
      * @param {*} constrs constraints in and lists in an orlist [optional]
      */
-    constructor(term, type, assms = {}, constrs = new OrList()){
+    constructor(term, type, assms = {}, constrs = new Orer()){
         super(term, assms);
         Utils.typeVarOrCrash(type);
-        Utils.typeIsOrCrash(constrs, OrList.type);
+        Utils.typeIsOrCrash(constrs, Orer.type);
         this.type = type;
         this.constrs = constrs;
-        if(Utils.isEmpty(this.constrs.getOrs())) this.constrs.add(new AndList());
     }
 
-    //returns the last andset in the orset: the last elem of constrs
-    lastAndList(){
-        return Utils.last(this.constrs.getOrs());
+    /**
+     * 
+     * @returns last Ander of the constrs Orer
+     */
+    lastAnder(){
+        if(Utils.isEmpty(this.constrs.getAnds())) this.constrs.add(new Ander());
+        return Utils.last(this.constrs.getAnds());
     }
 
     show(){
         return `${JSON.stringify(this.assms)} ⊢ ${this.shape} : ${this.type.show()} | ${this.constrs.show()}`;
     }
 
-    //add a single constraint to the last andset in the orset
-    unionSingle(constr){
-        Utils.typeIsOrCrash(constr, Constraint.type);
+    //add an atomic constraint (or, constraint)
+    addToLast(constr){
+        Utils.typeIsOrCrash(constr, Orer.type, Constraint.type);
         //this.constrs.combine(new ConstraintSet([constr]));
-        
-        this.lastAndList().add(constr);
+        if(constr.type === Constraint.type || !constr.isEmpty()) this.lastAnder().add(constr);
     }
 
-    /**
-     * 
-     * @param {*} constraint set (a single andlist full of orlists or constraints)
-     */
-    union(constrs){
-        Utils.typeIsOrCrash(constrs, AndList.type);
-        constrs.getAnds().map(x => this.lastAndList().add(x));
-    }
+    // /**
+    //  * 
+    //  * @param {*} constraint set (ander full of orers or constraints)
+    //  */
+    // union(constrs){
+    //     const last = this.lastAnder();
+    //     Utils.typeIsOrCrash(constrs, Ander.type);
+    //     constrs.getOrs().map(x => last.add(x)); //getOrs returns all the Orers which we can add to the last Ander
+    // }
 
 }

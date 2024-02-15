@@ -71,9 +71,13 @@ export class Utils{
         if(typeToGrammar[M.type] === undefined) throw 'termOrCrash: M does not have a type property which belongs to the grammar';
     }
 
+    static isType = (t, ...is) => {
+        return Utils.any(is.map(x => t.type === x)); 
+    }
+
     static typeIsOrCrash = (t, ...is) => {
         if(t.type === undefined) throw 'typeIsOrCrash: t has no \'type\' property';
-        const isCorrectType = Utils.any(is.map(x => t.type === x)); 
+        const isCorrectType = Utils.isType(t, ...is); 
         if (!isCorrectType) throw `typeIsOrCrash: t is a '${t.type}' when it needs to be one of '${is}'`;
     }
 

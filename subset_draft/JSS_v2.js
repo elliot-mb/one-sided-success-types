@@ -60,8 +60,8 @@ import { ConstraintSet } from './constraint_set.js';
 import { Utils } from './utils.js';
 import { Reconstructor } from './reconstructor.js';
 import {showsTree} from './aw_ast.js';
-import { OrList } from './orlist.js';
-import { AndList } from './andlist.js';
+import { Orer } from './orer.js';
+import { Ander } from './ander.js';
 
 const testTypeCheck = () => {
     console.log(typecheck(toASTTree('s => y => z => (s(z))(y(z))'), new ConstraintSet()).constraints.show());
@@ -143,6 +143,7 @@ const downgradeTest = () => {
 const bulkTest = () => {
     const r = new Reconstructor();
     const programs = [
+        'f => x => f(f(x))',
         'x => y => (0 + 1 - x(0) <= 0 ? x : y)',
         'x => x',
         '2 - 1',
@@ -163,9 +164,9 @@ const nullTest = () => {
 }
 
 const orSetAndSetTest = () => {
-    const o = new OrList(
-        new AndList(new Constraint(new GenT('A'), new GenT('B')), new Constraint(new GenT('A'), new GenT('B'))),
-        new AndList(new Constraint(new GenT('A'), new GenT('B')), new Constraint(new GenT('A'), new GenT('B'))));
+    const o = new Orer(
+        new Ander(new Constraint(new GenT('A'), new GenT('B')), new Constraint(new GenT('A'), new GenT('B'))),
+        new Ander(new Constraint(new GenT('A'), new GenT('B')), new Constraint(new GenT('A'), new GenT('B'))));
     console.log(o.show());
 
 }
