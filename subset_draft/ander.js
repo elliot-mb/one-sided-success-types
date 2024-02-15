@@ -34,6 +34,7 @@ export class Ander extends TypedList{
 
     //try to reduce nesting by moivng 'one thing' into this xs when pairs are nested like: This(OR(AND(one thing)))
     // we pass in something of our own
+    // we either get a constraint, a multi-ary or, or a set of ors dredged up from the depths of a singleton and
     collapse(orOrConstr){
         if(Utils.isType(orOrConstr, Constraint.type)) return orOrConstr; //it cannot be collapsed, because it is already in an ander
         const or = orOrConstr; // we know its an or now
