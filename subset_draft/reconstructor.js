@@ -5,6 +5,7 @@ import {ConstraintSet} from './constraint_set.js';
 import {EmptyJudgement, Judgement} from './judgement.js';
 import {Rule} from './rule.js';
 import {Untypable} from './typevar.js';
+import {Orer} from './orer.js';
 
 export class Reconstructor{
 
@@ -73,16 +74,12 @@ export class Reconstructor{
         
         //console.log(empty.show());
         const full = this.typecheck(empty);
-        console.log(full.show());
-        throw `the end`;
+        //console.log(full.show());
         const roughType = full.type;
         const constrs = full.constrs;
-        //try{
-        const unifiedType = this.unify(roughType, constrs); 
-        Utils.downgradeTypes(unifiedType);
-        return unifiedType;
-        // }catch(err){
-        //     return new Untypable();
-        // }
+        const unifiedTypes = constrs.toConstraintSets().map(cs => this.unify(roughType, cs));
+        //console.log(unifiedTypes);
+        unifiedTypes.map(t => Utils.downgradeTypes(t));
+        return unifiedTypes;
     }
 }

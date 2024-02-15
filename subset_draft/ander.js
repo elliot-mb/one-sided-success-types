@@ -14,6 +14,10 @@ export class Ander extends TypedList{
         this.type = Ander.type;
     }
 
+    isInDNF(){
+        return Utils.any(this.xs.map(x => Utils.isType(x, Constraint.type)));
+    }
+
     verifyElem(x){
         Utils.typeIsOrCrash(x, Orer.type, Constraint.type);
 
@@ -48,24 +52,13 @@ export class Ander extends TypedList{
 
     add(orOrConstr){
         this.verifyElem(orOrConstr);
-        // if(Utils.isType(orOrConstr, Orer.type)){ 
-        //     const unitAnds = orOrConstr.getAnds().filter(and => and.size() === 1);
-        //     const multiAnds = orOrConstr.getAnds().filter(and => and.size() !== 1);
-        //     const spreadOrs = new Orer(unitAnds.reduce((acc, and) => [...acc, ...and.getAnds()]));
-        //     this.xs.push(spreadOrs); 
-        // }else {
         this.xs.push(orOrConstr);
         const arrayer = (maybeArray) => maybeArray.length !== undefined ? maybeArray : [maybeArray];
-        this.xs = this.xs
+        this.xs = this.xs //for all xs
             .map(x => this.collapse(x))
             .filter(x => x !== null)
             .reduce((acc, maybeArray) => [...acc, ...(arrayer(maybeArray))], []);
-        console.log(this.xs);
-        //}
     }
 
-    addSpread(orer){
-
-    }
 
 }
