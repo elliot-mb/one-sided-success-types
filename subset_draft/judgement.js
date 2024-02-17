@@ -108,6 +108,7 @@ export class Judgement extends EmptyJudgement{
      */
     isRepeated(constrs, constr){
         Constraint.constraintOrCrash(constr);
+        console.log(constr.show());
         return Utils.any(constrs.map(c => c.equals(constr)));
     }
 
@@ -115,11 +116,15 @@ export class Judgement extends EmptyJudgement{
      * remove repeated constraints in all anders (does not remove repeated orers, as that should not be the case for any rules)
      */
     removeRepeats(){
-        this.constrs = new Orer(this.constrs.getAnds().map(ander => {
-            let constrs = ander.getConstraints();
-            constrs = constrs.filter(c => !this.isRepeated(constrs, c));
-            return new Ander(...ander.getAnds, constrs);
-        }));
+        console.log(this.constrs.show());
+        if(this.constrs.getAnds().length > 0){
+            this.constrs = new Orer(...this.constrs.getAnds().map(ander => {
+                let constrs = ander.getConstraints();
+                constrs = constrs.filter(c => true); //delete any repetitions here
+                console.log(ander.getNotConstraints(), constrs);
+                return new Ander(...ander.getNotConstraints(), ...constrs);
+            }));
+        }
     }
 
     // /**

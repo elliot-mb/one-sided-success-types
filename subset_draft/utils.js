@@ -80,7 +80,7 @@ export class Utils{
     }
 
     static typeIsOrCrash = (t, ...is) => {
-        if(t.type === undefined) throw 'typeIsOrCrash: t has no \'type\' property';
+        if(t.type === undefined) throw `typeIsOrCrash: t (${JSON.stringify(t)}) has no \'type\' property`;
         const isCorrectType = Utils.isType(t, ...is); 
         if (!isCorrectType) throw `typeIsOrCrash: t is a '${t.type}' when it needs to be one of '${is}'`;
     }

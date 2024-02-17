@@ -61,7 +61,11 @@ export class Ander extends TypedList{
             .reduce((acc, maybeArray) => [...acc, ...(arrayer(maybeArray))], []);
     }
 
-    getConstrains(){
+    getConstraints(){
         return this.xs.filter(x => x.type === Constraint.type);
+    }
+
+    getNotConstraints(){
+        return this.xs.filter(x => x.type !== Constraint.type);
     }
 }
