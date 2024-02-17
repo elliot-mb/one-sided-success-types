@@ -35,7 +35,7 @@ export class TypedList{
 
     //can be overriden
     show(){
-        return showDelegate();
+        return this.showDelegate();
     }
 
 }

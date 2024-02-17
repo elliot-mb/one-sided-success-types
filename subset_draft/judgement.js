@@ -4,13 +4,14 @@ import {ConstraintSet} from './constraint_set.js';
 import {Constraint} from './constraint.js';
 import {Orer} from './orer.js';
 import {Ander} from './ander.js';
+import {Assms} from './assms.js';
 
 // Γ ⊢ M    (just assumptions and a term)
 export class EmptyJudgement{
 
     static type = 'emptyjudgement';
 
-    constructor(term, assms = {}){
+    constructor(term, assms = new Assms()){
         Utils.termOrCrash(term); 
         this.assms = assms;
         this.term = term;
@@ -18,8 +19,8 @@ export class EmptyJudgement{
     }
 
     variableType(name){
-        if(this.assms[name] === undefined) throw `typecheck: term of shape ${this.shape()}, variable '${name}' is free; unbound in function`
-        return this.assms[name];
+        if(!this.assms.isIn(name)) throw `typecheck: term of shape ${this.shape()}, variable '${name}' is free; unbound in function`;
+        return this.assms.get(name);
     }
 
     //returns a new EmptyJudgement with the same assms but on the subterm
@@ -34,12 +35,11 @@ export class EmptyJudgement{
 
     //add a new assm to assms 
     addAssm(name, type){
-        Utils.typeVarOrCrash(type);
-        this.assms[name] = type;
+        this.assms.add(name, type);
     }
 
     show(){
-        return `${JSON.stringify(this.assms)} ⊢ ${this.shape}`;
+        return `${this.assms.show()} ⊢ ${this.shape}`;
     }
 
     //returns a Judgement with its type instantiated, and any immediate constraints in an OrList of AndLists
@@ -61,7 +61,7 @@ export class Judgement extends EmptyJudgement{
      * @param {*} type is the type of term
      * @param {*} constrs constraints in and lists in an orlist [optional]
      */
-    constructor(term, type, assms = {}, constrs = new Orer()){
+    constructor(term, type, assms = new Assms(), constrs = new Orer()){
         super(term, assms);
         Utils.typeVarOrCrash(type);
         Utils.typeIsOrCrash(constrs, Orer.type);
@@ -79,7 +79,7 @@ export class Judgement extends EmptyJudgement{
     }
 
     show(){
-        return `${JSON.stringify(this.assms)} ⊢ ${this.shape} : ${this.type.show()} | ${this.constrs.show()}`;
+        return `${this.assms.show()} ⊢ ${this.shape} : ${this.type.show()} | ${this.constrs.show()}`;
     }
 
     //add an atomic constraint (or, constraint)

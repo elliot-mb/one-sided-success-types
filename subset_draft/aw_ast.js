@@ -208,6 +208,18 @@ export const checkGrammar = term => {
     // here, we know the term is written just using the specification in ./type_subtm.json
 }
 
+// /**
+//  * 
+//  * @param {*} term AST (valid term, since no error checks are done here)
+//  * @returns the AST as a string
+//  */
+// export const termToString = term => {
+//     const subtermNames = Object.keys(typeToSubterms[term.type]);
+//     checkTerm(term);  
+//     const subterms = subtermNames.map(subtermName => getSubterm(term, subtermName));
+//     subterms.map(subterm => checkGrammar(subterm));
+// }
+
 //just first expression argument is there while we only have single expressions
 export const toASTTree = (program, justFirstExpression = true, enforceGrammar = true) => {
     //console.log(`${program} to AST Tree`);
