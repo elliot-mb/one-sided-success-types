@@ -1,5 +1,9 @@
 import {Constraint} from './constraint.js';
 import {GenT, NumT, ArrowT} from './typevar.js';
+import {Ander} from './ander.js';
+import {Orer} from './orer.js';
+import {Judgement, EmptyJudgement} from './judgement.js';
+
 
 export class Rule {
 
@@ -20,11 +24,11 @@ export class Rule {
         const premise2 = r.typecheck(empty.asSubterm('N'));
         const conclusn = empty.constrain(new GenT(r.getFreshVar('X')));
 
-        conclusn.union(premise1.constrs);
-        conclusn.union(premise2.constrs);
-        conclusn.unionSingle(new Constraint(premise1.type, new NumT()));
-        conclusn.unionSingle(new Constraint(premise2.type, new NumT()));
-        conclusn.unionSingle(new Constraint(conclusn.type, new NumT()));
+        conclusn.addToLast(premise1.constrs);
+        conclusn.addToLast(premise2.constrs);
+        conclusn.addToLast(new Constraint(premise1.type, new NumT()));
+        conclusn.addToLast(new Constraint(premise2.type, new NumT()));
+        conclusn.addToLast(new Constraint(conclusn.type, new NumT()));
 
         return conclusn; //when we add to the constraints we must do this and then return 
     }
@@ -44,9 +48,9 @@ export class Rule {
         const premise2 = r.typecheck(empty.asSubterm('N'));
         const conclusn = empty.constrain(X);
 
-        conclusn.union(premise1.constrs);
-        conclusn.union(premise2.constrs);
-        conclusn.unionSingle(new Constraint(premise1.type, new ArrowT(premise2.type, X)));
+        conclusn.addToLast(premise1.constrs);
+        conclusn.addToLast(premise2.constrs);
+        conclusn.addToLast(new Constraint(premise1.type, new ArrowT(premise2.type, X)));
 
         return conclusn;
     }
@@ -58,12 +62,12 @@ export class Rule {
         const premise3 = r.typecheck(empty.asSubterm('P'));
         const conclusn = empty.constrain(X);
 
-        conclusn.union(premise1.constrs);
-        conclusn.union(premise2.constrs);
-        conclusn.union(premise3.constrs);
-        conclusn.unionSingle(new Constraint(premise1.type, new NumT()));
-        conclusn.unionSingle(new Constraint(premise2.type, X));
-        conclusn.unionSingle(new Constraint(premise3.type, X));
+        conclusn.addToLast(premise1.constrs);
+        conclusn.addToLast(premise2.constrs);
+        conclusn.addToLast(premise3.constrs);
+        conclusn.addToLast(new Constraint(premise1.type, new NumT()));
+        conclusn.addToLast(new Constraint(premise2.type, X));
+        conclusn.addToLast(new Constraint(premise3.type, X));
         
         return conclusn;
     }

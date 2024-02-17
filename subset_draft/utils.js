@@ -11,7 +11,26 @@ export class Utils{
         return Utils.rollsover(char) ? 'A' : String.fromCharCode(code + 1);
     }
 
-    //returns either a string or '#' signifying it has rolled over (we obviously know what it will be?)
+    static isEmpty(xs){
+        if(xs.length === undefined) throw `isEmpty: xs '${xs}' has no property length`;
+        return xs.length === 0;
+    }
+
+    /**
+     * takes a list of bools and returns true if any of them are true 
+     **/
+    static any(bs){
+        return bs.reduce((acc, b) => acc || b, false);
+    }
+
+    static last(xs){
+        if(Utils.isEmpty(xs)) throw `last: list is empty`;
+        return xs[xs.length - 1];
+    }
+
+    /**
+     * returns either a string or '#' signifying it has rolled over (we obviously know what it will be?)
+     * **/
     static nextFreeTypeName = (typeName) => {
         if(typeof(typeName) !== 'string') throw 'nextFreeTypeName: typeName must be a string';
         let newName = `${typeName}`;
@@ -52,9 +71,14 @@ export class Utils{
         if(typeToGrammar[M.type] === undefined) throw 'termOrCrash: M does not have a type property which belongs to the grammar';
     }
 
-    static typeIsOrCrash = (t, is) => {
+    static isType = (t, ...is) => {
+        return Utils.any(is.map(x => t.type === x)); 
+    }
+
+    static typeIsOrCrash = (t, ...is) => {
         if(t.type === undefined) throw 'typeIsOrCrash: t has no \'type\' property';
-        if(t.type !== is) throw `typeIsOrCrash: t.type is not set to ${is}`;
+        const isCorrectType = Utils.isType(t, ...is); 
+        if (!isCorrectType) throw `typeIsOrCrash: t is a '${t.type}' when it needs to be one of '${is}'`;
     }
 
     // static goodShapeOrCrash = (shape) => {

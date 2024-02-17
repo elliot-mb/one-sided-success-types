@@ -21,7 +21,7 @@ const printBlocks = () => {
         e++;
     }
     console.log(d());
-    console.log(e); //you can capture variables outside functions 
+    
 
     {
         let f = 10;

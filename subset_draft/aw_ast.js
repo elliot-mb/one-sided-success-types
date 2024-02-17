@@ -120,6 +120,7 @@ const checkRule = (rule, objOrValue, fieldname) => {
         const funcName = funcNames[0];
         const useFunc = funcs[funcName]; //function to use the value and arg with
         const funcArg = funcNameArg[funcName]; //gets the function argument from the pair
+        //console.log(funcArg, objOrValue);
         const isOk = useFunc(objOrValue)(funcArg);
         if(!isOk) throw `checkRule: property violates '${funcName}' check on '${objOrValue}' and '${funcArg}', for '${fieldname}'`;
         return;
@@ -159,11 +160,10 @@ export const checkTerm = term => {
     const sAll = 'ALL';
     const rAny = x => y => x || y;
     const rAll = x => y => x && y;
-
     if(term === undefined) throw `checkTerm: term not defined`;
     if(term.type === undefined) throw `checkTerm: term.type not defined`;
     const checkFields = typeToProperties[term.type]; 
-    if(checkFields === undefined) throw `checkTerm: there is no term of type '${term.type}' in the grammar`
+    if(checkFields === undefined) throw `checkTerm: there is no term of type '${term.type}' in the grammar`;
     Object.keys(checkFields).map(field => { //field under this type of term in the AST
         const ruleset = checkFields[field];
         if(ruleset[stfy] === undefined) throw `checkTerm: ruleset is missing the 'satisfies' property`;
@@ -172,17 +172,18 @@ export const checkTerm = term => {
         const fails = [];
         const isOk = ruleset[ruls]
             .map((rule, i) => {
+                //console.log('here');
                 try{
                     checkRule(rule, term[field], field);
                 }catch(err){
                     //console.log(err);
-                    fails.push(i);
+                    fails.push(`${i}: ${err}`);
                     return false;
                 }
                 return true; //we need to not crash out in teh case that rAny is selected
             })
             .reduce((acc, x) => reducer(acc)(x));
-        if(!isOk) throw `checkTerm: '${ruleset[stfy]}' rule(s) in ruleset not met: rule #s [${fails}]`;
+        if(!isOk) throw `checkTerm: '${ruleset[stfy]}' rule(s) in ruleset not met:\r\n${fails.join('\r\n')}`;
 
     });
 }
@@ -198,7 +199,7 @@ export const checkGrammar = term => {
     const subtermNames = Object.keys(typeToSubterms[term.type]);
     let subterms;
     try{
-        checkTerm(term); //will crash 
+        checkTerm(term);  
         subterms = subtermNames.map(subtermName => getSubterm(term, subtermName));
         subterms.map(subterm => checkGrammar(subterm));
     }catch(err){
@@ -206,6 +207,18 @@ export const checkGrammar = term => {
     }
     // here, we know the term is written just using the specification in ./type_subtm.json
 }
+
+// /**
+//  * 
+//  * @param {*} term AST (valid term, since no error checks are done here)
+//  * @returns the AST as a string
+//  */
+// export const termToString = term => {
+//     const subtermNames = Object.keys(typeToSubterms[term.type]);
+//     checkTerm(term);  
+//     const subterms = subtermNames.map(subtermName => getSubterm(term, subtermName));
+//     subterms.map(subterm => checkGrammar(subterm));
+// }
 
 //just first expression argument is there while we only have single expressions
 export const toASTTree = (program, justFirstExpression = true, enforceGrammar = true) => {

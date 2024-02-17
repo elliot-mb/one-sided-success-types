@@ -60,6 +60,8 @@ import { ConstraintSet } from './constraint_set.js';
 import { Utils } from './utils.js';
 import { Reconstructor } from './reconstructor.js';
 import {showsTree} from './aw_ast.js';
+import { Orer } from './orer.js';
+import { Ander } from './ander.js';
 
 const testTypeCheck = () => {
     console.log(typecheck(toASTTree('s => y => z => (s(z))(y(z))'), new ConstraintSet()).constraints.show());
@@ -142,6 +144,8 @@ const bulkTest = () => {
     const r = new Reconstructor();
     const programs = [
         'x => y => (0 + 1 - x(0) <= 0 ? x : y)',
+        'f => x => f(f(x))',
+        'x => y => (0 + 1 - x(0) <= 0 ? x : y)',
         'x => x',
         '2 - 1',
         'f => x => f(f(x))',
@@ -150,13 +154,23 @@ const bulkTest = () => {
         'x => x(y => y(0))(f => x => f(f(x)))',
         '(x => y => x(1.1) <= 0 ? x : y)(x => x + 1)(y => y)',
         '(z => z)(0 - 1) <= 0 ? x => y => y(x => 0) : z => w => w(w(z))',
-        //'z => z(z)'
+        'z => z(z)'
     ];
-    programs.map(p => console.log(`${p} : ${r.reconstruct(p).show()}`));
+    programs.map(p => console.log(`${p} :\n ${r.reconstruct(p).map(t => `\t${t.show()}\n`)}`));
 
 }
 
+const nullTest = () => {
+    console.log(toASTTree('null'));
+}
 
+const orSetAndSetTest = () => {
+    const o = new Orer(
+        new Ander(new Constraint(new GenT('A'), new GenT('B')), new Constraint(new GenT('A'), new GenT('B'))),
+        new Ander(new Constraint(new GenT('A'), new GenT('B')), new Constraint(new GenT('A'), new GenT('B'))));
+    console.log(o.show());
+
+}
 
 // testTypeCheck();
 // testTypeVar();
@@ -165,6 +179,9 @@ const bulkTest = () => {
 //swapTest();
 //rolloverTest();
 bulkTest();
+//orSetAndSetTest();
+
+//nullTest();
 
 //showsTree('nullTree', 'null');
 /**

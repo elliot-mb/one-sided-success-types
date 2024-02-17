@@ -48,3 +48,33 @@ x => x(y => y(0))(f => x => f(f(x))) : (((Num -> A) -> A) -> ((B -> B) -> B -> B
 
 A summary of the process of developing the success type system with complements
 for JSS (see overleaf).
+
+# Grammar 
+
+### 10/02/24
+
+```
+values
+V, W ::= x 
+         n 
+         x => M 
+         @@null@@
+
+terms @@those in @s are not yet implemented@@
+M, N, P ::= x 
+            n 
+            x => M 
+            null
+            M + N 
+            M - N
+            M(N)
+            M <= 0 ? N : P 
+            @@const f = () => { M; return N }; P@@
+            @@const x = M; N@@
+
+A, B ::= Num 
+         A -> B
+         @@A^c@@
+         @@Ok@@
+         @@object@@ --NB this is the type of null
+```
