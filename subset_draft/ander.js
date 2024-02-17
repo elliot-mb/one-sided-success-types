@@ -26,7 +26,7 @@ export class Ander extends TypedList{
     }
 
     show(){
-        return `(${this.showDelegate(' ∧ ')})`;
+        return `AND(${this.showDelegate(' ∧ ')})`;
     }
 
     /**
@@ -61,5 +61,7 @@ export class Ander extends TypedList{
             .reduce((acc, maybeArray) => [...acc, ...(arrayer(maybeArray))], []);
     }
 
-
+    getConstrains(){
+        return this.xs.filter(x => x.type === Constraint.type);
+    }
 }

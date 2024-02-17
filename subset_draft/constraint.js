@@ -75,7 +75,8 @@ export class Constraint{
 
     equals(constr){
         Constraint.constraintOrCrash(constr);
-        return this.lhs().equals(constr.lhs()) && this.rhs().equals(constr.rhs());
+        return (this.lhs().equals(constr.lhs()) && this.rhs().equals(constr.rhs())) || //since theyre symmetrical we need to check both ways around
+                (this.rhs().equals(constr.lhs()) && this.lhs().equals(constr.rhs()));
     }
 
 }

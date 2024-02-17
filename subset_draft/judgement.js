@@ -101,6 +101,27 @@ export class Judgement extends EmptyJudgement{
         if(constr.type === Constraint.type || !constr.isEmpty()) this.lastAnder().add(constr);
     }
 
+    /**
+     * 
+     * @param {*} constrs
+     * @returns whether constr appears in it
+     */
+    isRepeated(constrs, constr){
+        Constraint.constraintOrCrash(constr);
+        return Utils.any(constrs.map(c => c.equals(constr)));
+    }
+
+    /**
+     * remove repeated constraints in all anders (does not remove repeated orers, as that should not be the case for any rules)
+     */
+    removeRepeats(){
+        this.constrs = new Orer(this.constrs.getAnds().map(ander => {
+            let constrs = ander.getConstraints();
+            constrs = constrs.filter(c => !this.isRepeated(constrs, c));
+            return new Ander(...ander.getAnds, constrs);
+        }));
+    }
+
     // /**
     //  * 
     //  * @param {*} constraint set (ander full of orers or constraints)

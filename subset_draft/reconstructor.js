@@ -32,9 +32,11 @@ export class Reconstructor{
     typecheck(empty){
         const maybeRule = Rule.appliesTo[empty.shape];
         if(maybeRule !== undefined){
-            return maybeRule(this, empty);
+            const full = maybeRule(this, empty);
+            full.removeRepeats();
+            return full;
         }
-        throw `typecheck: eJudge has an unrecognised shape`;
+        throw `typecheck: empty has an unrecognised shape`;
     }
 
     unify(topType, cSet){
