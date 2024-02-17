@@ -54,7 +54,7 @@
  */
 
 import { toASTTree } from './aw_ast.js';
-import { GenT, NumT, ArrowT } from './typevar.js';
+import { GenT, NumT, ArrowT, OkT } from './typevar.js';
 import { Constraint } from './constraint.js';
 import { ConstraintSet } from './constraint_set.js';
 import { Utils } from './utils.js';
@@ -172,12 +172,34 @@ const orSetAndSetTest = () => {
 
 }
 
+const equalsTest = () => {
+    let constr1 = new Constraint(new GenT('A'), new GenT('B')); 
+    let constr2 = new Constraint(new GenT('A'), new GenT('B'));
+    console.log(`'${constr1.show()}' === '${constr2.show()}' is ${constr1.equals(constr2)}`);
+    constr1 = new Constraint(new GenT('B'), new GenT('B')); 
+    constr2 = new Constraint(new GenT('A'), new GenT('B'));
+    console.log(`'${constr1.show()}' === '${constr2.show()}' is ${constr1.equals(constr2)}`);
+    constr1 = new Constraint(new GenT('A'), new ArrowT(new GenT('B'), new GenT('B'))); 
+    constr2 = new Constraint(new GenT('A'), new GenT('B'));
+    console.log(`'${constr1.show()}' === '${constr2.show()}' is ${constr1.equals(constr2)}`);
+    constr1 = new Constraint(new GenT('A'), new ArrowT(new GenT('B'), new GenT('B'))); 
+    constr2 = new Constraint(new GenT('A'), new ArrowT(new GenT('B'), new GenT('B')));
+    console.log(`'${constr1.show()}' === '${constr2.show()}' is ${constr1.equals(constr2)}`);
+    constr1 = new Constraint(new GenT('A'), new ArrowT(new GenT('B'), new GenT('B'))); 
+    constr2 = new Constraint(new GenT('B'), new ArrowT(new GenT('A'), new GenT('A')));
+    console.log(`'${constr1.show()}' === '${constr2.show()}' is ${constr1.equals(constr2)}`); //its a strict equals on the identifiers, too
+    constr1 = new Constraint(new OkT(), new GenT('B')); 
+    constr2 = new Constraint(new OkT(), new GenT('B'));
+    console.log(`'${constr1.show()}' === '${constr2.show()}' is ${constr1.equals(constr2)}`);
+}
+
 // testTypeCheck();
 // testTypeVar();
 //combinedTest();
 //downgradeTest();
 //swapTest();
 //rolloverTest();
+equalsTest();
 bulkTest();
 //orSetAndSetTest();
 

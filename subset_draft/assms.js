@@ -2,9 +2,11 @@ import {Utils} from "./utils.js";
 import {TypedList} from "./typedlist.js";
 
 export class Assms{
-    
+    static type = 'assms';
+
     constructor(typings = {}){
         this.typings = typings; //lookup table on the variable identifier
+        this.type = Assms.type;
     }
 
     isIn(name){

@@ -1,5 +1,5 @@
 import {Constraint} from './constraint.js';
-import {GenT, NumT, ArrowT} from './typevar.js';
+import {GenT, NumT, ArrowT, OkT} from './typevar.js';
 import {Ander} from './ander.js';
 import {Orer} from './orer.js';
 import {Judgement, EmptyJudgement} from './judgement.js';
@@ -11,7 +11,14 @@ export class Rule {
     //all rules take a reference to the reconstructor (r), EmptyJudgement, and return a Judgement
 
     static cTVar = (r, empty) => {
-        return empty.constrain(empty.variableType(empty.getSubterm('x')));
+        const typeInAssms = empty.variableType(empty.getSubterm('x'));
+        const conclusn = empty.constrain(typeInAssms); //(CTVar)
+
+        // //(OK)
+        // conclusn.addAnder();
+        // conclusn.addToLast(new Constraint(conclusn.termType, new OkT()));
+
+        return conclusn;
     }
 
     static cTNum = (r, empty) => {
@@ -26,9 +33,13 @@ export class Rule {
 
         conclusn.addToLast(premise1.constrs);
         conclusn.addToLast(premise2.constrs);
-        conclusn.addToLast(new Constraint(premise1.type, new NumT()));
-        conclusn.addToLast(new Constraint(premise2.type, new NumT()));
-        conclusn.addToLast(new Constraint(conclusn.type, new NumT()));
+        conclusn.addToLast(new Constraint(premise1.termType, new NumT()));
+        conclusn.addToLast(new Constraint(premise2.termType, new NumT()));
+        conclusn.addToLast(new Constraint(conclusn.termType, new NumT()));
+
+        // //(OK)
+        // conclusn.addAnder();
+        // conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
 
         return conclusn; //when we add to the constraints we must do this and then return 
     }
@@ -39,7 +50,13 @@ export class Rule {
         body.addAssm(empty.asSubterm('x').getSubterm('x'), X);
         const premise1 = r.typecheck(body);
 
-        return empty.constrain(new ArrowT(X, premise1.type), premise1.constrs);
+        const conclusn = empty.constrain(new ArrowT(X, premise1.termType), premise1.constrs);
+
+        //  //(OK)
+        //  conclusn.addAnder();
+        //  conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
+
+        return conclusn;
     }
 
     static cTApp = (r, empty) => { //CTApp
@@ -50,7 +67,11 @@ export class Rule {
 
         conclusn.addToLast(premise1.constrs);
         conclusn.addToLast(premise2.constrs);
-        conclusn.addToLast(new Constraint(premise1.type, new ArrowT(premise2.type, X)));
+        conclusn.addToLast(new Constraint(premise1.termType, new ArrowT(premise2.termType, X)));
+
+        //(OK)
+        // conclusn.addAnder();
+        // conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
 
         return conclusn;
     }
@@ -65,9 +86,13 @@ export class Rule {
         conclusn.addToLast(premise1.constrs);
         conclusn.addToLast(premise2.constrs);
         conclusn.addToLast(premise3.constrs);
-        conclusn.addToLast(new Constraint(premise1.type, new NumT()));
-        conclusn.addToLast(new Constraint(premise2.type, X));
-        conclusn.addToLast(new Constraint(premise3.type, X));
+        conclusn.addToLast(new Constraint(premise1.termType, new NumT()));
+        conclusn.addToLast(new Constraint(premise2.termType, X));
+        conclusn.addToLast(new Constraint(premise3.termType, X));
+
+        //(OK)
+        // conclusn.addAnder();
+        // conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
         
         return conclusn;
     }

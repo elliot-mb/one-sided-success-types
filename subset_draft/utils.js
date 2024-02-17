@@ -23,6 +23,10 @@ export class Utils{
         return bs.reduce((acc, b) => acc || b, false);
     }
 
+    static all(bs){
+        return bs.reduce((acc, b) => acc && b, true);
+    }
+
     static last(xs){
         if(Utils.isEmpty(xs)) throw `last: list is empty`;
         return xs[xs.length - 1];
@@ -52,8 +56,8 @@ export class Utils{
 
     static typeVarsOrCrash = (A, B) => {
         try{
-            if(A.typeof() !== GenT.type) throw 'typeVarsOrCrash: A must be a \'typevar\'';
-            if(B.typeof() !== GenT.type) throw 'typeVarsOrCrash: B must be a \'typevar\'';
+            if(A.type !== GenT.type) throw 'typeVarsOrCrash: A must be a \'typevar\'';
+            if(B.type !== GenT.type) throw 'typeVarsOrCrash: B must be a \'typevar\'';
         }catch(err){
             console.log(`typeVarsOrCrash: object dump A`);
             console.log(A);
@@ -63,7 +67,7 @@ export class Utils{
         }
     }
     static typeVarOrCrash = (A) => {
-        if(A.typeof() !== GenT.type) throw 'typeVarOrCrash: A must be a \'typevar\'';
+        if(A.type !== GenT.type) throw 'typeVarOrCrash: A must be a \'typevar\'';
     }
     static termOrCrash = (M) => {
         if(M.type === undefined) throw 'termOrCrash: M does not have a type property and so does not represent an AST node';

@@ -14,8 +14,9 @@ export class Ander extends TypedList{
         this.type = Ander.type;
     }
 
-    isInDNF(){
-        return Utils.any(this.xs.map(x => Utils.isType(x, Constraint.type)));
+    hasOrersInside(){
+        //if any are not constraint types 
+        return Utils.any(this.xs.map(x => !Utils.isType(x, Constraint.type))); //we dont have to check any deeper because they can only be Orers otherwise 
     }
 
     verifyElem(x){
@@ -25,7 +26,7 @@ export class Ander extends TypedList{
     }
 
     show(){
-        return `AND(${this.showDelegate(' ∧ ')})`;
+        return `(${this.showDelegate(' ∧ ')})`;
     }
 
     /**

@@ -12,7 +12,8 @@ export class Orer extends TypedList{
     }
 
     isInDNF(){
-        return Utils.any([this.isEmpty(), ...this.xs.map(x => x.isInDNF())]); //dependant on whether all the ands just contain constraints
+        //they all dont have orers inside which means they just are just constraints anded together
+        return this.isEmpty() || Utils.all(this.xs.map(x => !x.hasOrersInside())); //dependant on whether all the ands just contain constraints
     }
 
     isEmpty(){
@@ -26,7 +27,7 @@ export class Orer extends TypedList{
     }
 
     show(){
-        return `OR(${this.showDelegate(' v ')})`;
+        return `(${this.showDelegate(' v ')})`;
     }
 
     /**

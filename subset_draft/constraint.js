@@ -5,7 +5,8 @@ export class Constraint{
     static type = 'constraint';
 
     static constraintOrCrash = (C) => {
-        if(C.typeof() !== Constraint.type) throw 'constraintOrCrash: C has not the typeof() Constraint'
+        if(C.type === undefined) throw 'constraintOrCrash: type does not exist on C; C is not a constraint';
+        if(C.type !== Constraint.type) throw 'constraintOrCrash: C has not the type Constraint';
     }
 
     //checks that, when A is a single type variable, that it's identifier does not appear in FV(B)
@@ -63,10 +64,6 @@ export class Constraint{
         return `${this.A.show()} = ${this.B.show()}`;
     }
 
-    typeof(){
-        return Constraint.type;
-    }
-
     swapWith(tA, tB){
         Utils.typeVarsOrCrash(tA, tB);
         //console.log(`constraint swap start: ${this.A.show()} = ${this.B.show()}`);
@@ -74,6 +71,11 @@ export class Constraint{
         this.B = this.B.swapWith(tA, tB);
         //console.log(`constraint swap end: ${this.A.show()} = ${this.B.show()}`);
         return this;
+    }
+
+    equals(constr){
+        Constraint.constraintOrCrash(constr);
+        return this.lhs().equals(constr.lhs()) && this.rhs().equals(constr.rhs());
     }
 
 }

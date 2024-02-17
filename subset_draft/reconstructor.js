@@ -8,9 +8,11 @@ import {Untypable} from './typevar.js';
 import {Orer} from './orer.js';
 
 export class Reconstructor{
+    static type = 'reconstructor';
 
     constructor(){ //making a new one just resets the variable names (but there are an infinite number anyway)
         this.lastUsedVar = String.fromCharCode(Utils.firstCharCode);
+        this.type = Reconstructor.type;
     } 
 
     rstFreshVar(){
@@ -75,7 +77,7 @@ export class Reconstructor{
         //console.log(empty.show());
         const full = this.typecheck(empty);
         console.log(full.show());
-        const roughType = full.type;
+        const roughType = full.termType;
         const constrs = full.constrs;
         const unifiedTypes = constrs.toConstraintSets().map(cs => this.unify(roughType, cs));
         //console.log(unifiedTypes);

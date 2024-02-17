@@ -13,9 +13,11 @@ export class EmptyJudgement{
 
     constructor(term, assms = new Assms()){
         Utils.termOrCrash(term); 
+        Utils.typeIsOrCrash(assms, Assms.type);
         this.assms = assms;
         this.term = term;
         this.shape = termShape(this.term);
+        this.type = EmptyJudgement.type;
     }
 
     variableType(name){
@@ -43,9 +45,9 @@ export class EmptyJudgement{
     }
 
     //returns a Judgement with its type instantiated, and any immediate constraints in an OrList of AndLists
-    constrain(type, constrs = new Orer()){
+    constrain(termType, constrs = new Orer()){
         //Utils.typeIsOrCrash(ej, EmptyJudgement.type);
-        return new Judgement(this.term, type, this.assms, constrs);
+        return new Judgement(this.term, termType, this.assms, constrs);
     }
 }
 
@@ -58,15 +60,16 @@ export class Judgement extends EmptyJudgement{
      * 
      * @param {*} assms is a map from variable names (characters) to type objects
      * @param {*} term 
-     * @param {*} type is the type of term
+     * @param {*} termType is the type of term
      * @param {*} constrs constraints in and lists in an orlist [optional]
      */
-    constructor(term, type, assms = new Assms(), constrs = new Orer()){
+    constructor(term, termType, assms = new Assms(), constrs = new Orer()){
         super(term, assms);
-        Utils.typeVarOrCrash(type);
+        Utils.typeVarOrCrash(termType);
         Utils.typeIsOrCrash(constrs, Orer.type);
-        this.type = type;
+        this.termType = termType;
         this.constrs = constrs;
+        this.type = Judgement.type;
     }
 
     /**
@@ -74,15 +77,24 @@ export class Judgement extends EmptyJudgement{
      * @returns last Ander of the constrs Orer
      */
     lastAnder(){
-        if(Utils.isEmpty(this.constrs.getAnds())) this.constrs.add(new Ander());
+        if(Utils.isEmpty(this.constrs.getAnds())) this.addAnder();
         return Utils.last(this.constrs.getAnds());
     }
 
-    show(){
-        return `${this.assms.show()} ⊢ ${this.shape} : ${this.type.show()} | ${this.constrs.show()}`;
+    /**
+     * adds a new group of constraints corresponding to another rule 
+     */
+    addAnder(){
+        this.constrs.add(new Ander());
     }
 
-    //add an atomic constraint (or, constraint)
+    show(){
+        return `${this.assms.show()} ⊢ ${this.shape} : ${this.termType.show()} | ${this.constrs.show()}`;
+    }
+
+    /**
+     * add an atomic constraint (or, constraint) to the last ander in constrs
+     **/
     addToLast(constr){
         Utils.typeIsOrCrash(constr, Orer.type, Constraint.type);
         //this.constrs.combine(new ConstraintSet([constr]));

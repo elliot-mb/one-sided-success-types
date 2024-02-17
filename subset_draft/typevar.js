@@ -24,6 +24,7 @@ export class GenT{
     constructor(id){
         this.id = id;
         this.shape = () => GenT.genShape;
+        this.type = GenT.type;
     }
 
     getId(){
@@ -38,9 +39,9 @@ export class GenT{
         return [this.getId()];
     }
 
-    typeof() {
-        return GenT.type;
-    }
+    // equals(A){
+    //     return A.type === this.type && A.shape === this.shape && A.id === this.id;
+    // }
 
     /**
      * 
@@ -59,18 +60,25 @@ export class GenT{
         if(this.getId() === oldName) this.id = newName;
     }
 
-    //recursively goes down the types to match up identifiers/base types
-    equals(C) {
+    // //recursively goes down the types to match up identifiers/base types
+    // equals(C) {
+    //     if(this.shape() !== C.shape()) return false;
+    //     if(this.shape() === GenT.okShape) return true;
+    //     if(this.shape() === GenT.numShape) return true;
+    //     if(this.shape() === GenT.genShape){
+    //         return this.getId() === C.getId();
+    //     }
+    //     if(this.shape() === GenT.arrowShape){
+    //         return this.getA().equals(C.getA()) && this.getB().equals(C.getB());
+    //     }
+    //     return false;
+    // }       
+
+    //all types have their overloaded equals method!!
+    equals(C){
         if(this.shape() !== C.shape()) return false;
-        if(this.shape() === GenT.numShape) return true;
-        if(this.shape() === GenT.genShape){
-            return this.getId() === C.getId();
-        }
-        if(this.shape() === GenT.arrowShape){
-            return this.getA().equals(C.getA()) && this.getB().equals(C.getB());
-        }
-        return false;
-    }       
+        return this.getId() === C.getId();
+    }
 }
 
 // meaning: all values 
@@ -89,6 +97,10 @@ export class OkT extends GenT{
     swapWith(tA, tB){ 
         Utils.typeVarsOrCrash(tA, tB);
         return this;
+    }
+
+    equals(C){
+        return this.shape() === C.shape();
     }
 
 }
@@ -111,6 +123,10 @@ export class NumT extends GenT{
     }
 
     rename(oldName, newName){} //overload basecase in GenT to avoid errors
+
+    equals(C){
+        return this.shape() === C.shape();
+    }
 }
 
 // export class CrossT extends TypeVar{
@@ -119,7 +135,7 @@ export class NumT extends GenT{
 
 export class ArrowT extends GenT{
 
-    constructor(A, B, id){
+    constructor(A, B, id = GenT.ArrowT){
         super(id);
         Utils.typeVarsOrCrash(A, B);
         this.A = A;
@@ -169,6 +185,11 @@ export class ArrowT extends GenT{
         this.B.rename(oldName, newName);
     }
 
+    // equals(A){
+    //     return A.type === this.type && A.shape === this.shape && 
+    //         this.A.equals(A.getA()) && this.B.equals(A.getB());
+    // }
+
     /**
      * all the types mentioned in this type 
      */
@@ -182,4 +203,9 @@ export class ArrowT extends GenT{
         }
         return result; //just returns the unique identifiers
     }
+
+    equals(C) {
+        if(this.shape() !== C.shape()) return false;
+        return this.getA().equals(C.getA()) && this.getB().equals(C.getB());
+    }       
 }
