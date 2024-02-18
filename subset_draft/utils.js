@@ -107,7 +107,24 @@ export class Utils{
         }
     }
 
+
     /**
+     * finds the indices of repeated elements that are .equal(test) 
+     * @param {*} xs must all have .equals method
+     * @param {*} test 
+     */
+    static whereRepeated = (xs, test) => {
+        const acc = [];
+        for(let i = 0; i < xs.length; i++){
+            const x = xs[i];
+            if(x !== null && x.equals(test)) acc.push(i);
+        }
+        return acc;
+    }
+
+    /**
+     * 
+     * this method is ~O(n^2)
      * 
      * @param {*} xs a list of things with an .equals(elment of type xs[i]) method
      * @returns {*} xs without any repeated elements 
@@ -115,9 +132,18 @@ export class Utils{
     static removeRepeats = (xs) => {
         if(Utils.any(xs.map(x => x.equals === undefined))) throw Utils.makeErr('removeRepeats: all elements must have an xs method');
 
-        
-
-        return xs;
+        for(let i = 0; i < xs.length; i++){
+            const x = xs[i];
+            if(x !== null){
+                const repeats = Utils.whereRepeated(xs, x);
+                repeats.map(n => { //'delete' elements in front of the current one (without array moves)
+                    if(n !== i) xs[n] = null;
+                });
+            }
+    
+        }
+    
+        return xs.filter(x => x !== null);
     }
 
 

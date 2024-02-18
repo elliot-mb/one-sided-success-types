@@ -206,13 +206,34 @@ const removeRepeatsTest = () => {
         new GenT('E'),
         new NumT(),
         new ArrowT(new GenT('A'), new GenT('B')),
-        new ArrowT(new GenT('A'), new GenT('B')),
+        new ArrowT(new GenT('C'), new GenT('B')),
         new ArrowT(new GenT('A'), new GenT('B')),
         new OkT(),
         new OkT(),
         new NumT(),
-        new NumT()
+        new NumT(),
+        new OkT()
     ];
+
+    const types2 = [
+        new OkT(),
+        new ArrowT(new GenT('A'), new GenT('BC')),
+        new GenT('A'),
+        new GenT('D'),
+        new GenT('E'),
+        new NumT(),
+        new ArrowT(new GenT('A'), new GenT('B')),
+        new ArrowT(new GenT('C'), new GenT('B')),
+        new ArrowT(new GenT('A'), new GenT('B')),
+        new OkT(),
+        new OkT(),
+        new NumT(),
+        new NumT(),
+        new OkT()
+    ];
+
+
+    console.log(Utils.removeRepeats(types2).map(t => t.show()));
 
     for(let i = 0; i < types.length; i++){
         const t = types[i]
@@ -222,8 +243,6 @@ const removeRepeatsTest = () => {
             i--;
         }
     }
-
-    Utils.removeRepeats([0]);
 
     console.log(types.map(t => t.show()));
 }   
