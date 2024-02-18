@@ -47,7 +47,7 @@ export class Orer extends TypedList{
      * converts all the ands inside into constraintsets
      */
     toConstraintSets(){
-        if(!this.isInDNF()) throw `toConstraintSets: constraint sets cannot encode disjunction; this disjunction is not in DNF`;
+        if(!this.isInDNF()) throw Utils.makeErr(`toConstraintSets: constraint sets cannot encode disjunction; this disjunction is not in DNF`);
         if(this.isEmpty()) return [new ConstraintSet()];
         return this.getAnds().map(x => new ConstraintSet(x.getOrs())); //the ors returned here should all be constraints 
     }

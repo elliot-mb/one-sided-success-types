@@ -3,6 +3,13 @@ import {typeToGrammar} from './aw_ast.js';
 
 export class Utils{
 
+    /**
+     * 
+     * @param {*} message 
+     * @returns a useful error with the stack trace!
+     */
+    static makeErr = (message) => new Error(message).stack;
+
     static firstCharCode = 'A'.charCodeAt(0);
     static lastCharCode = 'Z'.charCodeAt(0);
     static rollsover = (char) => char.charCodeAt(0) + 1 > Utils.lastCharCode;
@@ -12,7 +19,7 @@ export class Utils{
     }
 
     static isEmpty(xs){
-        if(xs.length === undefined) throw `isEmpty: xs '${xs}' has no property length`;
+        if(xs.length === undefined) throw Utils.makeErr(`isEmpty: xs '${xs}' has no property length`);
         return xs.length === 0;
     }
 
@@ -28,7 +35,7 @@ export class Utils{
     }
 
     static last(xs){
-        if(Utils.isEmpty(xs)) throw `last: list is empty`;
+        if(Utils.isEmpty(xs)) throw Utils.makeErr(`last: list is empty`);
         return xs[xs.length - 1];
     }
 
@@ -36,7 +43,7 @@ export class Utils{
      * returns either a string or '#' signifying it has rolled over (we obviously know what it will be?)
      * **/
     static nextFreeTypeName = (typeName) => {
-        if(typeof(typeName) !== 'string') throw 'nextFreeTypeName: typeName must be a string';
+        if(typeof(typeName) !== 'string') throw Utils.makeErr('nextFreeTypeName: typeName must be a string');
         let newName = `${typeName}`;
         let carry = false;
         for(let i = newName.length - 1; i >= 0; i--){ 
@@ -56,23 +63,23 @@ export class Utils{
 
     static typeVarsOrCrash = (A, B) => {
         try{
-            if(A.type !== GenT.type) throw 'typeVarsOrCrash: A must be a \'typevar\'';
-            if(B.type !== GenT.type) throw 'typeVarsOrCrash: B must be a \'typevar\'';
+            if(A.type !== GenT.type) throw Utils.makeErr('typeVarsOrCrash: A must be a \'typevar\'');
+            if(B.type !== GenT.type) throw Utils.makeErr('typeVarsOrCrash: B must be a \'typevar\'');
         }catch(err){
             console.log(`typeVarsOrCrash: object dump A`);
             console.log(A);
             console.log(`typeVarsOrCrash: object dump B`);
             console.log(B);
-            throw 'typeVarsOrCrash: A or B was not a typevar: ' + err
+            throw Utils.makeErr('typeVarsOrCrash: A or B was not a typevar: ' + err);
         }
     }
     static typeVarOrCrash = (A) => {
-        if(A.type !== GenT.type) throw 'typeVarOrCrash: A must be a \'typevar\'';
+        if(A.type !== GenT.type) throw Utils.makeErr('typeVarOrCrash: A must be a \'typevar\'');
     }
     static termOrCrash = (M) => {
-        if(M.type === undefined) throw 'termOrCrash: M does not have a type property and so does not represent an AST node';
+        if(M.type === undefined) throw Utils.makeErr('termOrCrash: M does not have a type property and so does not represent an AST node');
         //const isValidNodeType = Object.keys(typeToGrammar).map(nodeT => M.type === nodeT).reduce((acc, b) => acc || b, false);
-        if(typeToGrammar[M.type] === undefined) throw 'termOrCrash: M does not have a type property which belongs to the grammar';
+        if(typeToGrammar[M.type] === undefined) throw Utils.Utils.makeErr('termOrCrash: M does not have a type property which belongs to the grammar');
     }
 
     static isType = (t, ...is) => {
@@ -80,9 +87,9 @@ export class Utils{
     }
 
     static typeIsOrCrash = (t, ...is) => {
-        if(t.type === undefined) throw `typeIsOrCrash: t (${JSON.stringify(t)}) has no \'type\' property`;
+        if(t.type === undefined) throw Utils.makeErr(`typeIsOrCrash: t (${JSON.stringify(t)}) has no \'type\' property`);
         const isCorrectType = Utils.isType(t, ...is); 
-        if (!isCorrectType) throw `typeIsOrCrash: t is a '${t.type}' when it needs to be one of '${is}'`;
+        if (!isCorrectType) throw Utils.makeErr(`typeIsOrCrash: t is a '${t.type}' when it needs to be one of '${is}'`);
     }
 
     // static goodShapeOrCrash = (shape) => {
@@ -99,4 +106,19 @@ export class Utils{
             freshT = Utils.nextFreeTypeName(freshT);
         }
     }
+
+    /**
+     * 
+     * @param {*} xs a list of things with an .equals(elment of type xs[i]) method
+     * @returns {*} xs without any repeated elements 
+     */
+    static removeRepeats = (xs) => {
+        if(Utils.any(xs.map(x => x.equals === undefined))) throw Utils.makeErr('removeRepeats: all elements must have an xs method');
+
+        
+
+        return xs;
+    }
+
+
 }

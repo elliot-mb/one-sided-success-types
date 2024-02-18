@@ -193,14 +193,50 @@ const equalsTest = () => {
     console.log(`'${constr1.show()}' === '${constr2.show()}' is ${constr1.equals(constr2)}`);
 }
 
+const removeRepeatsTest = () => {
+    const isRepeated = (xs, test, i) => {
+        return Utils.any(xs.map((x, j) => i !== j && x.equals(test)));
+    };
+
+    const types = [
+        new OkT(),
+        new ArrowT(new GenT('A'), new GenT('BC')),
+        new GenT('A'),
+        new GenT('D'),
+        new GenT('E'),
+        new NumT(),
+        new ArrowT(new GenT('A'), new GenT('B')),
+        new ArrowT(new GenT('A'), new GenT('B')),
+        new ArrowT(new GenT('A'), new GenT('B')),
+        new OkT(),
+        new OkT(),
+        new NumT(),
+        new NumT()
+    ];
+
+    for(let i = 0; i < types.length; i++){
+        const t = types[i]
+        const repeats = isRepeated(types, t, i);
+        if(repeats){
+            types.splice(i, 1);
+            i--;
+        }
+    }
+
+    Utils.removeRepeats([0]);
+
+    console.log(types.map(t => t.show()));
+}   
+
 // testTypeCheck();
 // testTypeVar();
 //combinedTest();
 //downgradeTest();
 //swapTest();
 //rolloverTest();
-equalsTest();
-bulkTest();
+//equalsTest();
+//bulkTest();
+removeRepeatsTest();
 //orSetAndSetTest();
 
 //nullTest();

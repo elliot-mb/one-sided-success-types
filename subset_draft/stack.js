@@ -15,7 +15,7 @@ export class Stack extends TypedList{
     }
 
     peek(){
-        if(this.isEmpty()) throw `peek: ${this.type} is empty`;
+        if(this.isEmpty()) throw Utils.makeErr(`peek: ${this.type} is empty`);
         return this.xs[this.counter - 1];
     }
 
@@ -25,7 +25,7 @@ export class Stack extends TypedList{
             //console.log(this.counter);
             return this.xs.pop();
         }
-        throw `pop: ${this.type} is empty`;
+        throw Utils.makeErr(`pop: ${this.type} is empty`);
     }
 
     add(x){
@@ -36,7 +36,7 @@ export class Stack extends TypedList{
 
     //merge two constraint sets, must be a stack of the same thing 
     combine(otherStack){
-        if(otherStack.type !== this.type) throw `combine: otherStack has a different type, '${otherStack.type} versus ${this.type}'`;
+        if(otherStack.type !== this.type) throw Utils.makeErr(`combine: otherStack has a different type, '${otherStack.type} versus ${this.type}'`);
         while(!otherStack.isEmpty()){
             const currElem = otherStack.pop();
             this.verifyElem(currElem); //checks the type of whats inside

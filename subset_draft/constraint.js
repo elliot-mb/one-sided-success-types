@@ -5,8 +5,8 @@ export class Constraint{
     static type = 'constraint';
 
     static constraintOrCrash = (C) => {
-        if(C.type === undefined) throw 'constraintOrCrash: type does not exist on C; C is not a constraint';
-        if(C.type !== Constraint.type) throw 'constraintOrCrash: C has not the type Constraint';
+        if(C.type === undefined) throw Utils.makeErr('constraintOrCrash: type does not exist on C; C is not a constraint');
+        if(C.type !== Constraint.type) throw Utils.makeErr('constraintOrCrash: C has not the type Constraint');
     }
 
     //checks that, when A is a single type variable, that it's identifier does not appear in FV(B)

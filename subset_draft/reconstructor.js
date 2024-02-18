@@ -36,7 +36,7 @@ export class Reconstructor{
             full.removeRepeats();
             return full;
         }
-        throw `typecheck: empty has an unrecognised shape`;
+        throw Utils.makeErr(`typecheck: empty has an unrecognised shape`);
     }
 
     unify(topType, cSet){
@@ -65,7 +65,7 @@ export class Reconstructor{
                 const r = c.rhs();
                 Utils.downgradeTypes(l);
                 Utils.downgradeTypes(r);
-                throw `Reconstructor.unify: failed to unify with constraint '${new Constraint(l, r).show()}'`;
+                throw Utils.makeErr(`Reconstructor.unify: failed to unify with constraint '${new Constraint(l, r).show()}'`);
             }
         }
         return topType;

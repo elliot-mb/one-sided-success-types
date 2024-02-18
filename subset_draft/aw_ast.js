@@ -11,7 +11,7 @@ const PROGRAM_T = 'Program';
 // writes the tree output as a nicely spaced string
 export const pretty = json => `{\r\n${pret(json, '  ')}\r\n}`;
 const pret = (json, whitespace = '') => {  // gives an array of lines to the tree_file
-    if(json === undefined) throw `pret: json not defined`;
+    if(json === undefined) throw Utils.makeErr(`pret: json not defined`);
 
     const isArr = Array.isArray(json); //a flag to stop us printing object key names if we are an array(array indices)
     
@@ -54,7 +54,7 @@ const typeToProperties = require('./AST_require.json');
 //turns the root node of the term's type to the grammar shape
 // as a string
 export const termShape = (term) => {
-    if(term.type === undefined) throw `termShape: term has no 'type' field`;
+    if(term.type === undefined) throw Utils.makeErr(`termShape: term has no 'type' field`);
     
     return typeToGrammar[term.type];
     
@@ -65,29 +65,29 @@ export const termShape = (term) => {
 //this function should be used to traverse the tree in a way that corresponds
 //to the shapes of terms.
 export const getSubterm = (term, subtermName) => {
-    if(subtermName === undefined) throw `getSubterm: subtermName was not given`;
-    if(term.type === undefined) throw `getSubterm: term has no 'type' field `;
+    if(subtermName === undefined) throw Utils.makeErr(`getSubterm: subtermName was not given`);
+    if(term.type === undefined) throw Utils.makeErr(`getSubterm: term has no 'type' field `);
     
     const nameToSubterm = typeToSubterms[term.type]; //shape to subterms
-    if(nameToSubterm === undefined) throw `getSubterm: term of 'type' '${term.type}' does not ` + 
-    `exist in the grammar`
-    if(nameToSubterm[subtermName] === undefined) throw `getSubterm: term of shape '${typeToGrammar[term.type]}' ` + 
-    `has no subterm called '${subtermName}'`;
+    if(nameToSubterm === undefined) throw Utils.makeErr(`getSubterm: term of 'type' '${term.type}' does not ` + `exist in the grammar`);
+
+    if(nameToSubterm[subtermName] === undefined) throw Utils.makeErr(`getSubterm: term of shape '${typeToGrammar[term.type]}' ` + `has no subterm called '${subtermName}'`);
+
     //we know the AST term to subterm map, we perform the access steps in the 
     //map in order to return the sub-AST-object/subterm object
     const steps = nameToSubterm[subtermName];
     let tempField = term; // reassigned
     steps.forEach((step) => tempField = tempField[step]); 
     
-    if(tempField === undefined) throw `getSubterm: steps [${steps}] on this term ` +
-    `of shape '${typeToGrammar[term.type]}' for '${subtermName}' did not succeed due to undefined field`;
+    if(tempField === undefined) throw Utils.makeErr(`getSubterm: steps [${steps}] on this term ` +
+    `of shape '${typeToGrammar[term.type]}' for '${subtermName}' did not succeed due to undefined field`);
     return tempField;
 }
 
 const ruleNameArg = rule => {
     const nameAndArg = rule[func];
     const names = Object.keys(nameAndArg);
-    if(names.length !== 1) throw `checkRule: function specifier has the wrong number of fields`;
+    if(names.length !== 1) throw Utils.makeErr(`checkRule: function specifier has the wrong number of fields`);
     const name = names[0];
     const arg = nameAndArg[name]; //gets the function argument from the pair
     return {"name": name, "arg": arg};
@@ -109,33 +109,33 @@ const checkRule = (rule, objOrValue, fieldname) => {
         'typeof': v => x => typeof(v) === x
     };
 
-    if(rule === undefined) throw `checkRule: rule not defined`;
+    if(rule === undefined) throw Utils.makeErr(`checkRule: rule not defined`);
     const ruleTypes = Object.keys(rule);
-    if(ruleTypes.length !== 1) throw `checkRule: rule has the wrong number of fields`;
+    if(ruleTypes.length !== 1) throw Utils.makeErr(`checkRule: rule has the wrong number of fields`);
     const ruleType = ruleTypes[0];
     if(ruleType === func){ //no more recursion
         const funcNameArg = rule[func];
         const funcNames = Object.keys(funcNameArg);
-        if(funcNames.length !== 1) throw `checkRule: function specifier has the wrong number of fields`;
+        if(funcNames.length !== 1) throw Utils.makeErr(`checkRule: function specifier has the wrong number of fields`);
         const funcName = funcNames[0];
         const useFunc = funcs[funcName]; //function to use the value and arg with
         const funcArg = funcNameArg[funcName]; //gets the function argument from the pair
         //console.log(funcArg, objOrValue);
         const isOk = useFunc(objOrValue)(funcArg);
-        if(!isOk) throw `checkRule: property violates '${funcName}' check on '${objOrValue}' and '${funcArg}', for '${fieldname}'`;
+        if(!isOk) throw Utils.makeErr(`checkRule: property violates '${funcName}' check on '${objOrValue}' and '${funcArg}', for '${fieldname}'`);
         return;
     }
     if(ruleType === prop){
         const propNameRule = rule[prop];
         const propNames = Object.keys(propNameRule);
-        if(propNames.length !== 1) throw `checkRule: property specifier has the wrong number of fields`;
+        if(propNames.length !== 1) throw Utils.makeErr(`checkRule: property specifier has the wrong number of fields`);
         const propName = propNames[0];
         const newRule = propNameRule[propName];
         const newObjOrValue = objOrValue[propName];
         checkRule(newRule, newObjOrValue, propName);
         return;
     }
-    throw `checkRule: unexpected token '${ruleType}' which is not a recongised rule type`
+    throw Utils.makeErr(`checkRule: unexpected token '${ruleType}' which is not a recongised rule type`);
 }
 
 export const checkTerm = term => {
@@ -160,15 +160,15 @@ export const checkTerm = term => {
     const sAll = 'ALL';
     const rAny = x => y => x || y;
     const rAll = x => y => x && y;
-    if(term === undefined) throw `checkTerm: term not defined`;
-    if(term.type === undefined) throw `checkTerm: term.type not defined`;
+    if(term === undefined) throw Utils.makeErr(`checkTerm: term not defined`);
+    if(term.type === undefined) throw Utils.makeErr(`checkTerm: term.type not defined`);
     const checkFields = typeToProperties[term.type]; 
-    if(checkFields === undefined) throw `checkTerm: there is no term of type '${term.type}' in the grammar`;
+    if(checkFields === undefined) throw Utils.makeErr(`checkTerm: there is no term of type '${term.type}' in the grammar`);
     Object.keys(checkFields).map(field => { //field under this type of term in the AST
         const ruleset = checkFields[field];
-        if(ruleset[stfy] === undefined) throw `checkTerm: ruleset is missing the 'satisfies' property`;
+        if(ruleset[stfy] === undefined) throw Utils.makeErr(`checkTerm: ruleset is missing the 'satisfies' property`);
         const reducer = ruleset[stfy] === sAny ? rAny : rAll;   
-        if(ruleset[ruls].length === 0) throw `checkTerm: rulesets must have at least one rule`;
+        if(ruleset[ruls].length === 0) throw Utils.makeErr(`checkTerm: rulesets must have at least one rule`);
         const fails = [];
         const isOk = ruleset[ruls]
             .map((rule, i) => {
@@ -183,19 +183,19 @@ export const checkTerm = term => {
                 return true; //we need to not crash out in teh case that rAny is selected
             })
             .reduce((acc, x) => reducer(acc)(x));
-        if(!isOk) throw `checkTerm: '${ruleset[stfy]}' rule(s) in ruleset not met:\r\n${fails.join('\r\n')}`;
+        if(!isOk) throw Utils.makeErr(`checkTerm: '${ruleset[stfy]}' rule(s) in ruleset not met:\r\n${fails.join('\r\n')}`);
 
     });
 }
 
 //verifies that the term uses just the expected shapes of subterms all the way down
 export const checkGrammar = term => {
-    if(term === undefined) throw `checkGrammar: term is not defined`
+    if(term === undefined) throw Utils.makeErr(`checkGrammar: term is not defined`);
     //base case where the term evalutes to raw strings or numbers
     if(typeof(term) !== 'object') return;
 
-    if(term.type === undefined) throw `checkGrammar: term has no 'type' field`;
-    if(typeToSubterms[term.type] === undefined) throw `checkGrammar: there is no term of type '${term.type}' in the grammar`
+    if(term.type === undefined) throw Utils.makeErr(`checkGrammar: term has no 'type' field`);
+    if(typeToSubterms[term.type] === undefined) throw Utils.makeErr(`checkGrammar: there is no term of type '${term.type}' in the grammar`);
     const subtermNames = Object.keys(typeToSubterms[term.type]);
     let subterms;
     try{
@@ -203,7 +203,7 @@ export const checkGrammar = term => {
         subterms = subtermNames.map(subtermName => getSubterm(term, subtermName));
         subterms.map(subterm => checkGrammar(subterm));
     }catch(err){
-        throw `checkGrammar: term shape '${typeToGrammar[term.type]}' failed since ${err}`;
+        throw Utils.makeErr(`checkGrammar: term shape '${typeToGrammar[term.type]}' failed since ${err}`);
     }
     // here, we know the term is written just using the specification in ./type_subtm.json
 }
