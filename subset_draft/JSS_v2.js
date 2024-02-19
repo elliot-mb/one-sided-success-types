@@ -254,8 +254,8 @@ const removeRepeatsTest = () => {
 //swapTest();
 //rolloverTest();
 //equalsTest();
-//bulkTest();
-removeRepeatsTest();
+bulkTest();
+//removeRepeatsTest();
 //orSetAndSetTest();
 
 //nullTest();

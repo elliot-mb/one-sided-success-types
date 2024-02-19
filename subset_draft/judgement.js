@@ -102,26 +102,22 @@ export class Judgement extends EmptyJudgement{
     }
 
     /**
-     * 
-     * @param {*} constrs
-     * @returns whether constr appears in it
-     */
-    isRepeated(constrs, constr){
-        Constraint.constraintOrCrash(constr);
-        console.log(constr.show());
-        return Utils.any(constrs.map(c => c.equals(constr)));
-    }
-
-    /**
      * remove repeated constraints in all anders (does not remove repeated orers, as that should not be the case for any rules)
+     * called at the end of each rule application, including the root
+     * 
+     * so something like this 
+     * ⊢ M o N : XB | OR(AND(Num = Num ∧ Num = Num ∧ XB = Num))
+     *   2 - 1 : Num   
+     * is reduced to this
+     * ⊢ M o N : XB | OR(AND(Num = Num ∧ XB = Num)) --notice the dropping of repeated constraint 
+     *   2 - 1 : Num
+     * 
      */
     removeRepeats(){
-        console.log(this.constrs.show());
         if(this.constrs.getAnds().length > 0){
             this.constrs = new Orer(...this.constrs.getAnds().map(ander => {
                 let constrs = ander.getConstraints();
-                constrs = constrs.filter(c => true); //delete any repetitions here
-                console.log(ander.getNotConstraints(), constrs);
+                constrs = Utils.removeRepeats(constrs);
                 return new Ander(...ander.getNotConstraints(), ...constrs);
             }));
         }

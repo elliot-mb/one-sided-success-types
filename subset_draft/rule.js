@@ -37,9 +37,9 @@ export class Rule {
         conclusn.addToLast(new Constraint(premise2.termType, new NumT()));
         conclusn.addToLast(new Constraint(conclusn.termType, new NumT()));
 
-        // //(OK)
-        // conclusn.addAnder();
-        // conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
+        //(OK)
+        conclusn.addAnder();
+        conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
 
         return conclusn; //when we add to the constraints we must do this and then return 
     }
@@ -52,9 +52,9 @@ export class Rule {
 
         const conclusn = empty.constrain(new ArrowT(X, premise1.termType), premise1.constrs);
 
-        //  //(OK)
-        //  conclusn.addAnder();
-        //  conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
+         //(OK)
+         conclusn.addAnder();
+         conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
 
         return conclusn;
     }
@@ -70,8 +70,8 @@ export class Rule {
         conclusn.addToLast(new Constraint(premise1.termType, new ArrowT(premise2.termType, X)));
 
         //(OK)
-        // conclusn.addAnder();
-        // conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
+        conclusn.addAnder();
+        conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
 
         return conclusn;
     }
@@ -91,8 +91,8 @@ export class Rule {
         conclusn.addToLast(new Constraint(premise3.termType, X));
 
         //(OK)
-        // conclusn.addAnder();
-        // conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
+        conclusn.addAnder();
+        conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
         
         return conclusn;
     }
