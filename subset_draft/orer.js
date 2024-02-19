@@ -27,7 +27,7 @@ export class Orer extends TypedList{
     }
 
     show(){
-        return `(${this.showDelegate(' v ')})`;
+        return `[${this.showDelegate(' v ')}]`;
     }
 
     /**

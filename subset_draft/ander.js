@@ -26,7 +26,7 @@ export class Ander extends TypedList{
     }
 
     show(){
-        return `[${this.showDelegate(' ∧ ')}]`;
+        return `(${this.showDelegate(' ∧ ')})`;
     }
 
     /**

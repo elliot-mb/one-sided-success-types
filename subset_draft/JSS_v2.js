@@ -143,7 +143,6 @@ const downgradeTest = () => {
 const bulkTest = () => {
     const r = new Reconstructor();
     const programs = [
-        'x => y => (0 + 1 - x(0) <= 0 ? x : y)',
         'f => x => f(f(x))',
         'x => y => (0 + 1 - x(0) <= 0 ? x : y)',
         'x => x',
