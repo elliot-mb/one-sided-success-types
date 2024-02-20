@@ -1,3 +1,5 @@
+import {modRequire} from './module_require.js';
+
 
 /**
  * idiom for importing z3 solver 
@@ -15,7 +17,7 @@
  * https://microsoft.github.io/z3guide/programming/Z3%20JavaScript%20Examples/
  */
 const main = async () => {
-    const { init } = require('z3-solver');
+    const { init } = modRequire('z3-solver');
     const { Context } = await init();
     const Z3 = new Context('z3');
     const solver = new Z3.Solver();
