@@ -12,7 +12,8 @@ export class Orer extends TypedList{
     }
 
     isInDNF(){
-        return Utils.any([this.isEmpty(), ...this.xs.map(x => x.isInDNF())]); //dependant on whether all the ands just contain constraints
+        //they all dont have orers inside which means they just are just constraints anded together
+        return this.isEmpty() || Utils.all(this.xs.map(x => !x.hasOrersInside())); //dependant on whether all the ands just contain constraints
     }
 
     isEmpty(){
@@ -26,7 +27,7 @@ export class Orer extends TypedList{
     }
 
     show(){
-        return `OR(${this.showDelegate(' v ')})`;
+        return `[${this.showDelegate(' v ')}]`;
     }
 
     /**
@@ -46,7 +47,7 @@ export class Orer extends TypedList{
      * converts all the ands inside into constraintsets
      */
     toConstraintSets(){
-        if(!this.isInDNF()) throw `toConstraintSets: constraint sets cannot encode disjunction; this disjunction is not in DNF`;
+        if(!this.isInDNF()) throw Utils.makeErr(`toConstraintSets: constraint sets cannot encode disjunction; this disjunction is not in DNF`);
         if(this.isEmpty()) return [new ConstraintSet()];
         return this.getAnds().map(x => new ConstraintSet(x.getOrs())); //the ors returned here should all be constraints 
     }

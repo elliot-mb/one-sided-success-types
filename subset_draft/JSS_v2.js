@@ -54,7 +54,7 @@
  */
 
 import { toASTTree } from './aw_ast.js';
-import { GenT, NumT, ArrowT } from './typevar.js';
+import { GenT, NumT, ArrowT, OkT } from './typevar.js';
 import { Constraint } from './constraint.js';
 import { ConstraintSet } from './constraint_set.js';
 import { Utils } from './utils.js';
@@ -143,7 +143,6 @@ const downgradeTest = () => {
 const bulkTest = () => {
     const r = new Reconstructor();
     const programs = [
-        'x => y => (0 + 1 - x(0) <= 0 ? x : y)',
         'f => x => f(f(x))',
         'x => y => (0 + 1 - x(0) <= 0 ? x : y)',
         'x => x',
@@ -172,13 +171,90 @@ const orSetAndSetTest = () => {
 
 }
 
+const equalsTest = () => {
+    let constr1 = new Constraint(new GenT('A'), new GenT('B')); 
+    let constr2 = new Constraint(new GenT('A'), new GenT('B'));
+    console.log(`'${constr1.show()}' === '${constr2.show()}' is ${constr1.equals(constr2)}`);
+    constr1 = new Constraint(new GenT('B'), new GenT('B')); 
+    constr2 = new Constraint(new GenT('A'), new GenT('B'));
+    console.log(`'${constr1.show()}' === '${constr2.show()}' is ${constr1.equals(constr2)}`);
+    constr1 = new Constraint(new GenT('A'), new ArrowT(new GenT('B'), new GenT('B'))); 
+    constr2 = new Constraint(new GenT('A'), new GenT('B'));
+    console.log(`'${constr1.show()}' === '${constr2.show()}' is ${constr1.equals(constr2)}`);
+    constr1 = new Constraint(new GenT('A'), new ArrowT(new GenT('B'), new GenT('B'))); 
+    constr2 = new Constraint(new GenT('A'), new ArrowT(new GenT('B'), new GenT('B')));
+    console.log(`'${constr1.show()}' === '${constr2.show()}' is ${constr1.equals(constr2)}`);
+    constr1 = new Constraint(new GenT('A'), new ArrowT(new GenT('B'), new GenT('B'))); 
+    constr2 = new Constraint(new GenT('B'), new ArrowT(new GenT('A'), new GenT('A')));
+    console.log(`'${constr1.show()}' === '${constr2.show()}' is ${constr1.equals(constr2)}`); //its a strict equals on the identifiers, too
+    constr1 = new Constraint(new OkT(), new GenT('B')); 
+    constr2 = new Constraint(new OkT(), new GenT('B'));
+    console.log(`'${constr1.show()}' === '${constr2.show()}' is ${constr1.equals(constr2)}`);
+}
+
+const removeRepeatsTest = () => {
+    const isRepeated = (xs, test, i) => {
+        return Utils.any(xs.map((x, j) => i !== j && x.equals(test)));
+    };
+
+    const types = [
+        new OkT(),
+        new ArrowT(new GenT('A'), new GenT('BC')),
+        new GenT('A'),
+        new GenT('D'),
+        new GenT('E'),
+        new NumT(),
+        new ArrowT(new GenT('A'), new GenT('B')),
+        new ArrowT(new GenT('C'), new GenT('B')),
+        new ArrowT(new GenT('A'), new GenT('B')),
+        new OkT(),
+        new OkT(),
+        new NumT(),
+        new NumT(),
+        new OkT()
+    ];
+
+    const types2 = [
+        new OkT(),
+        new ArrowT(new GenT('A'), new GenT('BC')),
+        new GenT('A'),
+        new GenT('D'),
+        new GenT('E'),
+        new NumT(),
+        new ArrowT(new GenT('A'), new GenT('B')),
+        new ArrowT(new GenT('C'), new GenT('B')),
+        new ArrowT(new GenT('A'), new GenT('B')),
+        new OkT(),
+        new OkT(),
+        new NumT(),
+        new NumT(),
+        new OkT()
+    ];
+
+
+    console.log(Utils.removeRepeats(types2).map(t => t.show()));
+
+    for(let i = 0; i < types.length; i++){
+        const t = types[i]
+        const repeats = isRepeated(types, t, i);
+        if(repeats){
+            types.splice(i, 1);
+            i--;
+        }
+    }
+
+    console.log(types.map(t => t.show()));
+}   
+
 // testTypeCheck();
 // testTypeVar();
 //combinedTest();
 //downgradeTest();
 //swapTest();
 //rolloverTest();
+//equalsTest();
 bulkTest();
+//removeRepeatsTest();
 //orSetAndSetTest();
 
 //nullTest();

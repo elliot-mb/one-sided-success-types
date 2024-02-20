@@ -8,9 +8,11 @@ import {Untypable} from './typevar.js';
 import {Orer} from './orer.js';
 
 export class Reconstructor{
+    static type = 'reconstructor';
 
     constructor(){ //making a new one just resets the variable names (but there are an infinite number anyway)
         this.lastUsedVar = String.fromCharCode(Utils.firstCharCode);
+        this.type = Reconstructor.type;
     } 
 
     rstFreshVar(){
@@ -30,9 +32,11 @@ export class Reconstructor{
     typecheck(empty){
         const maybeRule = Rule.appliesTo[empty.shape];
         if(maybeRule !== undefined){
-            return maybeRule(this, empty);
+            const full = maybeRule(this, empty);
+            full.removeRepeats();
+            return full;
         }
-        throw `typecheck: eJudge has an unrecognised shape`;
+        throw Utils.makeErr(`typecheck: empty has an unrecognised shape`);
     }
 
     unify(topType, cSet){
@@ -61,7 +65,7 @@ export class Reconstructor{
                 const r = c.rhs();
                 Utils.downgradeTypes(l);
                 Utils.downgradeTypes(r);
-                throw `Reconstructor.unify: failed to unify with constraint '${new Constraint(l, r).show()}'`;
+                throw Utils.makeErr(`Reconstructor.unify: failed to unify with constraint '${new Constraint(l, r).show()}'`);
             }
         }
         return topType;
@@ -75,7 +79,8 @@ export class Reconstructor{
         //console.log(empty.show());
         const full = this.typecheck(empty);
         console.log(full.show());
-        const roughType = full.type;
+        
+        const roughType = full.termType;
         const constrs = full.constrs;
         const unifiedTypes = constrs.toConstraintSets().map(cs => this.unify(roughType, cs));
         //console.log(unifiedTypes);
