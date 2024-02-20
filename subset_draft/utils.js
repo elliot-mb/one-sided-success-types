@@ -1,5 +1,5 @@
 import {GenT} from './typevar.js';
-import {typeToGrammar} from './aw_ast.js';
+import {typeToGrammar} from './wrapper_acorn.js';
 
 export class Utils{
 
