@@ -2,10 +2,10 @@
 // the ast walker https://github.com/acornjs/acorn/tree/master/acorn-walk/
 // testing with bun
 
-const acorn = require('acorn');
-const walk = require('acorn-walk');
+import { Parser } from 'acorn';
+import { full } from 'acorn-walk';
 
-const parse = (prog) => acorn.parse(prog, {ecmaVersion: 2023});
+const parse = (prog) => Parser.parse(prog, {ecmaVersion: 2023});
 const PROGRAM_T = 'Program';
 
 // writes the tree output as a nicely spaced string
@@ -224,7 +224,7 @@ export const checkGrammar = term => {
 export const toASTTree = (program, justFirstExpression = true, enforceGrammar = true) => {
     //console.log(`${program} to AST Tree`);
     let tree = {};
-    walk.full(parse(program), (node) => {
+    full(parse(program), (node) => {
         if(node.type === PROGRAM_T){
             tree = node;
         }
