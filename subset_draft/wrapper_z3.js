@@ -56,7 +56,7 @@ const main = async () => {
             //     console.log(`add(${k})`)
             //     solver.add(Z3.Not(vs[k]));
             // });
-            // solver.add(Z3.Or(Z3.Not(vs['x']), Z3.Not(vs['y'])));
+            solver.add(Z3.Or(Z3.Not(vs['x']), Z3.Not(vs['y'])));
             await restrain(solver);
         }
     }
