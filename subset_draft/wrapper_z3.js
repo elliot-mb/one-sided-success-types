@@ -18,22 +18,52 @@ import {modRequire} from './module_require.js';
  */
 const main = async () => {
     const { init } = modRequire('z3-solver');
-    const { Context, ast_to_string, Z3_string } = await init();
+    const { Context, Z3l } = await init();
     const Z3 = new Context('z3');
 
 
     const solver = new Z3.Solver();
-    const sort = Z3.Int.sort();
-    const x = Z3.Int.const('x');
-    const y = Z3.Int.const('y');
-    const g = Z3.Function.declare('g', sort, sort);
-    const conjecture = Z3.Implies(x.eq(y), g.call(g.call(x)).eq(g.call(y)));
-    solver.add(Z3.Not(conjecture));
-    solver.check()
-    .then((result) => {
-        console.log(result);
-        solver.model().ptr;
-    } );
+    const x = Z3.Bool.const('x');
+    const y = Z3.Bool.const('y');
+    const conjecture = Z3.And(x, y);
+    solver.add(conjecture);
+    const is_sat = await solver.check();
+    console.log(is_sat);
+
+    if(is_sat === 'sat'){
+        const model = solver.model();
+
+        const xSol = model.get(x);
+        const ySol = model.get(y);
+
+        //console.log(model.decls());
+
+        const ds = model.decls();
+        const vs = ds.map(d => {
+            const term = d.call();
+            return model.eval(term, true);
+        });
+        //console.log(vs);
+        Promise.all(vs.map(async v => {
+            const solver = new Z3.Solver();
+            solver.add(v);
+            const isSat = await (solver.check().then(isSat => isSat === 'sat'));
+            return isSat;
+        })).then(tvs => console.log(tvs));
+        // console.log(truthVals);
+    }
+
+
+
+    // Z3.solve(Z3.Not(conjecture))
+    // .then((model) => {
+    //     console.log(model);
+    //     console.log(model['x']);
+    //     console.log(model.x.e);
+    //     console.log(`[${model.evaluate(model.x)}]`);
+    //     // Z3.display(x)
+    //     // .then(result => console.log(result));
+    // } );
 
 
 
@@ -79,4 +109,4 @@ const main = async () => {
 
 }
 
-main();
+await main();
