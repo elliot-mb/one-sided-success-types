@@ -29,26 +29,48 @@ const main = async () => {
         return isSat;
     }
 
-
     const solver = new Z3.Solver();
     const x = Z3.Bool.const('x');
     const y = Z3.Bool.const('y');
     const conjecture = Z3.Or(x, Z3.Not(y));
     solver.add(conjecture);
-    const is_sat = await solver.check();
-    console.log(is_sat);
+    const allAss = [];
 
-    if(is_sat === 'sat'){
-        const model = solver.model();
-        //console.log(model.decls());
+    const restrain = async (solver) => {
+        
+        const is_sat = await solver.check();
+        console.log(is_sat);
+        if(is_sat === 'sat'){
+            const model = solver.model();
+            //console.log(model.decls());
+    
+            const ds = model.decls();
+            const vs = {}; 
+            await Promise.all(ds.filter(d => d.arity() === 0).map(async d => { //list of pairs of names and vals
+                const term = d.call(); //all declarations are evaluated
+                vs[d.name()] = await boolVal(model.eval(term, true));
+                allAss.push(vs);
+            }));
+            console.log(vs);
+            // Object.keys(vs).map(k => {
+            //     console.log(`add(${k})`)
+            //     solver.add(Z3.Not(vs[k]));
+            // });
+            // solver.add(Z3.Or(Z3.Not(vs['x']), Z3.Not(vs['y'])));
+            await restrain(solver);
+        }
+    }
 
-        const ds = model.decls();
-        const vs = {}; 
-        await Promise.all(ds.filter(d => d.arity() === 0).map(async d => { //list of pairs of names and vals
-            const term = d.call(); //all declarations are evaluated
-            vs[d.name()] = await boolVal(model.eval(term, true));
-        }));
-        console.log(vs);
+    await restrain(solver);
+    console.log(allAss);
+
+   
+
+}
+
+await main();
+
+ 
         // Promise.all(vs.map(async v => {
         //     const solver = new Z3.Solver();
         //     solver.add(v[1]);
@@ -56,7 +78,6 @@ const main = async () => {
         //     return isSat;
         // })).then(tvs => console.log(tvs));
         // console.log(truthVals);
-    }
 
 
 
@@ -110,8 +131,3 @@ const main = async () => {
     // //     }
     // // });
 
-
-
-}
-
-await main();
