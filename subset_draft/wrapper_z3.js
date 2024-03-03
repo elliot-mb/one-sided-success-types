@@ -1,5 +1,6 @@
 import {modRequire} from './module_require.js';
-
+import {Orer} from './orer.js';
+import {Ander} from './ander.js';
 
 /**
  * idiom for importing z3 solver 
@@ -11,17 +12,44 @@ import {modRequire} from './module_require.js';
 // } = await init();
 // const { Solver, Int, And } = new Context('main');
 
-
 /**
- * examples from the api
- * https://microsoft.github.io/z3guide/programming/Z3%20JavaScript%20Examples/
+ * exploring the solver and trying to get results out of it 
  */
 
-const main = async () => {
-    const { init } = modRequire('z3-solver');
-    const { Context, Z3l } = await init();
-    const Z3 = new Context('z3');
+const { init } = modRequire('z3-solver');
+const { Context, Z3l } = await init();
+const Z3 = new Context('z3');
 
+
+/**
+ * 
+ * @param {*} s solver
+ * @param {*} ts terms
+ */
+const getModels = async (s, ts) => {
+    const blockTerm = (s, m, t) => s.add(t.neq(m.eval(t, true)));
+    const fixTerm = (s, m, t) => s.add(t.eq(m.eval(t, true)));
+    const allSmtRec = async (ts) => {
+        if(await s.check() === 'sat'){
+            const m = s.model();
+            const result = [];
+            for(let i = 0; i < ts.length; i++){
+                s.push();
+                blockTerm(s, m, ts[i]);
+                for(let j = 0; j < i; j++){
+                    fixTerm(s, m, terms[j]);
+                }
+                s.pop();
+                result.push(...await allSmtRec(ts.slice(i)));
+            }
+            return result;
+        }
+    }
+    return await allSmtRec(ts);
+}
+
+
+const main = async () => {
     const boolVal = async (bool) => {
         const solver = new Z3.Solver();
         solver.add(bool);
@@ -32,41 +60,43 @@ const main = async () => {
     const solver = new Z3.Solver();
     const x = Z3.Bool.const('x');
     const y = Z3.Bool.const('y');
-    const conjecture = Z3.Or(x, Z3.Not(y));
-    solver.add(conjecture);
+    const conjecture = Z3.Or(x, y);
+    //solver.add(conjecture);
     const allAss = [];
 
-    const restrain = async (solver) => {
+
+
+    // const solveAll = async (solver) => {
         
-        const is_sat = await solver.check();
-        console.log(is_sat);
-        if(is_sat === 'sat'){
-            const model = solver.model();
-            //console.log(model.decls());
-    
-            const ds = model.decls();
-            const vs = {}; 
-            await Promise.all(ds.filter(d => d.arity() === 0).map(async d => { //list of pairs of names and vals
-                const term = d.call(); //all declarations are evaluated
-                vs[d.name()] = await boolVal(model.eval(term, true));
-                allAss.push(vs);
-            }));
-            console.log(vs);
-            // Object.keys(vs).map(k => {
-            //     console.log(`add(${k})`)
-            //     solver.add(Z3.Not(vs[k]));
-            // });
-            solver.add(Z3.Or(Z3.Not(vs['x']), Z3.Not(vs['y'])));
-            await restrain(solver);
-        }
-    }
-
-    await restrain(solver);
-    console.log(allAss);
-
-   
-
+    //     const is_sat = await solver.check();
+    //     console.log(is_sat);
+    //     const block = []; //spread this into an or
+    //     if(is_sat === 'sat'){
+    //         const model = solver.model();
+    //         //console.log(model.decls());
+    //         const ds = model.decls();
+    //         const vs = {}; 
+    //         await Promise.all(ds.filter(d => d.arity() === 0).map(async d => { //list of pairs of names and vals
+    //             const term = d.call(); //all declarations are evaluated
+    //             const boolTerm = model.eval(term, true);
+    //             block.push(Z3.Not(boolTerm));
+    //             vs[d.name()] = await boolVal(boolTerm);
+    //         }));
+    //         allAss.push(vs);
+    //         console.log(vs);
+    //     }else{
+    //         s
+    //         return;
+    //     }
+    //     Promise.all(block.map(bTerm => boolVal(bTerm))).then(r => console.log(r));
+    //     solver.add(Z3.Or(...block));
+    //     await solveAll(solver);
+    // }
+    getModels(solver, conjecture).then(r => console.log(r));
 }
+
+
+
 
 await main();
 
