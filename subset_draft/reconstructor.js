@@ -78,8 +78,10 @@ export class Reconstructor{
         
         //console.log(empty.show());
         const full = this.typecheck(empty);
-        console.log(full.show());
+        //console.log(full.show());
         
+        return full;
+
         const roughType = full.termType;
         const constrs = full.constrs;
         const unifiedTypes = constrs.toConstraintSets().map(cs => this.unify(roughType, cs));
