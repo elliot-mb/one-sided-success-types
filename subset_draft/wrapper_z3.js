@@ -37,14 +37,29 @@ const procTest = () => {
     proc.stdout.on('data', (data) => {
         console.log((data.toString()));
     })
-    spawnGetString('python3', ['./wrapper_z3.py', '-constraints', 'money']).then(r => console.log(r), err => console.err('damn'));
+    spawnGetString('python3', ['./wrapper_z3.py', '-constraints', 'money']).then(r => console.log(r), err => Utils.makeErr(err));
 
 }
 
 const sendConstraints = (constraints) => {
     //if(typeof(constraints) !== 'object') throw Utils.makeErr('sendProgramObject: argument \'object\' appears to not be of type object');
     // Utils.isTypeOrCrash(orer, )
+    if(typeof(constraints) !== 'string') throw Utils.makeErr('sendConstraints: must be a string');
     return spawnGetString('python3', ['./wrapper_z3.py', '-constraints', constraints]);
+}
+
+const sendConstrsToObj = async (constraints) => {
+    const resp = await sendConstraints(JSON.stringify(constraints));
+    return JSON.parse(pyDictToJSON(resp));
+}
+
+const pyDictToJSON = (dictStr) => {
+    let builder = "";
+    for(let i = 0; i < dictStr.length; i++) {
+        const c = dictStr[i]
+        builder += (c === '\'' ? '"' : c);
+    }
+    return builder;
 }
 
 const test = () => {
@@ -52,7 +67,7 @@ const test = () => {
     const program = 'f => x => f(f(x))';
     console.log(`${r.reconstruct(program).constrs.show()}`);
     //console.log(r.reconstruct(program).constrs);
-    sendConstraints(r.reconstruct(program).constrs).then(r => console.log(r));
+    sendConstrsToObj(r.reconstruct(program).constrs).then(resp => console.log(resp));
 }
 
 test();
