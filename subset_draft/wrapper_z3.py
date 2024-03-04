@@ -23,6 +23,7 @@ def main():
     b = Const('b', JSTy)
     c = Const('c', JSTy)
     
+    
     #solve(b != JSTy.To(a, c))
     solver.add(Or(And(b == JSTy.To(a, c), (a == JSTy.Num)), (JSTy.Ok == b)))
     solver.check()
