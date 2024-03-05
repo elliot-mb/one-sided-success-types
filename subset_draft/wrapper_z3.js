@@ -73,9 +73,10 @@ const pyDictToJSON = (dictStr) => {
 const test = () => {
     const r = new Reconstructor();
     const program = 'f => x => f(f(x))';
-    console.log(`${r.reconstruct(program).constrs.show()}`);
+    const done = r.reconstruct(program);
+    console.log(`${done.show()}`);
     //console.log(r.reconstruct(program).constrs);
-    sendConstrsToObj(r.reconstruct(program).constrs).then(resp => console.log(pretty(resp)));
+    sendConstrsToObj(done.constrs).then(resp => console.log(pretty(resp)));
 }
 
 test();
