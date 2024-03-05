@@ -4,8 +4,9 @@ from z3 import *
 
 parser = argparse.ArgumentParser(description = 'z3 interface')
 parser.add_argument('-constraints', '-c', type=str, default=None)
-parser.add_argument('-ander', '-a', type=str, default='ander')
-parser.add_argument('-orer', '-o', type=str, default='orer')
+parser.add_argument('-ander_type', '-a', type=str, default='ander')
+parser.add_argument('-orer_type', '-o', type=str, default='orer')
+parser.add_argument('-constraint_type', '-ct', type=str, default='constraint')
 parser.add_argument('-shape_field', '-s', type=str, default='shapeV')
 parser.add_argument('-general_shape', '-g', type=str, default='A')
 parser.add_argument('-ok_shape', '-k', type=str, default='Ok')
@@ -29,9 +30,21 @@ def to_type(nested, z3_vars, JSTy):
     else: # no other types are nested so we are done (HAVENT ACCOUNTED FOR COMPLEMENT)
         return z3_vars[nested['id']]
 
-def unpack(joiner):
-    
-
+# joiner ::= Ander | Orer | Constraint 
+def unpack(joiner, z3_vars, JSTy):
+    if(not ('type' in joiner or 'xs' in joiner)):
+        raise 'unpack(): joiner must be Ander | Orer | Constraint (found without \'type\' or \'xs\' field)'
+    join_t = joiner['type']
+    if(join_t == args.ander_type):
+        xs = joiner['xs']
+        return And(list(map(lambda x: unpack(x), xs)))
+    if(join_t == args.orer_type):
+        xs = joiner['xs']
+        return Or(list(map(lambda x: unpack(x), xs))) 
+    if(join_t == args.constraint_type):
+        return to_type(joiner['A'], z3_vars, JSTy) == to_type(joiner['B'], z3_vars, JSTy)
+    else:
+        raise 'unpack(): unrecognised type \'' + join_t + '\''
 #
 #   
 #   utilities 
@@ -50,7 +63,7 @@ def unwrap(joiner):
     if(not 'type' in joiner):
         return []
     join_t = joiner['type']
-    if(join_t != args.ander and join_t != args.orer):
+    if(join_t != args.ander_type and join_t != args.orer_type):
         if((not 'A' in joiner) and (not 'B' in joiner)):
             return [joiner['id']] # nest against flattener so strings dont get flattened
         else:
