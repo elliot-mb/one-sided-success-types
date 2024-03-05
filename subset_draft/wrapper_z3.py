@@ -26,7 +26,7 @@ def to_type(nested, z3_vars, JSTy):
         raise 'to_type: supposed type \'nested\' has no shapeV field'
     shape = nested[args.shape_field]
     if(shape == args.arrow_shape):
-        return JSTy.To(to_type(nested['A']), to_type(nested['B']))
+        return JSTy.To(to_type(nested['A'], z3_vars, JSTy), to_type(nested['B'], z3_vars, JSTy))
     else: # no other types are nested so we are done (HAVENT ACCOUNTED FOR COMPLEMENT)
         return z3_vars[nested['id']]
 
@@ -37,10 +37,10 @@ def unpack(joiner, z3_vars, JSTy):
     join_t = joiner['type']
     if(join_t == args.ander_type):
         xs = joiner['xs']
-        return And(list(map(lambda x: unpack(x), xs)))
+        return And(list(map(lambda x: unpack(x, z3_vars, JSTy), xs)))
     if(join_t == args.orer_type):
         xs = joiner['xs']
-        return Or(list(map(lambda x: unpack(x), xs))) 
+        return Or(list(map(lambda x: unpack(x, z3_vars, JSTy), xs))) 
     if(join_t == args.constraint_type):
         return to_type(joiner['A'], z3_vars, JSTy) == to_type(joiner['B'], z3_vars, JSTy)
     else:
@@ -103,16 +103,8 @@ def main():
         type_lookup[name] = Const(name, JSTy)
     type_lookup[args.ok_shape] = JSTy.Ok
     type_lookup[args.num_shape] = JSTy.Num #adds an entry for constraints involving numbers and oks, without any extra logic 
-    # create free variables 
-    # flatten anders and orers
-    #var_set = list(map(lambda x: Const(x, JSTy), reply['type_vars']))
-    a = type_lookup['XB']
-    b = type_lookup['XC']
-    c = type_lookup['XE']
-    
-    
-    #solve(b != JSTy.To(a, c))
-    solver.add(Or(And(b == JSTy.To(a, c), (a == type_lookup[args.num_shape])), (type_lookup[args.ok_shape] == b)))
+
+    solver.add(unpack(constrs, type_lookup, JSTy))#Or(And(b == JSTy.To(a, c), (a == type_lookup[args.num_shape])), (type_lookup[args.ok_shape] == b)))
     solver.check()
     mod = solver.model()
     reply['sol'] = list(map(lambda x: {str(x): str(mod[x])}, mod)) 
