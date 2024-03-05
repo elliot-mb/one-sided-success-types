@@ -23,7 +23,7 @@ export class GenT{
     
     constructor(id){
         this.id = id;
-        this.shape = () => GenT.genShape;
+        this.shapeV = GenT.genShape; //shapevar
         this.type = GenT.type;
     }
 
@@ -37,6 +37,10 @@ export class GenT{
 
     freeIn(){
         return [this.getId()];
+    }
+
+    shape(){
+        return this.shapeV;
     }
 
     // equals(A){
@@ -86,7 +90,7 @@ export class OkT extends GenT{
 
     constructor(){
         super(GenT.okShape);
-        this.shape = () => GenT.okShape;
+        this.shapeV = GenT.okShape;
     }
 
     freeIn(){
@@ -109,7 +113,7 @@ export class NumT extends GenT{
 
     constructor(){
         super(GenT.numShape);
-        this.shape = () => GenT.numShape;
+        this.shapeV = GenT.numShape;
     }
 
     freeIn(){
@@ -140,7 +144,7 @@ export class ArrowT extends GenT{
         Utils.typeVarsOrCrash(A, B);
         this.A = A;
         this.B = B;
-        this.shape = () => GenT.arrowShape;
+        this.shapeV = GenT.arrowShape;
     }
 
     getA(){

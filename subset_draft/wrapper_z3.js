@@ -1,6 +1,7 @@
 import { modRequire } from './module_require.js';
 import { Utils } from './utils.js';
 import { Reconstructor } from './reconstructor.js';
+import { pretty } from './wrapper_acorn.js';
 
 const { spawn } = modRequire('node:child_process');
 
@@ -14,14 +15,21 @@ const { spawn } = modRequire('node:child_process');
 const spawnGetString = (program, args) => {
 
     const proc = spawn(program, args);
-
-    proc.on('error', (err) => {
-        throw Utils.makeErr(`spawnGetString: program '${program}' threw error ${err}`);
-    });
     
+    //prints errors
+    proc.stderr.on('data', (response) => console.log(response.toString()));
+
+    proc.on('close', (code, signal) => {
+        console.log(`spawnGetString: program '${program}' emitted signal ${signal} threw code ${code}`);
+    });
+
     return new Promise(resolve => {
         proc.stdout.on('data', (response) => {
             resolve(response.toString());
+        });
+    }, reject => {
+        proc.on('error', (err) => {
+            reject(`spawnGetString: program '${program}' threw error ${err}`);
         });
     });
 }
@@ -67,7 +75,7 @@ const test = () => {
     const program = 'f => x => f(f(x))';
     console.log(`${r.reconstruct(program).constrs.show()}`);
     //console.log(r.reconstruct(program).constrs);
-    sendConstrsToObj(r.reconstruct(program).constrs).then(resp => console.log(resp));
+    sendConstrsToObj(r.reconstruct(program).constrs).then(resp => console.log(pretty(resp)));
 }
 
 test();
