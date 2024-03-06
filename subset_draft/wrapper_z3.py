@@ -16,6 +16,30 @@ args = parser.parse_args()
 
 #
 #
+#   https://z3prover.github.io/papers/programmingz3.html#sec-models
+#
+#
+
+def all_smt(s, initial_terms):
+    def block_term(s, m, t):
+        s.add(t != m.eval(t, model_completion=True))
+    def fix_term(s, m, t):
+        s.add(t == m.eval(t, model_completion=True))
+    def all_smt_rec(terms):
+        if sat == s.check():
+           m = s.model()
+           yield m
+           for i in range(len(terms)):
+               s.push()
+               block_term(s, m, terms[i])
+               for j in range(i):
+                   fix_term(s, m, terms[j])
+               yield from all_smt_rec(terms[i:])
+               s.pop()   
+    yield from all_smt_rec(list(initial_terms))
+
+#
+#
 #   constraint to Z3 formula conversion 
 #
 #
@@ -37,9 +61,13 @@ def unpack(joiner, z3_vars, JSTy):
     join_t = joiner['type']
     if(join_t == args.ander_type):
         xs = joiner['xs']
+        if(len(xs) == 1):
+            return unpack(xs[0], z3_vars, JSTy)
         return And(list(map(lambda x: unpack(x, z3_vars, JSTy), xs)))
     if(join_t == args.orer_type):
         xs = joiner['xs']
+        if(len(xs) == 1):
+            return unpack(xs[0], z3_vars, JSTy)
         return Or(list(map(lambda x: unpack(x, z3_vars, JSTy), xs))) 
     if(join_t == args.constraint_type):
         return to_type(joiner['A'], z3_vars, JSTy) == to_type(joiner['B'], z3_vars, JSTy)
@@ -85,29 +113,51 @@ def main():
     constrs = json.loads(args.constraints)
     type_lookup = type_vars(constrs)
     type_list = list(type_lookup.keys())
-    reply = {
-        'reflect': constrs,
-        'sol': None,
-        'type_vars': type_list
-    }
-    #print(reply['debug'])
+    solns = []
+
     solver = Solver()
     # the grammar for types 
     JSTy = Datatype('JSTy')
     JSTy.declare('Num')
     JSTy.declare('Ok')
-    JSTy.declare('Comp', ('val', JSTy))
+    JSTy.declare('Comp', ('comp', JSTy))
     JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
     JSTy = JSTy.create()
     for name in type_list:
         type_lookup[name] = Const(name, JSTy)
     type_lookup[args.ok_shape] = JSTy.Ok
     type_lookup[args.num_shape] = JSTy.Num #adds an entry for constraints involving numbers and oks, without any extra logic 
+    base_constraints = unpack(constrs, type_lookup, JSTy)
+    solver.add(base_constraints)#Or(And(b == JSTy.To(a, c), (a == type_lookup[args.num_shape])), (type_lookup[args.ok_shape] == b)))
+    # solnser = all_smt(solver, base_constraints)
+    # solnss = [(solnser)]
+    mod = None
+    illegal_assign = False
+    while(solver.check() == sat and not illegal_assign):
+        #print(solver)
+        mod = solver.model()
+        #print(mod)
+        mod_neg = []
+        sol = {}
+        for ass in mod:
+            if(ass.arity() == 0): 
+                sol[str(ass)] = str(mod[ass])
+                mod_neg.append(type_lookup[str(ass)] != mod[ass])
+            else: 
+                illegal_assign = True
 
-    solver.add(unpack(constrs, type_lookup, JSTy))#Or(And(b == JSTy.To(a, c), (a == type_lookup[args.num_shape])), (type_lookup[args.ok_shape] == b)))
-    solver.check()
-    mod = solver.model()
-    reply['sol'] = list(map(lambda x: {str(x): str(mod[x])}, mod)) 
+        mod_negation = Or(mod_neg)
+        solns.append(sol) 
+        #print(mod_negation, list(map(lambda x: x, mod)))
+        solver.add(mod_negation)
+
+    
+    reply = {
+        #'reflect': constrs,
+        'term': str(base_constraints).replace('\n', '').replace('  ', ''),
+        'sol': solns,
+        'type_vars': type_list
+    }
     print(reply) #test to see if we can send the constraints back
 
 if __name__ == '__main__':
