@@ -56,7 +56,7 @@ export class Ander extends TypedList{
         this.xs.push(orOrConstr);
         const arrayer = (maybeArray) => maybeArray.length !== undefined ? maybeArray : [maybeArray];
         this.xs = this.xs //for all xs
-            .map(x => this.collapse(x))
+            //.map(x => this.collapse(x))
             .filter(x => x !== null)
             .reduce((acc, maybeArray) => [...acc, ...(arrayer(maybeArray))], []);
     }

@@ -72,8 +72,9 @@ const pyDictToJSON = (dictStr) => {
 
 const test = () => {
     const r = new Reconstructor();
-    const program = 'f => x => f(0)(x)';
+    const program = 'x => 0 + x';
     const done = r.reconstruct(program);
+    const t = done.termType;
     console.log(`${done.show()}`);
     //console.log(r.reconstruct(program).constrs);
     sendConstraints(JSON.stringify(done.constrs))
@@ -83,7 +84,16 @@ const test = () => {
             .then(
                 resp => {   
                     console.log(pretty(resp));
-                    
+                    const solns = resp.sol;
+                    for(let i = 0; i < solns.length; i++){
+                        let tShow = t.show();
+                        const soln = solns[i];
+                        const types = Object.keys(soln);
+                        types.map(t => {
+                            tShow = tShow.replace(t, soln[t])
+                        });
+                        console.log(`${program} : ${tShow}`);
+                    }
                 },
                 err => console.error(`test: ${err}`)
             );
