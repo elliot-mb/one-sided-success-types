@@ -15,7 +15,7 @@ export class Rule {
     static cTVar = (r, empty) => {
         const typeInAssms = empty.variableType(empty.getSubterm('x'));
         const conclusn = empty.constrain(typeInAssms); //(CTVar)
-
+        conclusn.addAnder(); //add empty ander
         // //(OK)
         if(Rule.Ok){
             conclusn.addAnder();

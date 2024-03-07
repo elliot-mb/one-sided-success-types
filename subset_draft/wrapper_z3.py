@@ -14,29 +14,6 @@ parser.add_argument('-num_shape', '-n', type=str, default='Num')
 parser.add_argument('-arrow_shape', '-r', type=str, default='A -> B')
 args = parser.parse_args()
 
-#
-#
-#   https://z3prover.github.io/papers/programmingz3.html#sec-models
-#
-#
-
-def all_smt(s, initial_terms):
-    def block_term(s, m, t):
-        s.add(t != m.eval(t, model_completion=True))
-    def fix_term(s, m, t):
-        s.add(t == m.eval(t, model_completion=True))
-    def all_smt_rec(terms):
-        if sat == s.check():
-           m = s.model()
-           yield m
-           for i in range(len(terms)):
-               s.push()
-               block_term(s, m, terms[i])
-               for j in range(i):
-                   fix_term(s, m, terms[j])
-               yield from all_smt_rec(terms[i:])
-               s.pop()   
-    yield from all_smt_rec(list(initial_terms))
 
 #
 #
@@ -122,6 +99,7 @@ def main():
     JSTy.declare('Ok')
     JSTy.declare('Comp', ('comp', JSTy))
     JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
+    #JSTy.declare('Var', ('ident', StringSort()))
     JSTy = JSTy.create()
     for name in type_list:
         type_lookup[name] = Const(name, JSTy)
@@ -140,13 +118,14 @@ def main():
         mod_neg = []
         sol = {}
         for ass in mod:
-            if(ass.arity() == 0): 
+            if(ass.arity() == 0): #reassign constants
                 sol[str(ass)] = str(mod[ass])
                 mod_neg.append(type_lookup[str(ass)] != mod[ass])
             else: 
                 illegal_assign = True
 
         mod_negation = Or(mod_neg)
+        print(mod_negation)
         solns.append(sol) 
         #print(mod_negation, list(map(lambda x: x, mod)))
         solver.add(mod_negation)
