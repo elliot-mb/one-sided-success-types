@@ -72,7 +72,7 @@ const pyDictToJSON = (dictStr) => {
 
 const test = () => {
     const r = new Reconstructor();
-    const program = 'f => x => f(f(x))';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
+    const program = 'x => f => y => f(y(0))';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
     const done = r.reconstruct(program);
     const t = done.termType;
     console.log(`${done.show()}`);

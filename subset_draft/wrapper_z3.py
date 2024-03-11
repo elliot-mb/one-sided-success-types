@@ -86,6 +86,9 @@ def type_vars(joiner):
             uniques[v] = None
     return uniques # return a dict which we populate with z3 types
 
+def show_constrs(constrs):
+    return str(constrs).replace('\n', '').replace('  ', '')
+
 def main():
     constrs = json.loads(args.constraints)
     type_lookup = type_vars(constrs)
@@ -93,25 +96,35 @@ def main():
     solns = []
 
     solver = Solver()
+    solver.set(relevancy=2)
     # the grammar for types 
     JSTy = Datatype('JSTy')
+    ComplTy = Datatype('ComplTy') # stops directly nested complements
+    ComplTy.declare('Num')
+    ComplTy.declare('Ok')
+    ComplTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
+    
     JSTy.declare('Num')
     JSTy.declare('Ok')
-    JSTy.declare('Comp', ('comp', JSTy))
+    JSTy.declare('Comp', ('comp', ComplTy))
     JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
     #JSTy.declare('Var', ('ident', StringSort()))
-    JSTy = JSTy.create()
+    JSTy, ComplTy = CreateDatatypes(JSTy, ComplTy)
     for name in type_list:
         type_lookup[name] = Const(name, JSTy)
     type_lookup[args.ok_shape] = JSTy.Ok
     type_lookup[args.num_shape] = JSTy.Num #adds an entry for constraints involving numbers and oks, without any extra logic 
+    #type_lookup[args.arrow_shape] JSTy.
     base_constraints = unpack(constrs, type_lookup, JSTy)
+    #solver.add(And(JSTy.Comp(JSTy.Comp(JSTy)) == JSTy))
     solver.add(base_constraints)#Or(And(b == JSTy.To(a, c), (a == type_lookup[args.num_shape])), (type_lookup[args.ok_shape] == b)))
     # solnser = all_smt(solver, base_constraints)
     # solnss = [(solnser)]
     mod = None
     illegal_assign = False
-    while(solver.check() == sat and not illegal_assign):
+    max_types = 5
+    type_count = 0
+    while(solver.check() == sat and not illegal_assign and (max_types > type_count)):
         #print(solver)
         mod = solver.model()
         #print(mod)
@@ -119,7 +132,8 @@ def main():
         sol = {}
         for ass in mod:
             if(ass.arity() == 0): #reassign constants
-                sol[str(ass)] = str(mod[ass])
+                sol[show_constrs(ass)] = show_constrs(mod[ass])
+                #print("" + str(ass) + " = " + str(mod[ass]))
                 mod_neg.append(type_lookup[str(ass)] != mod[ass])
             else: 
                 illegal_assign = True
@@ -129,11 +143,13 @@ def main():
         solns.append(sol) 
         #print(mod_negation, list(map(lambda x: x, mod)))
         solver.add(mod_negation)
+        type_count += 1
 
     
     reply = {
         #'reflect': constrs,
-        'term': str(base_constraints).replace('\n', '').replace('  ', ''),
+        'term': show_constrs(base_constraints),
+        #'simple_term': show_constrs(simplify(base_constraints)),
         'sol': solns,
         'type_vars': type_list
     }
