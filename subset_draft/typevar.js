@@ -20,6 +20,7 @@ export class GenT{
     static okShape = 'Ok';
     static numShape = 'Num';
     static arrowShape = 'A -> B';
+    static compShape = 'Ac';
     
     constructor(id){
         this.id = id;
@@ -83,6 +84,30 @@ export class GenT{
         if(this.shape() !== C.shape()) return false;
         return this.getId() === C.getId();
     }
+}
+
+export class CompT extends GenT{
+
+    constructor(A, id = GenT.compShape){
+        super(id);
+        Utils.typeVarsOrCrash(A, A);
+        this.A = A;
+        this.shapeV = GenT.compShape;
+    }
+
+    getA(){
+        return this.A;
+    }
+
+    setA(A){
+        Utils.typeVarsOrCrash(A, A);
+        this.A = A;
+    }
+
+    freeIn(){
+        
+    }
+
 }
 
 // meaning: all values 
