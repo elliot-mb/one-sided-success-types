@@ -125,7 +125,7 @@ def main():
                 illegal_assign = True
 
         mod_negation = Or(mod_neg)
-        print(mod_negation)
+        #print(mod_negation)
         solns.append(sol) 
         #print(mod_negation, list(map(lambda x: x, mod)))
         solver.add(mod_negation)

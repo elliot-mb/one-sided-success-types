@@ -21,7 +21,7 @@ export class EmptyJudgement{
     }
 
     variableType(name){
-        if(!this.assms.isIn(name)) throw Utils.makeErr(`typecheck: term of shape ${this.shape()}, variable '${name}' is free; unbound in function`);
+        if(!this.assms.isIn(name)) throw Utils.makeErr(`typecheck: term variable '${name}' is free; unbound in function`);
         return this.assms.get(name);
     }
 
