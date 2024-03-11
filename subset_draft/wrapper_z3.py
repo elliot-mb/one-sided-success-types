@@ -90,7 +90,10 @@ def show_constrs(constrs):
     return str(constrs).replace('\n', '').replace('  ', '')
 
 def main():
-    constrs = json.loads(args.constraints)
+    recieved = json.loads(args.constraints)
+    #print(recieved)
+    constrs = recieved['constrs']
+    top_type = recieved['top_type']
     type_lookup = type_vars(constrs)
     type_list = list(type_lookup.keys())
     solns = []
@@ -118,6 +121,9 @@ def main():
     base_constraints = unpack(constrs, type_lookup, JSTy)
     #solver.add(And(JSTy.Comp(JSTy.Comp(JSTy)) == JSTy))
     solver.add(base_constraints)#Or(And(b == JSTy.To(a, c), (a == type_lookup[args.num_shape])), (type_lookup[args.ok_shape] == b)))
+    
+    # now show me its false
+    solver.add(to_type(top_type, type_lookup,) == JSTy.Comp(ComplTy.Ok))
     # solnser = all_smt(solver, base_constraints)
     # solnss = [(solnser)]
     mod = None
@@ -147,7 +153,7 @@ def main():
 
     
     reply = {
-        #'reflect': constrs,
+        'reflect': recieved,
         'term': show_constrs(base_constraints),
         #'simple_term': show_constrs(simplify(base_constraints)),
         'sol': solns,
