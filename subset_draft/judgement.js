@@ -1,5 +1,5 @@
 import {Utils} from './utils.js';
-import {termShape, getSubterm} from './aw_ast.js';
+import {termShape, getSubterm} from './wrapper_acorn.js';
 import {ConstraintSet} from './constraint_set.js';
 import {Constraint} from './constraint.js';
 import {Orer} from './orer.js';
@@ -21,7 +21,7 @@ export class EmptyJudgement{
     }
 
     variableType(name){
-        if(!this.assms.isIn(name)) throw Utils.makeErr(`typecheck: term of shape ${this.shape()}, variable '${name}' is free; unbound in function`);
+        if(!this.assms.isIn(name)) throw Utils.makeErr(`typecheck: term variable '${name}' is free; unbound in function`);
         return this.assms.get(name);
     }
 

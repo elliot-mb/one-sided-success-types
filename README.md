@@ -7,9 +7,11 @@ go wrong. Yet when it does not it may yet still go wrong.
 
 # Run scripts
 
-To develop these scripts Bun (https://bun.sh/blog/bun-v1.0.25) was used as a 
+Initially Bun was used to run these scripts, but issues with using Z3 bindings for JavaScript ([npm package](https://www.npmjs.com/package/z3-solver)) meant that for now I have to switch to Node to use it, due to an (as of 20/02/24) [unsolved bug with file path length](https://github.com/denoland/deno/issues/21695). This post is for another new local JavaScript runtime Deno, but a similar issue arises with Bun. 
+
+~~To develop these scripts Bun (https://bun.sh/blog/bun-v1.0.25) was used as a 
 local runtime, with npm (https://www.npmjs.com/package/acorn-walk?activeTab=readme)
-used where packages were used (inc. AST inspection for javascript).
+used where packages were used (inc. AST inspection for javascript).~~
 
 # Adding terms to the language subset
 

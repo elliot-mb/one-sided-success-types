@@ -2,10 +2,11 @@
 // the ast walker https://github.com/acornjs/acorn/tree/master/acorn-walk/
 // testing with bun
 
-const acorn = require('acorn');
-const walk = require('acorn-walk');
+import { Parser } from 'acorn';
+import { full } from 'acorn-walk';
+import { modRequire } from './module_require.js';
 
-const parse = (prog) => acorn.parse(prog, {ecmaVersion: 2023});
+const parse = (prog) => Parser.parse(prog, {ecmaVersion: 2023});
 const PROGRAM_T = 'Program';
 
 // writes the tree output as a nicely spaced string
@@ -40,16 +41,16 @@ const pret = (json, whitespace = '') => {  // gives an array of lines to the tre
 //fields in the AST object
 // the 'fields' are arrays string[] where each property must be used in order
 // to retrieve the property (most are just one long (singleton arrays))
-const typeToSubterms = require('./AST_subtm.json');
+const typeToSubterms = modRequire('./AST_subtm.json');
 
 //a map from AST types to grammar shapes 
-export const typeToGrammar = require('./AST_grmmr.json');
+export const typeToGrammar = modRequire('./AST_grmmr.json');
 
 //a map from AST types to maps from specific fields to restrictions they must obey
 //in an effort to express whats permitted in the subset of the language
 //a list of restrictions is disjunctive or conjunctive, based on the symbol 'ANY' or 'ALL' resp.
 //in the 'satisfies' field of the object that holds the restriction list 
-const typeToProperties = require('./AST_require.json');
+const typeToProperties = modRequire('./AST_require.json');
 
 //turns the root node of the term's type to the grammar shape
 // as a string
@@ -224,7 +225,7 @@ export const checkGrammar = term => {
 export const toASTTree = (program, justFirstExpression = true, enforceGrammar = true) => {
     //console.log(`${program} to AST Tree`);
     let tree = {};
-    walk.full(parse(program), (node) => {
+    full(parse(program), (node) => {
         if(node.type === PROGRAM_T){
             tree = node;
         }

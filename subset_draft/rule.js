@@ -10,12 +10,12 @@ export class Rule {
     //static class for all the rules, each with its own shape 
     //all rules take a reference to the reconstructor (r), EmptyJudgement, and return a Judgement
 
-    static Ok = false; //just for demonstration purposes, showing to steven that it still works
+    static Ok = true; //just for demonstration purposes, showing to steven that it still works
 
     static cTVar = (r, empty) => {
         const typeInAssms = empty.variableType(empty.getSubterm('x'));
         const conclusn = empty.constrain(typeInAssms); //(CTVar)
-
+        conclusn.addAnder(); //add empty ander
         // //(OK)
         if(Rule.Ok){
             conclusn.addAnder();

@@ -1,0 +1,876 @@
+zsh: command not found: k
+zsh: unknown sort specifier
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 16:42:55 
+❯ node wrapper_z3.js
+x: XB, f: XC ⊢ x => M : XB -> XC -> XD | [(XC = XB -> XE ∧ XC = XE -> XD)]
+{'term': 'And(XC == To(XB, XE), XC == To(XE, XD))', 'sol': [{'XD': 'Num', 'XB': 'Num', 'XE': 'Num', 'XC': 'To(Num, Num)'}, {'XE': 'Ok', 'XD': 'Ok', 'XC': 'To(Ok, Ok)', 'XB': 'Ok'}, {'XE': 'To(Num, Num)', 'XD': 'To(Num, Num)', 'XC': 'To(To(Num, Num), To(Num, Num))', 'XB': 'To(Num, Num)'}, {'XE': 'To(Ok, Num)', 'XD': 'To(Ok, Num)', 'XC': 'To(To(Ok, Num), To(Ok, Num))', 'XB': 'To(Ok, Num)'}, {'XE': 'To(Ok, Ok)', 'XD': 'To(Ok, Ok)', 'XC': 'To(To(Ok, Ok), To(Ok, Ok))', 'XB': 'To(Ok, Ok)'}, {'XE': 'To(Ok, To(Num, Num))', 'XD': 'To(Ok, To(Num, Num))', 'XC': 'To(To(Ok, To(Num, Num)), To(Ok, To(Num, Num)))', 'XB': 'To(Ok, To(Num, Num))'}, {'XE': 'To(To(Num, Num), To(Num, Num))', 'XD': 'To(To(Num, Num), To(Num, Num))', 'XC': 'To(To(To(Num, Num), To(Num, Num)),\n   To(To(Num, Num), To(Num, Num)))', 'XB': 'To(To(Num, Num), To(Num, Num))'}, {'XE': 'To(To(Num, Num), To(Ok, Num))', 'XD': 'To(To(Num, Num), To(Ok, Num))', 'XC': 'To(To(To(Num, Num), To(Ok, Num)),\n   To(To(Num, Num), To(Ok, Num)))', 'XB': 'To(To(Num, Num), To(Ok, Num))'}, {'XE': 'To(To(Ok, Ok), Num)', 'XD': 'To(To(Ok, Ok), Num)', 'XC': 'To(To(To(Ok, Ok), Num), To(To(Ok, Ok), Num))', 'XB': 'To(To(Ok, Ok), Num)'}], 'type_vars': ['XC', 'XB', 'XE', 'XD']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+{
+  "term": "And(XC == To(XB, XE), XC == To(XE, XD))",
+  "sol": [
+    {
+      "XD": "Num",
+      "XB": "Num",
+      "XE": "Num",
+      "XC": "To(Num, Num)"
+    },
+    {
+      "XE": "Ok",
+      "XD": "Ok",
+      "XC": "To(Ok, Ok)",
+      "XB": "Ok"
+    },
+    {
+      "XE": "To(Num, Num)",
+      "XD": "To(Num, Num)",
+      "XC": "To(To(Num, Num), To(Num, Num))",
+      "XB": "To(Num, Num)"
+    },
+    {
+      "XE": "To(Ok, Num)",
+      "XD": "To(Ok, Num)",
+      "XC": "To(To(Ok, Num), To(Ok, Num))",
+      "XB": "To(Ok, Num)"
+    },
+    {
+      "XE": "To(Ok, Ok)",
+      "XD": "To(Ok, Ok)",
+      "XC": "To(To(Ok, Ok), To(Ok, Ok))",
+      "XB": "To(Ok, Ok)"
+    },
+    {
+      "XE": "To(Ok, To(Num, Num))",
+      "XD": "To(Ok, To(Num, Num))",
+      "XC": "To(To(Ok, To(Num, Num)), To(Ok, To(Num, Num)))",
+      "XB": "To(Ok, To(Num, Num))"
+    },
+    {
+      "XE": "To(To(Num, Num), To(Num, Num))",
+      "XD": "To(To(Num, Num), To(Num, Num))",
+      "XC": "To(To(To(Num, Num), To(Num, Num)),\n   To(To(Num, Num), To(Num, Num)))",
+      "XB": "To(To(Num, Num), To(Num, Num))"
+    },
+    {
+      "XE": "To(To(Num, Num), To(Ok, Num))",
+      "XD": "To(To(Num, Num), To(Ok, Num))",
+      "XC": "To(To(To(Num, Num), To(Ok, Num)),\n   To(To(Num, Num), To(Ok, Num)))",
+      "XB": "To(To(Num, Num), To(Ok, Num))"
+    },
+    {
+      "XE": "To(To(Ok, Ok), Num)",
+      "XD": "To(To(Ok, Ok), Num)",
+      "XC": "To(To(To(Ok, Ok), Num), To(To(Ok, Ok), Num))",
+      "XB": "To(To(Ok, Ok), Num)"
+    }
+  ],
+  "type_vars": [
+    "XC",
+    "XB",
+    "XE",
+    "XD"
+  ]
+}
+x => f => f(f(x)) : Num -> To(Num, Num) -> Num
+x => f => f(f(x)) : Ok -> To(Ok, Ok) -> Ok
+x => f => f(f(x)) : To(Num, Num) -> To(To(Num, Num), To(Num, Num)) -> To(Num, Num)
+x => f => f(f(x)) : To(Ok, Num) -> To(To(Ok, Num), To(Ok, Num)) -> To(Ok, Num)
+x => f => f(f(x)) : To(Ok, Ok) -> To(To(Ok, Ok), To(Ok, Ok)) -> To(Ok, Ok)
+x => f => f(f(x)) : To(Ok, To(Num, Num)) -> To(To(Ok, To(Num, Num)), To(Ok, To(Num, Num))) -> To(Ok, To(Num, Num))
+x => f => f(f(x)) : To(To(Num, Num), To(Num, Num)) -> To(To(To(Num, Num), To(Num, Num)),
+   To(To(Num, Num), To(Num, Num))) -> To(To(Num, Num), To(Num, Num))
+x => f => f(f(x)) : To(To(Num, Num), To(Ok, Num)) -> To(To(To(Num, Num), To(Ok, Num)),
+   To(To(Num, Num), To(Ok, Num))) -> To(To(Num, Num), To(Ok, Num))
+x => f => f(f(x)) : To(To(Ok, Ok), Num) -> To(To(To(Ok, Ok), Num), To(To(Ok, Ok), Num)) -> To(To(Ok, Ok), Num)
+spawnGetString: program 'python3' emitted signal null threw code 0
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 16:42:58 
+❯ node wrapper_z3.js
+x: XB, f: XC ⊢ x => M : XB -> XC -> XD | [(XC = XB -> XE ∧ XC = XE -> XD)]
+{'term': 'And(XC == To(XB, XE), XC == To(XE, XD))', 'sol': [{'XD': 'Num', 'XB': 'Num', 'XE': 'Num', 'XC': 'To(Num, Num)'}, {'XE': 'Ok', 'XD': 'Ok', 'XC': 'To(Ok, Ok)', 'XB': 'Ok'}, {'XE': 'Comp(Num)', 'XD': 'Comp(Num)', 'XC': 'To(Comp(Num), Comp(Num))', 'XB': 'Comp(Num)'}, {'XE': 'Comp(Ok)', 'XD': 'Comp(Ok)', 'XC': 'To(Comp(Ok), Comp(Ok))', 'XB': 'Comp(Ok)'}, {'XE': 'To(Num, Num)', 'XD': 'To(Num, Num)', 'XC': 'To(To(Num, Num), To(Num, Num))', 'XB': 'To(Num, Num)'}], 'type_vars': ['XC', 'XB', 'XE', 'XD']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+{
+  "term": "And(XC == To(XB, XE), XC == To(XE, XD))",
+  "sol": [
+    {
+      "XD": "Num",
+      "XB": "Num",
+      "XE": "Num",
+      "XC": "To(Num, Num)"
+    },
+    {
+      "XE": "Ok",
+      "XD": "Ok",
+      "XC": "To(Ok, Ok)",
+      "XB": "Ok"
+    },
+    {
+      "XE": "Comp(Num)",
+      "XD": "Comp(Num)",
+      "XC": "To(Comp(Num), Comp(Num))",
+      "XB": "Comp(Num)"
+    },
+    {
+      "XE": "Comp(Ok)",
+      "XD": "Comp(Ok)",
+      "XC": "To(Comp(Ok), Comp(Ok))",
+      "XB": "Comp(Ok)"
+    },
+    {
+      "XE": "To(Num, Num)",
+      "XD": "To(Num, Num)",
+      "XC": "To(To(Num, Num), To(Num, Num))",
+      "XB": "To(Num, Num)"
+    }
+  ],
+  "type_vars": [
+    "XC",
+    "XB",
+    "XE",
+    "XD"
+  ]
+}
+x => f => f(f(x)) : Num -> To(Num, Num) -> Num
+x => f => f(f(x)) : Ok -> To(Ok, Ok) -> Ok
+x => f => f(f(x)) : Comp(Num) -> To(Comp(Num), Comp(Num)) -> Comp(Num)
+x => f => f(f(x)) : Comp(Ok) -> To(Comp(Ok), Comp(Ok)) -> Comp(Ok)
+x => f => f(f(x)) : To(Num, Num) -> To(To(Num, Num), To(Num, Num)) -> To(Num, Num)
+spawnGetString: program 'python3' emitted signal null threw code 0
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 16:43:52 
+❯ node wrapper_z3.js
+x: XB, f: XC ⊢ x => M : XB -> XC -> XD | [(XC = XB -> XE ∧ XC = XE -> XD)]
+Traceback (most recent call last):
+  File "/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/./wrapper_z3.py", line 142, in <module>
+    main()
+  File "/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/./wrapper_z3.py", line 102, in main
+
+    JSTy.declare('Var', ('name', String))
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 5158, in declare
+    return self.declare_core(name, "is-" + name, *args)
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 5133, in declare_core
+    _z3_assert(
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 107, in _z3_assert
+    raise Z3Exception(msg)
+z3.z3types.Z3Exception: Valid list of accessors expected. An accessor is a pair of the form (String, Datatype|Sort)
+
+spawnGetString: program 'python3' emitted signal null threw code 1
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 16:46:34 
+❯ node wrapper_z3.js
+x: XB, f: XC ⊢ x => M : XB -> XC -> XD | [(XC = XB -> XE ∧ XC = XE -> XD)]
+Traceback (most recent call last):
+  File "/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/./wrapper_z3.py", line 145, in <module>
+    main()
+  File "/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/./wrapper_z3.py", line 102, in main
+
+    JSTy.declare('Var', ('name', Int))
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 5158, in declare
+    return self.declare_core(name, "is-" + name, *args)
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 5133, in declare_core
+
+    _z3_assert(
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 107, in _z3_assert
+
+    raise Z3Exception(msg)
+z3.z3types.Z3Exception: Valid list of accessors expected. An accessor is a pair of the form (String, Datatype|Sort)
+
+spawnGetString: program 'python3' emitted signal null threw code 1
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 16:49:54 
+❯ node wrapper_z3.js
+x: XB, f: XC ⊢ x => M : XB -> XC -> XD | [(XC = XB -> XE ∧ XC = XE -> XD)]
+Traceback (most recent call last):
+  File "/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/./wrapper_z3.py", line 142, in <module>
+
+    main()
+  File "/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/./wrapper_z3.py", line 102, in main
+    JSTy.declare('Var', ('ident', String))
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 5158, in declare
+    return self.declare_core(name, "is-" + name, *args)
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 5133, in declare_core
+
+    _z3_assert(
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 107, in _z3_assert
+
+    raise Z3Exception(msg)
+z3.z3types.Z3Exception: Valid list of accessors expected. An accessor is a pair of the form (String, Datatype|Sort)
+
+spawnGetString: program 'python3' emitted signal null threw code 1
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 16:51:12 
+❯ node wrapper_z3.js
+x: XB, f: XC ⊢ x => M : XB -> XC -> XD | [(XC = XB -> XE ∧ XC = XE -> XD)]
+Traceback (most recent call last):
+  File "/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/./wrapper_z3.py", line 142, in <module>
+    main()
+  File "/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/./wrapper_z3.py", line 102, in main
+
+    JSTy.declare('Var', ('ident', String))
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 5158, in declare
+    return self.declare_core(name, "is-" + name, *args)
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 5133, in declare_core
+    _z3_assert(
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 107, in _z3_assert
+    raise Z3Exception(msg)
+z3.z3types.Z3Exception: Valid list of accessors expected. An accessor is a pair of the form (String, Datatype|Sort)
+
+spawnGetString: program 'python3' emitted signal null threw code 1
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 16:52:13 
+❯ node wrapper_z3.js
+x: XB, f: XC ⊢ x => M : XB -> XC -> XD | [(XC = XB -> XE ∧ XC = XE -> XD)]
+Traceback (most recent call last):
+  File "/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/./wrapper_z3.py", line 142, in <module>
+
+    main()
+  File "/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/./wrapper_z3.py", line 105, in main
+    type_lookup[name] = Const(name, JSTy.Var(name))
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 862, in __call__
+    tmp = self.domain(i).cast(args[i])
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 604, in cast
+    _z3_assert(is_expr(val), "Z3 expression expected")
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 107, in _z3_assert
+    raise Z3Exception(msg)
+z3.z3types.Z3Exception: Z3 expression expected
+
+spawnGetString: program 'python3' emitted signal null threw code 1
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 16:53:14 
+❯ node wrapper_z3.js
+x: XB, f: XC ⊢ x => M : XB -> XC -> XD | [(XC = XB -> XE ∧ XC = XE -> XD)]
+Traceback (most recent call last):
+  File "/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/./wrapper_z3.py", line 142, in <module>
+
+    main()
+  File "/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/./wrapper_z3.py", line 105, in main
+    type_lookup[name] = JSTy.Var(name)#Const(name, JSTy.Var(name))
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 862, in __call__
+    tmp = self.domain(i).cast(args[i])
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 604, in cast
+    _z3_assert(is_expr(val), "Z3 expression expected")
+  File "/home/elliot/.local/lib/python3.10/site-packages/z3/z3.py", line 107, in _z3_assert
+    raise Z3Exception(msg)
+z3.z3types.Z3Exception: Z3 expression expected
+
+spawnGetString: program 'python3' emitted signal null threw code 1
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 16:53:43 
+❯ node wrapper_z3.js
+x: XB, f: XC ⊢ x => M : XB -> XC -> XD | [(XC = XB -> XE ∧ XC = XE -> XD)]
+{'term': 'And(XC == To(XB, XE), XC == To(XE, XD))', 'sol': [{'XD': 'Num', 'XB': 'Num', 'XE': 'Num', 'XC': 'To(Num, Num)'}, {'XE': 'Ok', 'XD': 'Ok', 'XC': 'To(Ok, Ok)', 'XB': 'Ok'}, {'XE': 'Comp(Num)', 'XD': 'Comp(Num)', 'XC': 'To(Comp(Num), Comp(Num))', 'XB': 'Comp(Num)'}, {'XE': 'Comp(Ok)', 'XD': 'Comp(Ok)', 'XC': 'To(Comp(Ok), Comp(Ok))', 'XB': 'Comp(Ok)'}, {'XE': 'To(Num, Num)', 'XD': 'To(Num, Num)', 'XC': 'To(To(Num, Num), To(Num, Num))', 'XB': 'To(Num, Num)'}], 'type_vars': ['XC', 'XB', 'XE', 'XD']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+{
+  "term": "And(XC == To(XB, XE), XC == To(XE, XD))",
+  "sol": [
+    {
+      "XD": "Num",
+      "XB": "Num",
+      "XE": "Num",
+      "XC": "To(Num, Num)"
+    },
+    {
+      "XE": "Ok",
+      "XD": "Ok",
+      "XC": "To(Ok, Ok)",
+      "XB": "Ok"
+    },
+    {
+      "XE": "Comp(Num)",
+      "XD": "Comp(Num)",
+      "XC": "To(Comp(Num), Comp(Num))",
+      "XB": "Comp(Num)"
+    },
+    {
+      "XE": "Comp(Ok)",
+      "XD": "Comp(Ok)",
+      "XC": "To(Comp(Ok), Comp(Ok))",
+      "XB": "Comp(Ok)"
+    },
+    {
+      "XE": "To(Num, Num)",
+      "XD": "To(Num, Num)",
+      "XC": "To(To(Num, Num), To(Num, Num))",
+      "XB": "To(Num, Num)"
+    }
+  ],
+  "type_vars": [
+    "XC",
+    "XB",
+    "XE",
+    "XD"
+  ]
+}
+x => f => f(f(x)) : Num -> To(Num, Num) -> Num
+x => f => f(f(x)) : Ok -> To(Ok, Ok) -> Ok
+x => f => f(f(x)) : Comp(Num) -> To(Comp(Num), Comp(Num)) -> Comp(Num)
+x => f => f(f(x)) : Comp(Ok) -> To(Comp(Ok), Comp(Ok)) -> Comp(Ok)
+x => f => f(f(x)) : To(Num, Num) -> To(To(Num, Num), To(Num, Num)) -> To(Num, Num)
+spawnGetString: program 'python3' emitted signal null threw code 0
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 16:55:44 
+❯ node wrapper_z3.js
+x: XB, f: XC ⊢ x => M : XB -> XC -> XD | [(XC = XB -> XE ∧ XC = XE -> XD)]
+{'term': 'And(XC == To(XB, XE), XC == To(XE, XD))', 'sol': [{'XD': 'Num', 'XB': 'Num', 'XE': 'Num', 'XC': 'To(Num, Num)'}, {'XE': 'Ok', 'XD': 'Ok', 'XC': 'To(Ok, Ok)', 'XB': 'Ok'}, {'XE': 'Comp(Num)', 'XD': 'Comp(Num)', 'XC': 'To(Comp(Num), Comp(Num))', 'XB': 'Comp(Num)'}, {'XE': 'Comp(Ok)', 'XD': 'Comp(Ok)', 'XC': 'To(Comp(Ok), Comp(Ok))', 'XB': 'Comp(Ok)'}, {'XE': 'To(Num, Num)', 'XD': 'To(Num, Num)', 'XC': 'To(To(Num, Num), To(Num, Num))', 'XB': 'To(Num, Num)'}], 'type_vars': ['XC', 'XB', 'XE', 'XD']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+{
+  "term": "And(XC == To(XB, XE), XC == To(XE, XD))",
+  "sol": [
+    {
+      "XD": "Num",
+      "XB": "Num",
+      "XE": "Num",
+      "XC": "To(Num, Num)"
+    },
+    {
+      "XE": "Ok",
+      "XD": "Ok",
+      "XC": "To(Ok, Ok)",
+      "XB": "Ok"
+    },
+    {
+      "XE": "Comp(Num)",
+      "XD": "Comp(Num)",
+      "XC": "To(Comp(Num), Comp(Num))",
+      "XB": "Comp(Num)"
+    },
+    {
+      "XE": "Comp(Ok)",
+      "XD": "Comp(Ok)",
+      "XC": "To(Comp(Ok), Comp(Ok))",
+      "XB": "Comp(Ok)"
+    },
+    {
+      "XE": "To(Num, Num)",
+      "XD": "To(Num, Num)",
+      "XC": "To(To(Num, Num), To(Num, Num))",
+      "XB": "To(Num, Num)"
+    }
+  ],
+  "type_vars": [
+    "XC",
+    "XB",
+    "XE",
+    "XD"
+  ]
+}
+x => f => f(f(x)) : Num -> To(Num, Num) -> Num
+x => f => f(f(x)) : Ok -> To(Ok, Ok) -> Ok
+x => f => f(f(x)) : Comp(Num) -> To(Comp(Num), Comp(Num)) -> Comp(Num)
+x => f => f(f(x)) : Comp(Ok) -> To(Comp(Ok), Comp(Ok)) -> Comp(Ok)
+x => f => f(f(x)) : To(Num, Num) -> To(To(Num, Num), To(Num, Num)) -> To(Num, Num)
+spawnGetString: program 'python3' emitted signal null threw code 0
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 16:57:19 
+❯ node wrapper_z3.js
+x: XB, f: XC ⊢ x => M : XB -> XC -> XD | [([() v (XC = Ok)] ∧ [([() v (XC = Ok)] ∧ [() v (XB = Ok)] ∧ XC = XB -> XE) v (XE = Ok)] ∧ XC = XE -> XD) v (XD = Ok) v (XC -> XD = Ok) v (XB -> XC -> XD = Ok)]
+{'term': 'Or(And(Or(And, XC == Ok), Or(And(Or(And, XC == Ok),Or(And, XB == Ok),XC == To(XB, XE)),XE == Ok), XC == To(XE, XD)), XD == Ok, To(XC, XD) == Ok, To(XB, To(XC, XD)) == Ok)', 'sol': [{'XE': 'Ok', 'XB': 'Comp(Ok)', 'XD': 'Num', 'XC': 'To(Ok, Num)'}, {'XD': 'Ok', 'XE': 'Num', 'XB': 'Num'}, {'XD': 'Ok', 'XE': 'Comp(Num)', 'XB': 'Ok'}, {'XD': 'Ok', 'XE': 'Comp(Ok)', 'XB': 'Comp(Num)'}, {'XD': 'Ok', 'XE': 'To(Num, Num)', 'XB': 'Comp(Comp(Num))'}], 'type_vars': ['XC', 'XB', 'XE', 'XD']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+{
+  "term": "Or(And(Or(And, XC == Ok), Or(And(Or(And, XC == Ok),Or(And, XB == Ok),XC == To(XB, XE)),XE == Ok), XC == To(XE, XD)), XD == Ok, To(XC, XD) == Ok, To(XB, To(XC, XD)) == Ok)",
+  "sol": [
+    {
+      "XE": "Ok",
+      "XB": "Comp(Ok)",
+      "XD": "Num",
+      "XC": "To(Ok, Num)"
+    },
+    {
+      "XD": "Ok",
+      "XE": "Num",
+      "XB": "Num"
+    },
+    {
+      "XD": "Ok",
+      "XE": "Comp(Num)",
+      "XB": "Ok"
+    },
+    {
+      "XD": "Ok",
+      "XE": "Comp(Ok)",
+      "XB": "Comp(Num)"
+    },
+    {
+      "XD": "Ok",
+      "XE": "To(Num, Num)",
+      "XB": "Comp(Comp(Num))"
+    }
+  ],
+  "type_vars": [
+    "XC",
+    "XB",
+    "XE",
+    "XD"
+  ]
+}
+x => f => f(f(x)) : Comp(Ok) -> To(Ok, Num) -> Num
+x => f => f(f(x)) : Num -> XC -> Ok
+x => f => f(f(x)) : Ok -> XC -> Ok
+x => f => f(f(x)) : Comp(Num) -> XC -> Ok
+x => f => f(f(x)) : Comp(Comp(Num)) -> XC -> Ok
+spawnGetString: program 'python3' emitted signal null threw code 0
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 17:00:34 
+❯ node wrapper_z3.js
+x: XB ⊢ x => M : XB -> Num | [(XB -> Num = Ok)]
+{'term': 'To(XB, Num) == Ok', 'sol': [], 'type_vars': ['XB']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+{
+  "term": "To(XB, Num) == Ok",
+  "sol": [
+
+  ],
+  "type_vars": [
+    "XB"
+  ]
+}
+spawnGetString: program 'python3' emitted signal null threw code 0
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 17:07:08 
+❯ node wrapper_z3.js
+x: XB ⊢ x => M : XB -> XC | [([() v (XB = Ok)] ∧ XB = Num -> XC) v (XC = Ok) v (XB -> XC = Ok)]
+{'term': 'Or(And(Or(And, XB == Ok), XB == To(Num, XC)), XC == Ok, To(XB, XC) == Ok)', 'sol': [{'XC': 'Num', 'XB': 'To(Num, Num)'}, {'XC': 'Comp(Num)', 'XB': 'To(Num, Comp(Num))'}, {'XC': 'Comp(Ok)', 'XB': 'To(Num, Comp(Ok))'}, {'XC': 'To(Num, Num)', 'XB': 'To(Num, To(Num, Num))'}], 'type_vars': ['XB', 'XC']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+{
+  "term": "Or(And(Or(And, XB == Ok), XB == To(Num, XC)), XC == Ok, To(XB, XC) == Ok)",
+  "sol": [
+    {
+      "XC": "Num",
+      "XB": "To(Num, Num)"
+    },
+    {
+      "XC": "Comp(Num)",
+      "XB": "To(Num, Comp(Num))"
+    },
+    {
+      "XC": "Comp(Ok)",
+      "XB": "To(Num, Comp(Ok))"
+    },
+    {
+      "XC": "To(Num, Num)",
+      "XB": "To(Num, To(Num, Num))"
+    }
+  ],
+  "type_vars": [
+    "XB",
+    "XC"
+  ]
+}
+x => x(0) : To(Num, Num) -> Num
+x => x(0) : To(Num, Comp(Num)) -> Comp(Num)
+x => x(0) : To(Num, Comp(Ok)) -> Comp(Ok)
+x => x(0) : To(Num, To(Num, Num)) -> To(Num, Num)
+spawnGetString: program 'python3' emitted signal null threw code 0
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 17:07:35 
+❯ node wrapper_z3.js
+x: XB ⊢ x => M : XB -> XE | [([([() v (XB = Ok)] ∧ XB = Num -> XC) v (XC = Ok)] ∧ [([() v (XB = Ok)] ∧ XB = Num -> XD) v (XD = Ok)] ∧ XC = Num ∧ XD = Num ∧ XE = Num) v (XE = Ok) v (XB -> XE = Ok)]
+{'term': 'Or(And(Or(And(Or(And, XB == Ok), XB == To(Num, XC)),XC == Ok), Or(And(Or(And, XB == Ok), XB == To(Num, XD)),XD == Ok), XC == Num, XD == Num, XE == Num), XE == Ok, To(XB, XE) == Ok)', 'sol': [{'XE': 'Num', 'XB': 'To(Num, Num)', 'XC': 'Num', 'XD': 'Num'}, {'XE': 'Ok', 'XD': 'Comp(Num)', 'XC': 'Comp(Num)'}, {'XE': 'Ok', 'XD': 'Comp(Ok)', 'XC': 'Comp(Ok)'}, {'XE': 'Ok', 'XD': 'To(Num, Num)', 'XC': 'To(Num, Num)'}], 'type_vars': ['XB', 'XC', 'XD', 'XE']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+{
+  "term": "Or(And(Or(And(Or(And, XB == Ok), XB == To(Num, XC)),XC == Ok), Or(And(Or(And, XB == Ok), XB == To(Num, XD)),XD == Ok), XC == Num, XD == Num, XE == Num), XE == Ok, To(XB, XE) == Ok)",
+  "sol": [
+    {
+      "XE": "Num",
+      "XB": "To(Num, Num)",
+      "XC": "Num",
+      "XD": "Num"
+    },
+    {
+      "XE": "Ok",
+      "XD": "Comp(Num)",
+      "XC": "Comp(Num)"
+    },
+    {
+      "XE": "Ok",
+      "XD": "Comp(Ok)",
+      "XC": "Comp(Ok)"
+    },
+    {
+      "XE": "Ok",
+      "XD": "To(Num, Num)",
+      "XC": "To(Num, Num)"
+    }
+  ],
+  "type_vars": [
+    "XB",
+    "XC",
+    "XD",
+    "XE"
+  ]
+}
+x => x(0) + x(1) : To(Num, Num) -> Num
+x => x(0) + x(1) : XB -> Ok
+x => x(0) + x(1) : XB -> Ok
+x => x(0) + x(1) : XB -> Ok
+spawnGetString: program 'python3' emitted signal null threw code 0
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 17:08:00 
+❯ node wrapper_z3.js
+x: XB, y: XC, f: XD ⊢ x => M : XB -> XC -> XD -> XG | [([([() v (XD = Ok)] ∧ [() v (XB = Ok)] ∧ XD = XB -> XE) v (XE = Ok)] ∧ [([() v (XD = Ok)] ∧ [() v (XC = Ok)] ∧ XD = XC -> XF) v (XF = Ok)] ∧ XE = Num ∧ XF = Num ∧ XG = Num) v (XG = Ok) v (XD -> XG = Ok) v (XC -> XD -> XG = Ok) v (XB -> XC -> XD -> XG = Ok)]
+{'term': 'Or(And(Or(And(Or(And, XD == Ok),Or(And, XB == Ok),XD == To(XB, XE)),XE == Ok), Or(And(Or(And, XD == Ok),Or(And, XC == Ok),XD == To(XC, XF)),XF == Ok), XE == Num, XF == Num, XG == Num), XG == Ok, To(XD, XG) == Ok, To(XC, To(XD, XG)) == Ok, To(XB, To(XC, To(XD, XG))) == Ok)', 'sol': [{'XG': 'Ok', 'XB': 'Comp(Num)', 'XC': 'Num', 'XF': 'Num', 'XE': 'Num', 'XD': 'To(Comp(Num), Num)'}, {'XB': 'Num', 'XE': 'Comp(Num)', 'XC': 'Ok', 'XF': 'Comp(Num)', 'XG': 'Ok'}, {'XB': 'Ok', 'XE': 'Comp(Ok)', 'XC': 'Comp(Num)', 'XF': 'Comp(Ok)', 'XG': 'Ok'}, {'XB': 'Comp(Ok)', 'XE': 'To(Num, Num)', 'XC': 'Comp(Ok)', 'XF': 'To(Num, Num)', 'XG': 'Ok'}], 'type_vars': ['XD', 'XB', 'XE', 'XC', 'XF', 'XG']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+{
+  "term": "Or(And(Or(And(Or(And, XD == Ok),Or(And, XB == Ok),XD == To(XB, XE)),XE == Ok), Or(And(Or(And, XD == Ok),Or(And, XC == Ok),XD == To(XC, XF)),XF == Ok), XE == Num, XF == Num, XG == Num), XG == Ok, To(XD, XG) == Ok, To(XC, To(XD, XG)) == Ok, To(XB, To(XC, To(XD, XG))) == Ok)",
+  "sol": [
+    {
+      "XG": "Ok",
+      "XB": "Comp(Num)",
+      "XC": "Num",
+      "XF": "Num",
+      "XE": "Num",
+      "XD": "To(Comp(Num), Num)"
+    },
+    {
+      "XB": "Num",
+      "XE": "Comp(Num)",
+      "XC": "Ok",
+      "XF": "Comp(Num)",
+      "XG": "Ok"
+    },
+    {
+      "XB": "Ok",
+      "XE": "Comp(Ok)",
+      "XC": "Comp(Num)",
+      "XF": "Comp(Ok)",
+      "XG": "Ok"
+    },
+    {
+      "XB": "Comp(Ok)",
+      "XE": "To(Num, Num)",
+      "XC": "Comp(Ok)",
+      "XF": "To(Num, Num)",
+      "XG": "Ok"
+    }
+  ],
+  "type_vars": [
+    "XD",
+    "XB",
+    "XE",
+    "XC",
+    "XF",
+    "XG"
+  ]
+}
+x => y => f => f(x) + f(y) : Comp(Num) -> Num -> To(Comp(Num), Num) -> Ok
+x => y => f => f(x) + f(y) : Num -> Ok -> XD -> Ok
+x => y => f => f(x) + f(y) : Ok -> Comp(Num) -> XD -> Ok
+x => y => f => f(x) + f(y) : Comp(Ok) -> Comp(Ok) -> XD -> Ok
+spawnGetString: program 'python3' emitted signal null threw code 0
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 17:09:00 
+❯ node wrapper_z3.js
+x: XB, y: XC, f: XD ⊢ x => M : XB -> XC -> XD -> XH | [([([() v (XD = Ok)] ∧ XD = Num -> XE) v (XE = Ok)] ∧ [([([() v (XD = Ok)] ∧ [() v (XC = Ok)] ∧ XD = XC -> XG) v (XG = Ok)] ∧ [() v (XB = Ok)] ∧ XG = XB -> XF) v (XF = Ok)] ∧ XE = Num ∧ XF = Num ∧ XH = Num) v (XH = Ok) v (XD -> XH = Ok) v (XC -> XD -> XH = Ok) v (XB -> XC -> XD -> XH = Ok)]
+{'term': 'Or(And(Or(And(Or(And, XD == Ok), XD == To(Num, XE)),XE == Ok), Or(And(Or(And(Or(And, XD == Ok), Or(And, XC == Ok), XD == To(XC, XG)), XG == Ok),Or(And, XB == Ok),XG == To(XB, XF)),XF == Ok), XE == Num, XF == Num, XH == Num), XH == Ok, To(XD, XH) == Ok, To(XC, To(XD, XH)) == Ok, To(XB, To(XC, To(XD, XH))) == Ok)', 'sol': [{'XH': 'Ok', 'XB': 'Num', 'XG': 'To(Num, Num)', 'XF': 'Num', 'XC': 'Num', 'XE': 'Num', 'XD': 'To(Num, Num)'}, {'XB': 'Ok', 'XE': 'Comp(Num)', 'XC': 'Ok', 'XH': 'Ok', 'XF': 'Comp(Num)', 'XG': 'Num'}, {'XB': 'Comp(Num)', 'XE': 'Comp(Ok)', 'XC': 'Comp(Num)', 'XH': 'Ok', 'XF': 'Comp(Ok)', 'XG': 'Comp(Num)'}, {'XB': 'Comp(Ok)', 'XE': 'To(Num, Num)', 'XC': 'Comp(Ok)', 'XH': 'Ok', 'XF': 'To(Num, Num)', 'XG': 'Comp(Ok)'}], 'type_vars': ['XD', 'XE', 'XC', 'XG', 'XB', 'XF', 'XH']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+{
+  "term": "Or(And(Or(And(Or(And, XD == Ok), XD == To(Num, XE)),XE == Ok), Or(And(Or(And(Or(And, XD == Ok), Or(And, XC == Ok), XD == To(XC, XG)), XG == Ok),Or(And, XB == Ok),XG == To(XB, XF)),XF == Ok), XE == Num, XF == Num, XH == Num), XH == Ok, To(XD, XH) == Ok, To(XC, To(XD, XH)) == Ok, To(XB, To(XC, To(XD, XH))) == Ok)",
+  "sol": [
+    {
+      "XH": "Ok",
+      "XB": "Num",
+      "XG": "To(Num, Num)",
+      "XF": "Num",
+      "XC": "Num",
+      "XE": "Num",
+      "XD": "To(Num, Num)"
+    },
+    {
+      "XB": "Ok",
+      "XE": "Comp(Num)",
+      "XC": "Ok",
+      "XH": "Ok",
+      "XF": "Comp(Num)",
+      "XG": "Num"
+    },
+    {
+      "XB": "Comp(Num)",
+      "XE": "Comp(Ok)",
+      "XC": "Comp(Num)",
+      "XH": "Ok",
+      "XF": "Comp(Ok)",
+      "XG": "Comp(Num)"
+    },
+    {
+      "XB": "Comp(Ok)",
+      "XE": "To(Num, Num)",
+      "XC": "Comp(Ok)",
+      "XH": "Ok",
+      "XF": "To(Num, Num)",
+      "XG": "Comp(Ok)"
+    }
+  ],
+  "type_vars": [
+    "XD",
+    "XE",
+    "XC",
+    "XG",
+    "XB",
+    "XF",
+    "XH"
+  ]
+}
+x => y => f => f(0) + f(y)(x) : Num -> Num -> To(Num, Num) -> Ok
+x => y => f => f(0) + f(y)(x) : Ok -> Ok -> XD -> Ok
+x => y => f => f(0) + f(y)(x) : Comp(Num) -> Comp(Num) -> XD -> Ok
+x => y => f => f(0) + f(y)(x) : Comp(Ok) -> Comp(Ok) -> XD -> Ok
+spawnGetString: program 'python3' emitted signal null threw code 0
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 17:09:59 
+❯ node wrapper_z3.js
+x: XB, y: XC, f: XD ⊢ x => M : XB -> XC -> XD -> XH | [([([() v (XD = Ok)] ∧ XD = Num -> XE) v (XE = Ok)] ∧ [([([() v (XD = Ok)] ∧ [() v (XC = Ok)] ∧ XD = XC -> XG) v (XG = Ok)] ∧ [() v (XB = Ok)] ∧ XG = XB -> XF) v (XF = Ok)] ∧ XE = Num ∧ XF = Num ∧ XH = Num) v (XH = Ok) v (XD -> XH = Ok) v (XC -> XD -> XH = Ok) v (XB -> XC -> XD -> XH = Ok)]
+{'term': 'Or(And(Or(And(Or(And, XD == Ok), XD == To(Num, XE)),XE == Ok), Or(And(Or(And(Or(And, XD == Ok), Or(And, XC == Ok), XD == To(XC, XG)), XG == Ok),Or(And, XB == Ok),XG == To(XB, XF)),XF == Ok), XE == Num, XF == Num, XH == Num), XH == Ok, To(XD, XH) == Ok, To(XC, To(XD, XH)) == Ok, To(XB, To(XC, To(XD, XH))) == Ok)', 'sol': [{'XH': 'Ok', 'XB': 'Num', 'XG': 'To(Num, Num)', 'XF': 'Num', 'XC': 'Num', 'XE': 'Num', 'XD': 'To(Num, Num)'}, {'XB': 'Ok', 'XE': 'Comp(Num)', 'XC': 'Ok', 'XH': 'Ok', 'XF': 'Comp(Num)', 'XG': 'Num'}, {'XB': 'Comp(Num)', 'XE': 'Comp(Ok)', 'XC': 'Comp(Num)', 'XH': 'Ok', 'XF': 'Comp(Ok)', 'XG': 'Comp(Num)'}, {'XB': 'Comp(Ok)', 'XE': 'To(Num, Num)', 'XC': 'Comp(Ok)', 'XH': 'Ok', 'XF': 'To(Num, Num)', 'XG': 'Comp(Ok)'}], 'type_vars': ['XD', 'XE', 'XC', 'XG', 'XB', 'XF', 'XH']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+{
+  "term": "Or(And(Or(And(Or(And, XD == Ok), XD == To(Num, XE)),XE == Ok), Or(And(Or(And(Or(And, XD == Ok), Or(And, XC == Ok), XD == To(XC, XG)), XG == Ok),Or(And, XB == Ok),XG == To(XB, XF)),XF == Ok), XE == Num, XF == Num, XH == Num), XH == Ok, To(XD, XH) == Ok, To(XC, To(XD, XH)) == Ok, To(XB, To(XC, To(XD, XH))) == Ok)",
+  "sol": [
+    {
+      "XH": "Ok",
+      "XB": "Num",
+      "XG": "To(Num, Num)",
+      "XF": "Num",
+      "XC": "Num",
+      "XE": "Num",
+      "XD": "To(Num, Num)"
+    },
+    {
+      "XB": "Ok",
+      "XE": "Comp(Num)",
+      "XC": "Ok",
+      "XH": "Ok",
+      "XF": "Comp(Num)",
+      "XG": "Num"
+    },
+    {
+      "XB": "Comp(Num)",
+      "XE": "Comp(Ok)",
+      "XC": "Comp(Num)",
+      "XH": "Ok",
+      "XF": "Comp(Ok)",
+      "XG": "Comp(Num)"
+    },
+    {
+      "XB": "Comp(Ok)",
+      "XE": "To(Num, Num)",
+      "XC": "Comp(Ok)",
+      "XH": "Ok",
+      "XF": "To(Num, Num)",
+      "XG": "Comp(Ok)"
+    }
+  ],
+  "type_vars": [
+    "XD",
+    "XE",
+    "XC",
+    "XG",
+    "XB",
+    "XF",
+    "XH"
+  ]
+}
+x => y => f => f(0) + f(y)(x) : Num -> Num -> To(Num, Num) -> Ok
+x => y => f => f(0) + f(y)(x) : Ok -> Ok -> XD -> Ok
+x => y => f => f(0) + f(y)(x) : Comp(Num) -> Comp(Num) -> XD -> Ok
+x => y => f => f(0) + f(y)(x) : Comp(Ok) -> Comp(Ok) -> XD -> Ok
+spawnGetString: program 'python3' emitted signal null threw code 0
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 17:13:04 
+❯ node wrapper_z3.js
+x: XB, y: XC, f: XD ⊢ x => M : XB -> XC -> XD -> XH | [([([() v (XD = Ok)] ∧ XD = Num -> XE) v (XE = Ok)] ∧ [([([() v (XD = Ok)] ∧ [() v (XC = Ok)] ∧ XD = XC -> XG) v (XG = Ok)] ∧ [() v (XB = Ok)] ∧ XG = XB -> XF) v (XF = Ok)] ∧ XE = Num ∧ XF = Num ∧ XH = Num) v (XH = Ok) v (XD -> XH = Ok) v (XC -> XD -> XH = Ok) v (XB -> XC -> XD -> XH = Ok)]
+{'term': 'Or(And(Or(And(Or(And, XD == Ok), XD == To(Num, XE)),XE == Ok), Or(And(Or(And(Or(And, XD == Ok), Or(And, XC == Ok), XD == To(XC, XG)), XG == Ok),Or(And, XB == Ok),XG == To(XB, XF)),XF == Ok), XE == Num, XF == Num, XH == Num), XH == Ok, To(XD, XH) == Ok, To(XC, To(XD, XH)) == Ok, To(XB, To(XC, To(XD, XH))) == Ok)', 'sol': [{'XH': 'Ok', 'XB': 'Num', 'XG': 'To(Num, Num)', 'XF': 'Num', 'XC': 'Num', 'XE': 'Num', 'XD': 'To(Num, Num)'}, {'XB': 'Ok', 'XE': 'Comp(Num)', 'XC': 'Ok', 'XH': 'Ok', 'XF': 'Comp(Num)', 'XG': 'Num'}, {'XB': 'Comp(Num)', 'XE': 'Comp(Ok)', 'XC': 'Comp(Num)', 'XH': 'Ok', 'XF': 'Comp(Ok)', 'XG': 'Comp(Num)'}, {'XB': 'Comp(Ok)', 'XE': 'To(Num, Num)', 'XC': 'Comp(Ok)', 'XH': 'Ok', 'XF': 'To(Num, Num)', 'XG': 'Comp(Ok)'}], 'type_vars': ['XD', 'XE', 'XC', 'XG', 'XB', 'XF', 'XH']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+{
+  "term": "Or(And(Or(And(Or(And, XD == Ok), XD == To(Num, XE)),XE == Ok), Or(And(Or(And(Or(And, XD == Ok), Or(And, XC == Ok), XD == To(XC, XG)), XG == Ok),Or(And, XB == Ok),XG == To(XB, XF)),XF == Ok), XE == Num, XF == Num, XH == Num), XH == Ok, To(XD, XH) == Ok, To(XC, To(XD, XH)) == Ok, To(XB, To(XC, To(XD, XH))) == Ok)",
+  "sol": [
+    {
+      "XH": "Ok",
+      "XB": "Num",
+      "XG": "To(Num, Num)",
+      "XF": "Num",
+      "XC": "Num",
+      "XE": "Num",
+      "XD": "To(Num, Num)"
+    },
+    {
+      "XB": "Ok",
+      "XE": "Comp(Num)",
+      "XC": "Ok",
+      "XH": "Ok",
+      "XF": "Comp(Num)",
+      "XG": "Num"
+    },
+    {
+      "XB": "Comp(Num)",
+      "XE": "Comp(Ok)",
+      "XC": "Comp(Num)",
+      "XH": "Ok",
+      "XF": "Comp(Ok)",
+      "XG": "Comp(Num)"
+    },
+    {
+      "XB": "Comp(Ok)",
+      "XE": "To(Num, Num)",
+      "XC": "Comp(Ok)",
+      "XH": "Ok",
+      "XF": "To(Num, Num)",
+      "XG": "Comp(Ok)"
+    }
+  ],
+  "type_vars": [
+    "XD",
+    "XE",
+    "XC",
+    "XG",
+    "XB",
+    "XF",
+    "XH"
+  ]
+}
+x => y => f => f(0) + f(y)(x) : Num -> Num -> To(Num, Num) -> Ok
+x => y => f => f(0) + f(y)(x) : Ok -> Ok -> XD -> Ok
+x => y => f => f(0) + f(y)(x) : Comp(Num) -> Comp(Num) -> XD -> Ok
+x => y => f => f(0) + f(y)(x) : Comp(Ok) -> Comp(Ok) -> XD -> Ok
+spawnGetString: program 'python3' emitted signal null threw code 0
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 17:13:05 
+❯ node wrapper_z3.js
+x: XB, y: XC, f: XD ⊢ x => M : XB -> XC -> XD -> XH | [([([() v (XD = Ok)] ∧ XD = Num -> XE) v (XE = Ok)] ∧ [([([() v (XD = Ok)] ∧ [() v (XC = Ok)] ∧ XD = XC -> XG) v (XG = Ok)] ∧ [() v (XB = Ok)] ∧ XG = XB -> XF) v (XF = Ok)] ∧ XE = Num ∧ XF = Num ∧ XH = Num) v (XH = Ok) v (XD -> XH = Ok) v (XC -> XD -> XH = Ok) v (XB -> XC -> XD -> XH = Ok)]
+{'term': 'Or(And(Or(And(Or(And, XD == Ok), XD == To(Num, XE)),XE == Ok), Or(And(Or(And(Or(And, XD == Ok), Or(And, XC == Ok), XD == To(XC, XG)), XG == Ok),Or(And, XB == Ok),XG == To(XB, XF)),XF == Ok), XE == Num, XF == Num, XH == Num), XH == Ok, To(XD, XH) == Ok, To(XC, To(XD, XH)) == Ok, To(XB, To(XC, To(XD, XH))) == Ok)', 'sol': [{'XH': 'Ok', 'XB': 'Num', 'XG': 'To(Num, Num)', 'XF': 'Num', 'XC': 'Num', 'XE': 'Num', 'XD': 'To(Num, Num)'}, {'XB': 'Ok', 'XE': 'Comp(Num)', 'XC': 'Ok', 'XH': 'Ok', 'XF': 'Comp(Num)', 'XG': 'Num'}, {'XB': 'Comp(Num)', 'XE': 'Comp(Ok)', 'XC': 'Comp(Num)', 'XH': 'Ok', 'XF': 'Comp(Ok)', 'XG': 'Comp(Num)'}, {'XB': 'Comp(Ok)', 'XE': 'To(Num, Num)', 'XC': 'Comp(Ok)', 'XH': 'Ok', 'XF': 'To(Num, Num)', 'XG': 'Comp(Ok)'}], 'type_vars': ['XD', 'XE', 'XC', 'XG', 'XB', 'XF', 'XH']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+{
+  "term": "Or(And(Or(And(Or(And, XD == Ok), XD == To(Num, XE)),XE == Ok), Or(And(Or(And(Or(And, XD == Ok), Or(And, XC == Ok), XD == To(XC, XG)), XG == Ok),Or(And, XB == Ok),XG == To(XB, XF)),XF == Ok), XE == Num, XF == Num, XH == Num), XH == Ok, To(XD, XH) == Ok, To(XC, To(XD, XH)) == Ok, To(XB, To(XC, To(XD, XH))) == Ok)",
+  "sol": [
+    {
+      "XH": "Ok",
+      "XB": "Num",
+      "XG": "To(Num, Num)",
+      "XF": "Num",
+      "XC": "Num",
+      "XE": "Num",
+      "XD": "To(Num, Num)"
+    },
+    {
+      "XB": "Ok",
+      "XE": "Comp(Num)",
+      "XC": "Ok",
+      "XH": "Ok",
+      "XF": "Comp(Num)",
+      "XG": "Num"
+    },
+    {
+      "XB": "Comp(Num)",
+      "XE": "Comp(Ok)",
+      "XC": "Comp(Num)",
+      "XH": "Ok",
+      "XF": "Comp(Ok)",
+      "XG": "Comp(Num)"
+    },
+    {
+      "XB": "Comp(Ok)",
+      "XE": "To(Num, Num)",
+      "XC": "Comp(Ok)",
+      "XH": "Ok",
+      "XF": "To(Num, Num)",
+      "XG": "Comp(Ok)"
+    }
+  ],
+  "type_vars": [
+    "XD",
+    "XE",
+    "XC",
+    "XG",
+    "XB",
+    "XF",
+    "XH"
+  ]
+}
+x => y => f => f(0) + f(y)(x) : Num -> Num -> To(Num, Num) -> Ok
+x => y => f => f(0) + f(y)(x) : Ok -> Ok -> XD -> Ok
+x => y => f => f(0) + f(y)(x) : Comp(Num) -> Comp(Num) -> XD -> Ok
+x => y => f => f(0) + f(y)(x) : Comp(Ok) -> Comp(Ok) -> XD -> Ok
+spawnGetString: program 'python3' emitted signal null threw code 0
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 17:13:05 
+❯ node wrapper_z3.js
+x: XB, y: XC, f: XD ⊢ x => M : XB -> XC -> XD -> XH | [([([() v (XD = Ok)] ∧ XD = Num -> XE) v (XE = Ok)] ∧ [([([() v (XD = Ok)] ∧ [() v (XC = Ok)] ∧ XD = XC -> XG) v (XG = Ok)] ∧ [() v (XB = Ok)] ∧ XG = XB -> XF) v (XF = Ok)] ∧ XE = Num ∧ XF = Num ∧ XH = Num) v (XH = Ok) v (XD -> XH = Ok) v (XC -> XD -> XH = Ok) v (XB -> XC -> XD -> XH = Ok)]
+{'term': 'Or(And(Or(And(Or(And, XD == Ok), XD == To(Num, XE)),XE == Ok), Or(And(Or(And(Or(And, XD == Ok), Or(And, XC == Ok), XD == To(XC, XG)), XG == Ok),Or(And, XB == Ok),XG == To(XB, XF)),XF == Ok), XE == Num, XF == Num, XH == Num), XH == Ok, To(XD, XH) == Ok, To(XC, To(XD, XH)) == Ok, To(XB, To(XC, To(XD, XH))) == Ok)', 'sol': [{'XH': 'Ok', 'XB': 'Num', 'XG': 'To(Num, Num)', 'XF': 'Num', 'XC': 'Num', 'XE': 'Num', 'XD': 'To(Num, Num)'}, {'XB': 'Ok', 'XE': 'Comp(Num)', 'XC': 'Ok', 'XH': 'Ok', 'XF': 'Comp(Num)', 'XG': 'Num'}, {'XB': 'Comp(Num)', 'XE': 'Comp(Ok)', 'XC': 'Comp(Num)', 'XH': 'Ok', 'XF': 'Comp(Ok)', 'XG': 'Comp(Num)'}, {'XB': 'Comp(Ok)', 'XE': 'To(Num, Num)', 'XC': 'Comp(Ok)', 'XH': 'Ok', 'XF': 'To(Num, Num)', 'XG': 'Comp(Ok)'}], 'type_vars': ['XD', 'XE', 'XC', 'XG', 'XB', 'XF', 'XH']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+{
+  "term": "Or(And(Or(And(Or(And, XD == Ok), XD == To(Num, XE)),XE == Ok), Or(And(Or(And(Or(And, XD == Ok), Or(And, XC == Ok), XD == To(XC, XG)), XG == Ok),Or(And, XB == Ok),XG == To(XB, XF)),XF == Ok), XE == Num, XF == Num, XH == Num), XH == Ok, To(XD, XH) == Ok, To(XC, To(XD, XH)) == Ok, To(XB, To(XC, To(XD, XH))) == Ok)",
+  "sol": [
+    {
+      "XH": "Ok",
+      "XB": "Num",
+      "XG": "To(Num, Num)",
+      "XF": "Num",
+      "XC": "Num",
+      "XE": "Num",
+      "XD": "To(Num, Num)"
+    },
+    {
+      "XB": "Ok",
+      "XE": "Comp(Num)",
+      "XC": "Ok",
+      "XH": "Ok",
+      "XF": "Comp(Num)",
+      "XG": "Num"
+    },
+    {
+      "XB": "Comp(Num)",
+      "XE": "Comp(Ok)",
+      "XC": "Comp(Num)",
+      "XH": "Ok",
+      "XF": "Comp(Ok)",
+      "XG": "Comp(Num)"
+    },
+    {
+      "XB": "Comp(Ok)",
+      "XE": "To(Num, Num)",
+      "XC": "Comp(Ok)",
+      "XH": "Ok",
+      "XF": "To(Num, Num)",
+      "XG": "Comp(Ok)"
+    }
+  ],
+  "type_vars": [
+    "XD",
+    "XE",
+    "XC",
+    "XG",
+    "XB",
+    "XF",
+    "XH"
+  ]
+}
+x => y => f => f(0) + f(y)(x) : Num -> Num -> To(Num, Num) -> Ok
+x => y => f => f(0) + f(y)(x) : Ok -> Ok -> XD -> Ok
+x => y => f => f(0) + f(y)(x) : Comp(Num) -> Comp(Num) -> XD -> Ok
+x => y => f => f(0) + f(y)(x) : Comp(Ok) -> Comp(Ok) -> XD -> Ok
+spawnGetString: program 'python3' emitted signal null threw code 0
+ ~/Doc/c/year-3/tb2/i/ast/subset_draft  feature-z3-i…-integration *1 !4 ▓▒░   ░▒▓ 17:13:06 
+❯ node wrapper_z3.js
+x: XB, y: XC, f: XD ⊢ x => M : XB -> XC -> XD -> XH | [([([() v (XD = Ok)] ∧ XD = Num -> XE) v (XE = Ok)] ∧ [([([() v (XD = Ok)] ∧ [() v (XC = Ok)] ∧ XD = XC -> XG) v (XG = Ok)] ∧ [() v (XB = Ok)] ∧ XG = XB -> XF) v (XF = Ok)] ∧ XE = Num ∧ XF = Num ∧ XH = Num) v (XH = Ok) v (XD -> XH = Ok) v (XC -> XD -> XH = Ok) v (XB -> XC -> XD -> XH = Ok)]
+Or(XH != Ok,
+   XB != Num,
+   XG != To(Num, Num),
+   XF != Num,
+   XC != Num,
+   XE != Num,
+   XD != To(Num, Num))
+Or(XB != Ok,
+   XE != Comp(Num),
+   XC != Ok,
+   XH != Ok,
+   XF != Comp(Num),
+   XG != Num)
+Or(XB != Comp(Num),
+   XE != Comp(Ok),
+   XC != Comp(Num),
+   XH != Ok,
+   XF != Comp(Ok),
+   XG != Comp(Num))
+Or(XB != Comp(Ok),
+   XE != To(Num, Num),
+   XC != Comp(Ok),
+   XH != Ok,
+   XF != To(Num, Num),
+   XG != Comp(Ok))
+{'term': 'Or(And(Or(And(Or(And, XD == Ok), XD == To(Num, XE)),XE == Ok), Or(And(Or(And(Or(And, XD == Ok), Or(And, XC == Ok), XD == To(XC, XG)), XG == Ok),Or(And, XB == Ok),XG == To(XB, XF)),XF == Ok), XE == Num, XF == Num, XH == Num), XH == Ok, To(XD, XH) == Ok, To(XC, To(XD, XH)) == Ok, To(XB, To(XC, To(XD, XH))) == Ok)', 'sol': [{'XH': 'Ok', 'XB': 'Num', 'XG': 'To(Num, Num)', 'XF': 'Num', 'XC': 'Num', 'XE': 'Num', 'XD': 'To(Num, Num)'}, {'XB': 'Ok', 'XE': 'Comp(Num)', 'XC': 'Ok', 'XH': 'Ok', 'XF': 'Comp(Num)', 'XG': 'Num'}, {'XB': 'Comp(Num)', 'XE': 'Comp(Ok)', 'XC': 'Comp(Num)', 'XH': 'Ok', 'XF': 'Comp(Ok)', 'XG': 'Comp(Num)'}, {'XB': 'Comp(Ok)', 'XE': 'To(Num, Num)', 'XC': 'Comp(Ok)', 'XH': 'Ok', 'XF': 'To(Num, Num)', 'XG': 'Comp(Ok)'}], 'type_vars': ['XD', 'XE', 'XC', 'XG', 'XB', 'XF', 'XH']}
+
+spawnGetString: program 'python3' emitted signal null threw code 0
+test: SyntaxError: Unexpected token O in JSON at position 0
+spawnGetString: program 'python3' emitted signal null threw code 0
