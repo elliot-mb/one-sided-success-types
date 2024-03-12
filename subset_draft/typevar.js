@@ -4,7 +4,7 @@ import {Utils} from './utils.js';
  * its here we use the grammar for types, which
  * says that type variables are:
  * 
- * A, B ::= Num | A x B | A -> B | A^c | Ok 
+ * A, B ::= O Num | X A x B | O A -> B | O A^c | O Ok 
  * 
  */
 
@@ -20,7 +20,7 @@ export class GenT{
     static okShape = 'Ok';
     static numShape = 'Num';
     static arrowShape = 'A -> B';
-    static compShape = 'Ac';
+    static compShape = 'Aᶜ';
     
     constructor(id){
         this.id = id;
@@ -36,6 +36,7 @@ export class GenT{
         return this.getId();
     }
 
+    //for unification 
     freeIn(){
         return [this.getId()];
     }
@@ -105,7 +106,23 @@ export class CompT extends GenT{
     }
 
     freeIn(){
-        
+        return getA().freeIn();
+    }
+
+    swapWith(tA, tB){ 
+        Utils.typeVarsOrCrash(tA, tB);
+        //console.log(`(${this.show()})[${tA.show()}/${tB.show()}] ${this.getId() === tA.getId()}`);
+        this.A = this.getA.swapWith(tA, tB);
+        return this;
+    }
+
+    equals(C){
+        if(this.shape() !== C.shape()) return false;
+        return this.getA().equals(C.getA()); //get the Id inside the complement
+    }
+
+    show(){
+        return `(${this.getA().show()})ᶜ`;
     }
 
 }
@@ -132,6 +149,10 @@ export class OkT extends GenT{
         return this.shape() === C.shape();
     }
 
+    show(){
+        return `Ok`;
+    }
+
 }
 
 export class NumT extends GenT{
@@ -155,6 +176,10 @@ export class NumT extends GenT{
 
     equals(C){
         return this.shape() === C.shape();
+    }
+
+    show(){
+        return 'Num';
     }
 }
 
