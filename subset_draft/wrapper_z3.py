@@ -87,7 +87,7 @@ def type_vars(joiner):
     return uniques # return a dict which we populate with z3 types
 
 def show_constrs(constrs):
-    return str(constrs).replace('\n', '').replace('  ', '')
+    return str(constrs)#.replace('\n', '').replace('  ', '')
 
 def main():
     recieved = json.loads(args.constraints)
@@ -129,7 +129,7 @@ def main():
     # solnss = [(solnser)]
     mod = None
     illegal_assign = False
-    max_types = 5
+    max_types = 10
     type_count = 0
     while(solver.check() == sat and not illegal_assign and (max_types > type_count)):
         #print(solver)
