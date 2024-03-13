@@ -34,21 +34,6 @@ const spawnGetString = (program, args) => {
     });
 }
 
-const procTest = () => {
-
-    const proc = spawn('python3', ['./wrapper_z3.py', '-constraints', {money: "bags"}]);
-
-    proc.on('error', (err) => {
-        throw Utils.makeErr(`wrapper_z3.js: ${err}`);
-    });
-    
-    proc.stdout.on('data', (data) => {
-        console.log((data.toString()));
-    })
-    spawnGetString('python3', ['./wrapper_z3.py', '-constraints', 'money']).then(r => console.log(r), err => Utils.makeErr(err));
-
-}
-
 const sendConstraints = (constraints) => {
     //if(typeof(constraints) !== 'object') throw Utils.makeErr('sendProgramObject: argument \'object\' appears to not be of type object');
     // Utils.isTypeOrCrash(orer, )
@@ -80,29 +65,6 @@ const test = async () => {
     const solns = await sendConstrsToObj(topAndConstrs);
     console.log(pretty(solns));
     console.log(done.constrs.toConstraintSet().show());
-
-    //console.log(r.reconstruct(program).constrs);
-    // sendConstraints(JSON.stringify(topAndConstrs))
-    //     .then(resp => console.log(resp))
-    //     .then(resp => {
-            // sendConstrsToObj(topAndConstrs)
-            // .then(
-            //     resp => {   
-            //         console.log(pretty(resp));
-            //         const solns = resp.sol;
-            //         for(let i = 0; i < solns.length; i++){
-            //             let tShow = t.show();
-            //             const soln = solns[i];
-            //             const types = Object.keys(soln);
-            //             types.map(t => {
-            //                 tShow = tShow.replace(t, soln[t])
-            //             });
-            //             console.log(`${program} : ${tShow}`);
-            //         }
-            //     },
-            //     err => console.error(`test: ${err}`)
-            // );
-        // });
 }
 
 test();
