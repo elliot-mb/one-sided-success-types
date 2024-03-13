@@ -70,35 +70,39 @@ const pyDictToJSON = (dictStr) => {
     return builder;
 }
 
-const test = () => {
+const test = async () => {
     const r = new Reconstructor();
     const program = 'x => x + 1';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
     const done = r.reconstruct(program);
     const t = done.termType;
     console.log(`${done.show()}`);
     const topAndConstrs = {'top_type': t, 'constrs': done.constrs};
+    const solns = await sendConstrsToObj(topAndConstrs);
+    console.log(pretty(solns));
+    console.log(done.constrs.toConstraintSet().show());
+
     //console.log(r.reconstruct(program).constrs);
-    sendConstraints(JSON.stringify(topAndConstrs))
-        .then(resp => console.log(resp))
-        .then(resp => {
-            sendConstrsToObj(topAndConstrs)
-            .then(
-                resp => {   
-                    console.log(pretty(resp));
-                    const solns = resp.sol;
-                    for(let i = 0; i < solns.length; i++){
-                        let tShow = t.show();
-                        const soln = solns[i];
-                        const types = Object.keys(soln);
-                        types.map(t => {
-                            tShow = tShow.replace(t, soln[t])
-                        });
-                        console.log(`${program} : ${tShow}`);
-                    }
-                },
-                err => console.error(`test: ${err}`)
-            );
-        });
+    // sendConstraints(JSON.stringify(topAndConstrs))
+    //     .then(resp => console.log(resp))
+    //     .then(resp => {
+            // sendConstrsToObj(topAndConstrs)
+            // .then(
+            //     resp => {   
+            //         console.log(pretty(resp));
+            //         const solns = resp.sol;
+            //         for(let i = 0; i < solns.length; i++){
+            //             let tShow = t.show();
+            //             const soln = solns[i];
+            //             const types = Object.keys(soln);
+            //             types.map(t => {
+            //                 tShow = tShow.replace(t, soln[t])
+            //             });
+            //             console.log(`${program} : ${tShow}`);
+            //         }
+            //     },
+            //     err => console.error(`test: ${err}`)
+            // );
+        // });
 }
 
 test();

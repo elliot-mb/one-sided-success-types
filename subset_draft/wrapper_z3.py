@@ -157,7 +157,7 @@ def main():
 
     
     reply = {
-        'reflect': recieved,
+        #'reflect': recieved,
         'term': show_constrs(base_constraints),
         #'simple_term': show_constrs(simplify(base_constraints)),
         'sol': solns,
