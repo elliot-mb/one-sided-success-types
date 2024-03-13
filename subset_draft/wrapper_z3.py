@@ -123,7 +123,8 @@ def main():
     solver.add(base_constraints)#Or(And(b == JSTy.To(a, c), (a == type_lookup[args.num_shape])), (type_lookup[args.ok_shape] == b)))
     
     # now show me its false
-    solver.add(to_type(top_type, type_lookup, JSTy) == JSTy.Comp(ComplTy.Ok))
+    # solver.add(to_type(top_type, type_lookup, JSTy) == JSTy.Comp(ComplTy.Ok))
+
     # solnser = all_smt(solver, base_constraints)
     # solnss = [(solnser)]
     mod = None
@@ -136,14 +137,17 @@ def main():
         #print(mod)
         mod_neg = []
         sol = {}
+        solver.push() # starting to add solved assms to solve the vars that dont matter
         for ass in mod:
             if(ass.arity() == 0): #reassign constants
                 sol[show_constrs(ass)] = show_constrs(mod[ass])
+                solver.add(ass == mod[ass])
                 #print("" + str(ass) + " = " + str(mod[ass]))
                 mod_neg.append(type_lookup[str(ass)] != mod[ass])
             else: 
                 illegal_assign = True
-
+         
+        solver.pop()
         mod_negation = Or(mod_neg)
         #print(mod_negation)
         solns.append(sol) 

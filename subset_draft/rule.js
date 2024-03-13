@@ -64,13 +64,13 @@ export class Rule {
         const X = new GenT(r.getFreshVar('X'));
         const Y = new GenT(r.getFreshVar('Y'));
         const body = empty.asSubterm('M');
-        body.addAssm(empty.asSubterm('x').getSubterm('x'), X);
+        body.addAssm(empty.asSubterm('x').getSubterm('x'), Y);
         const premise1 = r.typecheck(body);
 
-        const conclusn = empty.constrain(Y, premise1.constrs);
+        const conclusn = empty.constrain(X, premise1.constrs);
 
         conclusn.addAnder();
-        conclusn.addToLast(new Constraint(conclusn.termType, new ArrowT(X, premise1.termType)));
+        conclusn.addToLast(new Constraint(conclusn.termType, new ArrowT(Y, premise1.termType)));
          //(OK)
         if(Rule.Ok){
             conclusn.addAnder();
