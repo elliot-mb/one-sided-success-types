@@ -7,11 +7,13 @@ parser.add_argument('-constraints', '-c', type=str, default=None)
 parser.add_argument('-ander_type', '-a', type=str, default='ander')
 parser.add_argument('-orer_type', '-o', type=str, default='orer')
 parser.add_argument('-constraint_type', '-ct', type=str, default='constraint')
+parser.add_argument('-constraint_set_type', '-cst', type=str, default='constraintset')
 parser.add_argument('-shape_field', '-s', type=str, default='shapeV')
 parser.add_argument('-general_shape', '-g', type=str, default='A')
 parser.add_argument('-ok_shape', '-k', type=str, default='Ok')
 parser.add_argument('-num_shape', '-n', type=str, default='Num')
 parser.add_argument('-arrow_shape', '-r', type=str, default='A -> B')
+parser.add_argument('-typevar_type', '-tvt', type=str, default='GenT')
 args = parser.parse_args()
 
 
@@ -50,11 +52,25 @@ def unpack(joiner, const_lookup, JSTy):
         return to_type(joiner['A'], const_lookup, JSTy) == to_type(joiner['B'], const_lookup, JSTy)
     else:
         raise 'unpack(): unrecognised type \'' + join_t + '\''
+    
 #
 #   
 #   utilities 
 #
 #
+    
+def bound_in_constr_set(constr_set):
+    #print(constr_set)
+    typevars = []
+    if(not constr_set['type'] == args.constraint_set_type):
+        raise 'bound_in_constr_set: constr_set must be of type constraint set'
+    for x in constr_set['xs']:
+        maybe_gen_t = x['A']
+        if(not maybe_gen_t[args.shape_field] == args.general_shape):
+            raise 'bound_in_constr_set: constraint x must have a left side which is a GenT'
+        typevars.append(x['A']['id']) #left side is always a single GenT typevar
+
+    return typevars
 
 def flatten(xss):
     flat = []
@@ -91,7 +107,7 @@ def show_constrs(constrs):
 
 # iteratively acquires more solutions by constraining assignments against what they come up as 
 # whitelist tells us which assignments to not try and negate (a list of variable names)
-def make_solns(const_lookup, constrs, count, whitelist = []):
+def make_solns(const_lookup, constrs, count, whitelist = [], blacklist = []):
     solns = [] # can be added to a dict, array of dicts  
     solver = Solver()
     solver.set(relevancy=2)
@@ -104,23 +120,30 @@ def make_solns(const_lookup, constrs, count, whitelist = []):
         #print(solver)
         mod = solver.model()
         #print(mod)
-        mod_neg = []
+        mod_can_neg = []
+        mod_must_neg = []
         sol = {} #new dict 
         for ass in mod:
             assStr = str(ass)
             if(ass.arity() == 0): #reassign constants
                 sol[assStr] = mod[ass]
+                neg = const_lookup[assStr] != mod[ass]
                 if(not assStr in whitelist): #if its in the whitelist we shouldnt reassign
-                    mod_neg.append(const_lookup[assStr] != mod[ass])
-                    #print('reassign ' + assStr)
-            else: 
+                    mod_can_neg.append(neg)
+                if(assStr in blacklist):
+                    #print('MUST REASSIGN ' + assStr)
+                    mod_must_neg.append(neg)
+            else:                     #print('reassign ' + assStr)
                 illegal_assign = True
          
-        mod_negation = Or(mod_neg)
+        mod_negation = Or(mod_can_neg)
         #print(mod_negation)
         solns.append(sol) 
+        if(len(mod_must_neg) > 0):
+            solver.add(And(mod_must_neg))
         #print(mod_negation, list(map(lambda x: x, mod)))
         solver.add(mod_negation)
+        #print(solver)
         solve_count += 1
     return solns
 
@@ -150,6 +173,8 @@ def assigns_in_soln(soln):
     return keys
 
 def main():
+    MAX_DEPTH = 4 # how many solutions can we find up to (square this number)
+
     recieved = json.loads(args.constraints)
     #print(recieved)
     constrs = recieved['constrs']
@@ -181,7 +206,8 @@ def main():
     #type_lookup[args.arrow_shape] JSTy.
     term_type = to_type(recieved['term_type'], type_lookup, JSTy)
     all_constrs = unpack(constrs, type_lookup, JSTy)
-    top_constrs = Or(list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs'])))
+    top_constrs = list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs']))
+    bound_in_top = bound_in_constr_set(top_type)
     
     #solver.add(And(JSTy.Comp(JSTy.Comp(JSTy)) == JSTy))
     solver.add(all_constrs)#Or(And(b == JSTy.To(a, c), (a == type_lookup[args.num_shape])), (type_lookup[args.ok_shape] == b)))
@@ -190,16 +216,25 @@ def main():
     # solver.add(to_type(top_type, type_lookup, JSTy) == JSTy.Comp(ComplTy.Ok))
 
     # first pass 
-    solns = make_solns(type_lookup, all_constrs, 10)
+    solns = make_solns(type_lookup, all_constrs, MAX_DEPTH)
+    
+    # all solutions that dont interfere with the disjunctive toplevel constraints
 
+    #print('hang my limbs')
     top_solns = [] #nested list of toplevel types
     for soln in solns:
+        stripped_solns = {} #copy the relevant entries which wont conflict with the top types
+        for kv in soln.items():
+            if(not kv[0] in bound_in_top):
+                stripped_solns[kv[0]] = kv[1]
+        #print(stripped_solns)
         #top_solns.append(make_solns(soln_to_lookup(soln), top_constrs, 10))
         top_solns.append(make_solns(
             type_lookup, 
-            And(soln_to_constrs(soln, type_lookup), top_constrs), 
-            10,
-            assigns_in_soln(soln)))
+            And(soln_to_constrs(stripped_solns, type_lookup), And(top_constrs)), 
+            MAX_DEPTH,
+            [], # no privileged/whitelisted variables
+            [show_constrs(term_type)])) # make sure the term type changes each time
     
     def key_in_or_none(d, k):
         if k in d:
@@ -224,14 +259,15 @@ def main():
     reply = {
         #'reflect': recieved,
         'term_type': show_constrs(term_type),
-        'top': show_constrs(top_constrs),
+        'top': show_constrs(Or(top_constrs)),
         'term': show_constrs(all_constrs),
         #'simple_term': show_constrs(simplify(base_constraints)),
         'sol': solns_to_strs(solns),
         'top_solns': list(map(lambda x: solns_to_strs(x), top_solns)),
         #'sol_conj': show_constrs(list(map(lambda x: soln_to_constrs(x, type_lookup), solns))),
         'type_vars': type_list,
-        'term_type_assignments': uniqueList
+        'term_type_assignments': uniqueList,
+        'bound_in_top': bound_in_top
     }
     print(reply) #test to see if we can send the constraints back
 
