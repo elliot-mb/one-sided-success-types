@@ -131,7 +131,7 @@ def make_solns(const_lookup, constrs, count, whitelist = [], blacklist = []):
                 if(not assStr in whitelist): #if its in the whitelist we shouldnt reassign
                     mod_can_neg.append(neg)
                 if(assStr in blacklist):
-                    #print('MUST REASSIGN ' + assStr)
+                    print('MUST REASSIGN ' + assStr)
                     mod_must_neg.append(neg)
             else:                     #print('reassign ' + assStr)
                 illegal_assign = True
@@ -231,10 +231,10 @@ def main():
         #top_solns.append(make_solns(soln_to_lookup(soln), top_constrs, 10))
         top_solns.append(make_solns(
             type_lookup, 
-            And(soln_to_constrs(stripped_solns, type_lookup), And(top_constrs)), 
+            And(soln_to_constrs(stripped_solns, type_lookup)), 
             MAX_DEPTH,
             [], # no privileged/whitelisted variables
-            [show_constrs(term_type)])) # make sure the term type changes each time
+            bound_in_top)) # make sure the term type changes each time
     
     def key_in_or_none(d, k):
         if k in d:
