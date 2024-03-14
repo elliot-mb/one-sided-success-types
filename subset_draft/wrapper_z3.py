@@ -206,6 +206,8 @@ def main():
             return d[k]
         return 'Untypable' # no solution to constraints leads to assignment to result type 
 
+    top_solns.append(solns) # attach them incase all variables were solved in the first go (including the term type)
+
     term_type_assignments = flatten(list(
         map(lambda x: list(
             map(lambda y: key_in_or_none(y, show_constrs(term_type)), solns_to_strs(x))), 
