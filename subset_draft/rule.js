@@ -16,7 +16,6 @@ export class Rule {
         const typeInAssms = empty.variableType(empty.getSubterm('x'));
         const conclusn = empty.constrain(new GenT(r.getFreshVar('X'))); //(CTVar)
 
-        conclusn.addAnder(); //add empty ander
         conclusn.addToLast(new Constraint(conclusn.termType, typeInAssms)); // X = Gamma(x)
         // //(OK)
         if(Rule.Ok){
@@ -29,7 +28,7 @@ export class Rule {
 
     static cTNum = (r, empty) => {
         const conclusn = empty.constrain(new GenT(r.getFreshVar('X'))); 
-        conclusn.addAnder();
+
         conclusn.addToLast(new Constraint(conclusn.termType, new NumT()));
         
         if(Rule.Ok){
@@ -67,10 +66,9 @@ export class Rule {
         body.addAssm(empty.asSubterm('x').getSubterm('x'), Y);
         const premise1 = r.typecheck(body);
 
-        const conclusn = empty.constrain(X, premise1.constrs);
+        const conclusn = empty.constrain(X);
 
-        conclusn.addAnder();
-        //conclusn.addToLast(premise1.constrs); //make sure to add the premise constraints (where )
+        conclusn.addToLast(premise1.constrs); //make sure to add the premise constraints (where )
         conclusn.addToLast(new Constraint(conclusn.termType, new ArrowT(Y, premise1.termType)));
          //(OK)
         if(Rule.Ok){
