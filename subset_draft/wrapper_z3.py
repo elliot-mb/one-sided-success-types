@@ -22,32 +22,32 @@ args = parser.parse_args()
 #
 
 # z3_vars is the map of vars
-def to_type(nested, z3_vars, JSTy):
+def to_type(nested, const_lookup, JSTy):
     if(not args.shape_field in nested):
         raise 'to_type: supposed type \'nested\' has no shapeV field'
     shape = nested[args.shape_field]
     if(shape == args.arrow_shape):
-        return JSTy.To(to_type(nested['A'], z3_vars, JSTy), to_type(nested['B'], z3_vars, JSTy))
+        return JSTy.To(to_type(nested['A'], const_lookup, JSTy), to_type(nested['B'], const_lookup, JSTy))
     else: # no other types are nested so we are done (HAVENT ACCOUNTED FOR COMPLEMENT)
-        return z3_vars[nested['id']]
+        return const_lookup[nested['id']]
 
 # joiner ::= Ander | Orer | Constraint 
-def unpack(joiner, z3_vars, JSTy):
+def unpack(joiner, const_lookup, JSTy):
     if(not ('type' in joiner or 'xs' in joiner)):
         raise 'unpack(): joiner must be Ander | Orer | Constraint (found without \'type\' or \'xs\' field)'
     join_t = joiner['type']
     if(join_t == args.ander_type):
         xs = joiner['xs']
         if(len(xs) == 1):
-            return unpack(xs[0], z3_vars, JSTy)
-        return And(list(map(lambda x: unpack(x, z3_vars, JSTy), xs)))
+            return unpack(xs[0], const_lookup, JSTy)
+        return And(list(map(lambda x: unpack(x, const_lookup, JSTy), xs)))
     if(join_t == args.orer_type):
         xs = joiner['xs']
         if(len(xs) == 1):
-            return unpack(xs[0], z3_vars, JSTy)
-        return Or(list(map(lambda x: unpack(x, z3_vars, JSTy), xs))) 
+            return unpack(xs[0], const_lookup, JSTy)
+        return Or(list(map(lambda x: unpack(x, const_lookup, JSTy), xs))) 
     if(join_t == args.constraint_type):
-        return to_type(joiner['A'], z3_vars, JSTy) == to_type(joiner['B'], z3_vars, JSTy)
+        return to_type(joiner['A'], const_lookup, JSTy) == to_type(joiner['B'], const_lookup, JSTy)
     else:
         raise 'unpack(): unrecognised type \'' + join_t + '\''
 #
@@ -89,7 +89,9 @@ def type_vars(joiner):
 def show_constrs(constrs):
     return str(constrs).replace('\n', '').replace('  ', '')
 
-def make_solns(const_lookup, constrs, count):
+# iteratively acquires more solutions by constraining assignments against what they come up as 
+# whitelist tells us which assignments to not try and negate (a list of variable names)
+def make_solns(const_lookup, constrs, count, whitelist = []):
     solns = [] # can be added to a dict, array of dicts  
     solver = Solver()
     solver.set(relevancy=2)
@@ -104,17 +106,16 @@ def make_solns(const_lookup, constrs, count):
         #print(mod)
         mod_neg = []
         sol = {} #new dict 
-        solver.push() # starting to add solved assms to solve the vars that dont matter
         for ass in mod:
+            assStr = str(ass)
             if(ass.arity() == 0): #reassign constants
-                sol[show_constrs(ass)] = show_constrs(mod[ass])
-                solver.add(ass == mod[ass])
-                #print("" + str(ass) + " = " + str(mod[ass]))
-                mod_neg.append(const_lookup[str(ass)] != mod[ass])
+                sol[assStr] = mod[ass]
+                if(not assStr in whitelist): #if its in the whitelist we shouldnt reassign
+                    mod_neg.append(const_lookup[assStr] != mod[ass])
+                    #print('reassign ' + assStr)
             else: 
                 illegal_assign = True
          
-        solver.pop()
         mod_negation = Or(mod_neg)
         #print(mod_negation)
         solns.append(sol) 
@@ -123,11 +124,36 @@ def make_solns(const_lookup, constrs, count):
         solve_count += 1
     return solns
 
+def constrs_to_strs(m):
+    new_map = {}
+    for kv in m.items():
+        new_map[kv[0]] = show_constrs(kv[1])
+    return new_map
+
+def solns_to_strs(solns):
+    return list(map(lambda x: constrs_to_strs(x), solns))
+
+#turn a single solution into a conjunction of constraints
+def soln_to_constrs(soln, const_lookup):
+    return And(list(map(lambda kv: const_lookup[kv[0]] == kv[1], soln.items())))
+
+def soln_to_lookup(soln):
+    new_lookup = {}
+    for ass_kv in soln.items():
+        new_lookup[ass_kv[0]] = ass_kv[1]
+    return new_lookup
+
+def assigns_in_soln(soln):
+    keys = []
+    for ass_kv in soln.items():
+        keys.append(ass_kv[0])
+    return keys
 
 def main():
     recieved = json.loads(args.constraints)
     #print(recieved)
     constrs = recieved['constrs']
+    
     top_type = recieved['top_type']
     type_lookup = type_vars(constrs)
     type_list = list(type_lookup.keys())
@@ -153,50 +179,57 @@ def main():
     type_lookup[args.ok_shape] = JSTy.Ok
     type_lookup[args.num_shape] = JSTy.Num #adds an entry for constraints involving numbers and oks, without any extra logic 
     #type_lookup[args.arrow_shape] JSTy.
-    base_constraints = unpack(constrs, type_lookup, JSTy)
+    term_type = to_type(recieved['term_type'], type_lookup, JSTy)
+    all_constrs = unpack(constrs, type_lookup, JSTy)
+    top_constrs = Or(list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs'])))
+    
     #solver.add(And(JSTy.Comp(JSTy.Comp(JSTy)) == JSTy))
-    solver.add(base_constraints)#Or(And(b == JSTy.To(a, c), (a == type_lookup[args.num_shape])), (type_lookup[args.ok_shape] == b)))
+    solver.add(all_constrs)#Or(And(b == JSTy.To(a, c), (a == type_lookup[args.num_shape])), (type_lookup[args.ok_shape] == b)))
     
     # now show me its false
     # solver.add(to_type(top_type, type_lookup, JSTy) == JSTy.Comp(ComplTy.Ok))
 
-    # solnser = all_smt(solver, base_constraints)
-    # solnss = [(solnser)]
-    mod = None
-    illegal_assign = False
-    max_types = 10
-    type_count = 0
-    while(solver.check() == sat and not illegal_assign and (max_types > type_count)):
-        #print(solver)
-        mod = solver.model()
-        #print(mod)
-        mod_neg = []
-        sol = {}
-        solver.push() # starting to add solved assms to solve the vars that dont matter
-        for ass in mod:
-            if(ass.arity() == 0): #reassign constants
-                sol[show_constrs(ass)] = show_constrs(mod[ass])
-                solver.add(ass == mod[ass])
-                #print("" + str(ass) + " = " + str(mod[ass]))
-                mod_neg.append(type_lookup[str(ass)] != mod[ass])
-            else: 
-                illegal_assign = True
-         
-        solver.pop()
-        mod_negation = Or(mod_neg)
-        #print(mod_negation)
-        solns.append(sol) 
-        #print(mod_negation, list(map(lambda x: x, mod)))
-        solver.add(mod_negation)
-        type_count += 1
+    # first pass 
+    solns = make_solns(type_lookup, all_constrs, 10)
 
+    top_solns = [] #nested list of toplevel types
+    for soln in solns:
+        #top_solns.append(make_solns(soln_to_lookup(soln), top_constrs, 10))
+        top_solns.append(make_solns(
+            type_lookup, 
+            And(soln_to_constrs(soln, type_lookup), top_constrs), 
+            10,
+            assigns_in_soln(soln)))
     
+    def key_in_or_none(d, k):
+        if k in d:
+            return d[k]
+        return 'Untypable' # no solution to constraints leads to assignment to result type 
+
+    term_type_assignments = flatten(list(
+        map(lambda x: list(
+            map(lambda y: key_in_or_none(y, show_constrs(term_type)), solns_to_strs(x))), 
+                top_solns)))
+    
+    #just take the uniques 
+    uniques = {}
+    uniqueList = []
+    for i in range(len(term_type_assignments)):
+        uniques[term_type_assignments[i]] = None
+    for type_str_none in uniques.items():
+        uniqueList.append(type_str_none[0])
+
     reply = {
         #'reflect': recieved,
-        'term': show_constrs(base_constraints),
+        'term_type': show_constrs(term_type),
+        'top': show_constrs(top_constrs),
+        'term': show_constrs(all_constrs),
         #'simple_term': show_constrs(simplify(base_constraints)),
-        'sol': solns,
-        'type_vars': type_list
+        'sol': solns_to_strs(solns),
+        'top_solns': list(map(lambda x: solns_to_strs(x), top_solns)),
+        #'sol_conj': show_constrs(list(map(lambda x: soln_to_constrs(x, type_lookup), solns))),
+        'type_vars': type_list,
+        'term_type_assignments': uniqueList
     }
     print(reply) #test to see if we can send the constraints back
 
