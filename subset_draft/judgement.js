@@ -98,7 +98,11 @@ export class Judgement extends EmptyJudgement{
     addToLast(constr){
         Utils.typeIsOrCrash(constr, Orer.type, Constraint.type);
         //this.constrs.combine(new ConstraintSet([constr]));
-        if(constr.type === Constraint.type || !constr.isEmpty()) this.lastAnder().add(constr);
+        if(constr.type === Constraint.type || constr.type === Orer.type) {
+            this.lastAnder().add(constr);
+            return;
+        }
+        throw Utils.makeErr('addToLast: only constraints or orers may be added, not \'' + constr.show() + '\'');
     }
 
     /**

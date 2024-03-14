@@ -70,6 +70,7 @@ export class Rule {
         const conclusn = empty.constrain(X, premise1.constrs);
 
         conclusn.addAnder();
+        //conclusn.addToLast(premise1.constrs); //make sure to add the premise constraints (where )
         conclusn.addToLast(new Constraint(conclusn.termType, new ArrowT(Y, premise1.termType)));
          //(OK)
         if(Rule.Ok){
