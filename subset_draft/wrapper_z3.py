@@ -87,7 +87,42 @@ def type_vars(joiner):
     return uniques # return a dict which we populate with z3 types
 
 def show_constrs(constrs):
-    return str(constrs)#.replace('\n', '').replace('  ', '')
+    return str(constrs).replace('\n', '').replace('  ', '')
+
+def make_solns(const_lookup, constrs, count):
+    solns = [] # can be added to a dict, array of dicts  
+    solver = Solver()
+    solver.set(relevancy=2)
+    solver.add(constrs)
+    mod = None
+    illegal_assign = False
+    max_solves = count
+    solve_count = 0
+    while(solver.check() == sat and not illegal_assign and (max_solves > solve_count)):
+        #print(solver)
+        mod = solver.model()
+        #print(mod)
+        mod_neg = []
+        sol = {} #new dict 
+        solver.push() # starting to add solved assms to solve the vars that dont matter
+        for ass in mod:
+            if(ass.arity() == 0): #reassign constants
+                sol[show_constrs(ass)] = show_constrs(mod[ass])
+                solver.add(ass == mod[ass])
+                #print("" + str(ass) + " = " + str(mod[ass]))
+                mod_neg.append(const_lookup[str(ass)] != mod[ass])
+            else: 
+                illegal_assign = True
+         
+        solver.pop()
+        mod_negation = Or(mod_neg)
+        #print(mod_negation)
+        solns.append(sol) 
+        #print(mod_negation, list(map(lambda x: x, mod)))
+        solver.add(mod_negation)
+        solve_count += 1
+    return solns
+
 
 def main():
     recieved = json.loads(args.constraints)
