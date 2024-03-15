@@ -94,6 +94,7 @@ const test = async () => {
     const topLvls = done.constrs.toConstraintSet();
     console.log(topLvls)
     const topAndConstrs = {'term_type': t, 'top_type': topLvls, 'constrs': done.constrs};
+    console.log(JSON.stringify(topAndConstrs));
     const result = await sendConstrsToObj(topAndConstrs);
     console.log(pretty(result));
     console.log(`${program}:`);

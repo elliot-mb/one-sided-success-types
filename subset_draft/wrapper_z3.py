@@ -14,6 +14,7 @@ parser.add_argument('-ok_shape', '-k', type=str, default='Ok')
 parser.add_argument('-num_shape', '-n', type=str, default='Num')
 parser.add_argument('-arrow_shape', '-r', type=str, default='A -> B')
 parser.add_argument('-typevar_type', '-tvt', type=str, default='GenT')
+parser.add_argument('-constraint_file', '-cf', type=str, default=None)
 args = parser.parse_args()
 
 
@@ -26,7 +27,7 @@ args = parser.parse_args()
 # z3_vars is the map of vars
 def to_type(nested, const_lookup, JSTy):
     if(not args.shape_field in nested):
-        raise 'to_type: supposed type \'nested\' has no shapeV field'
+         raise Exception( 'to_type: supposed type \'nested\' has no shapeV field')
     shape = nested[args.shape_field]
     if(shape == args.arrow_shape):
         return JSTy.To(to_type(nested['A'], const_lookup, JSTy), to_type(nested['B'], const_lookup, JSTy))
@@ -36,7 +37,7 @@ def to_type(nested, const_lookup, JSTy):
 # joiner ::= Ander | Orer | Constraint 
 def unpack(joiner, const_lookup, JSTy):
     if(not ('type' in joiner or 'xs' in joiner)):
-        raise 'unpack(): joiner must be Ander | Orer | Constraint (found without \'type\' or \'xs\' field)'
+         raise Exception( 'unpack(): joiner must be Ander | Orer | Constraint (found without \'type\' or \'xs\' field)')
     join_t = joiner['type']
     if(join_t == args.ander_type):
         xs = joiner['xs']
@@ -51,7 +52,7 @@ def unpack(joiner, const_lookup, JSTy):
     if(join_t == args.constraint_type):
         return to_type(joiner['A'], const_lookup, JSTy) == to_type(joiner['B'], const_lookup, JSTy)
     else:
-        raise 'unpack(): unrecognised type \'' + join_t + '\''
+         raise Exception( 'unpack(): unrecognised type \'' + join_t + '\'')
     
 #
 #   
@@ -63,11 +64,11 @@ def bound_in_constr_set(constr_set):
     #print(constr_set)
     typevars = []
     if(not constr_set['type'] == args.constraint_set_type):
-        raise 'bound_in_constr_set: constr_set must be of type constraint set'
+         raise Exception( 'bound_in_constr_set: constr_set must be of type constraint set')
     for x in constr_set['xs']:
         maybe_gen_t = x['A']
         if(not maybe_gen_t[args.shape_field] == args.general_shape):
-            raise 'bound_in_constr_set: constraint x must have a left side which is a GenT'
+             raise Exception( 'bound_in_constr_set: constraint x must have a left side which is a GenT')
         typevars.append(x['A']['id']) #left side is always a single GenT typevar
 
     return typevars
@@ -116,9 +117,10 @@ def make_solns(const_lookup, constrs, count, whitelist = [], blacklist = []):
     illegal_assign = False
     max_solves = count
     solve_count = 0
+    #print(solver)
     while(solver.check() == sat and not illegal_assign and (max_solves > solve_count)):
-        #print(solver)
         mod = solver.model()
+        print(solver)
         #print(mod)
         mod_can_neg = []
         mod_must_neg = []
@@ -145,6 +147,7 @@ def make_solns(const_lookup, constrs, count, whitelist = [], blacklist = []):
         solver.add(mod_negation)
         #print(solver)
         solve_count += 1
+
     return solns
 
 def constrs_to_strs(m):
@@ -174,9 +177,19 @@ def assigns_in_soln(soln):
 
 def main():
     MAX_DEPTH = 4 # how many solutions can we find up to (square this number)
-
-    recieved = json.loads(args.constraints)
+    recieved = None
+    if(not args.constraint_file == None): 
+        recieved_f = open(args.constraint_file, 'r')
+        print(args.constraint_file)
+        recieved_lns = ''    
+        for ln in recieved_f:
+            recieved_lns += ln + '\n'
+        recieved = json.loads(recieved_lns)
+    elif(not args.constraints == None):
+        recieved = json.loads(args.constraints)
     #print(recieved)
+    if(recieved == None):
+        raise Exception('main: no file or json specified or provided')
     constrs = recieved['constrs']
     
     top_type = recieved['top_type']
@@ -258,14 +271,13 @@ def main():
 
     reply = {
         #'reflect': recieved,
-        'term_type': show_constrs(term_type),
-        'top': show_constrs(Or(top_constrs)),
-        'term': show_constrs(all_constrs),
-        #'simple_term': show_constrs(simplify(base_constraints)),
-        'sol': solns_to_strs(solns),
+        #'term_type': show_constrs(term_type),
+        #'top': show_constrs(Or(top_constrs)),
+        #'term': show_constrs(all_constrs),
+        #'sol': solns_to_strs(solns),
         'top_solns': list(map(lambda x: solns_to_strs(x), top_solns)),
         #'sol_conj': show_constrs(list(map(lambda x: soln_to_constrs(x, type_lookup), solns))),
-        'type_vars': type_list,
+        #'type_vars': type_list,
         'term_type_assignments': uniqueList,
         'bound_in_top': bound_in_top
     }
