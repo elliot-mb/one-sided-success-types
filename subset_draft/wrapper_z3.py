@@ -1,5 +1,6 @@
 import argparse
 import json
+import pprint
 from z3 import *
 
 parser = argparse.ArgumentParser(description = 'z3 interface')
@@ -169,10 +170,11 @@ def soln_to_lookup(soln):
         new_lookup[ass_kv[0]] = ass_kv[1]
     return new_lookup
 
-def assigns_in_soln(soln):
+# variables assigned to in solutions (just gets teh keys of a dict)
+def keys_in_dict(d):
     keys = []
-    for ass_kv in soln.items():
-        keys.append(ass_kv[0])
+    for kv in d.items():
+        keys.append(kv[0])
     return keys
 
 def main():
@@ -220,6 +222,7 @@ def main():
     term_type = to_type(recieved['term_type'], type_lookup, JSTy)
     all_constrs = unpack(constrs, type_lookup, JSTy)
     top_constrs = list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs']))
+    print(top_constrs)
     bound_in_top = bound_in_constr_set(top_type)
     
     #solver.add(And(JSTy.Comp(JSTy.Comp(JSTy)) == JSTy))
@@ -244,17 +247,16 @@ def main():
         #top_solns.append(make_solns(soln_to_lookup(soln), top_constrs, 10))
         top_solns.append(make_solns(
             type_lookup, 
-            And(soln_to_constrs(stripped_solns, type_lookup)), 
+            And(soln_to_constrs(stripped_solns, type_lookup), *top_constrs), 
             MAX_DEPTH,
-            [], # no privileged/whitelisted variables
-            bound_in_top)) # make sure the term type changes each time
+            whitelist=[keys_in_dict(stripped_solns)]))#whitelist all assignments previously generated!  
     
     def key_in_or_none(d, k):
         if k in d:
             return d[k]
         return 'Untypable' # no solution to constraints leads to assignment to result type 
 
-    top_solns.append(solns) # attach them incase all variables were solved in the first go (including the term type)
+    #top_solns.append(solns) # attach them incase all variables were solved in the first go (including the term type)
 
     term_type_assignments = flatten(list(
         map(lambda x: list(
@@ -274,14 +276,16 @@ def main():
         #'term_type': show_constrs(term_type),
         #'top': show_constrs(Or(top_constrs)),
         #'term': show_constrs(all_constrs),
-        #'sol': solns_to_strs(solns),
+        'sol': solns_to_strs(solns),
         'top_solns': list(map(lambda x: solns_to_strs(x), top_solns)),
         #'sol_conj': show_constrs(list(map(lambda x: soln_to_constrs(x, type_lookup), solns))),
         #'type_vars': type_list,
         'term_type_assignments': uniqueList,
         'bound_in_top': bound_in_top
     }
-    print(reply) #test to see if we can send the constraints back
+    #print(reply) #test to see if we can send the constraints back
+    pprint.pprint(reply)
+
 
 if __name__ == '__main__':
     main()
