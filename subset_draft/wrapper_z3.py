@@ -25,6 +25,9 @@ args = parser.parse_args()
 #
 #
 
+def type_name(var):
+    return var['id']
+
 # z3_vars is the map of vars
 def to_type(nested, const_lookup, JSTy):
     if(not args.shape_field in nested):
@@ -33,7 +36,7 @@ def to_type(nested, const_lookup, JSTy):
     if(shape == args.arrow_shape):
         return JSTy.To(to_type(nested['A'], const_lookup, JSTy), to_type(nested['B'], const_lookup, JSTy))
     else: # no other types are nested so we are done (HAVENT ACCOUNTED FOR COMPLEMENT)
-        return const_lookup[nested['id']]
+        return const_lookup[type_name(nested)]
 
 # joiner ::= Ander | Orer | Constraint 
 def unpack(joiner, const_lookup, JSTy):
@@ -177,6 +180,12 @@ def keys_in_dict(d):
         keys.append(kv[0])
     return keys
 
+def vals_in_dict(d):  
+    vals = []
+    for kv in d.items():
+        vals.append(kv[1])
+    return vals
+
 def main():
     MAX_DEPTH = 4 # how many solutions can we find up to (square this number)
     recieved = None
@@ -219,10 +228,10 @@ def main():
     type_lookup[args.ok_shape] = JSTy.Ok
     type_lookup[args.num_shape] = JSTy.Num #adds an entry for constraints involving numbers and oks, without any extra logic 
     #type_lookup[args.arrow_shape] JSTy.
-    term_type = to_type(recieved['term_type'], type_lookup, JSTy)
+    term_type = type_lookup[str(type_name(recieved['term_type']))] #get it out of type_lookup
     all_constrs = unpack(constrs, type_lookup, JSTy)
     top_constrs = list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs']))
-    print(top_constrs)
+    print(top_constrs, term_type)
     bound_in_top = bound_in_constr_set(top_type)
     
     #solver.add(And(JSTy.Comp(JSTy.Comp(JSTy)) == JSTy))
@@ -232,24 +241,23 @@ def main():
     # solver.add(to_type(top_type, type_lookup, JSTy) == JSTy.Comp(ComplTy.Ok))
 
     # first pass 
-    solns = make_solns(type_lookup, all_constrs, MAX_DEPTH)
+    solns = make_solns(type_lookup, all_constrs, MAX_DEPTH, whitelist = [], blacklist = [str(term_type)])
     
     # all solutions that dont interfere with the disjunctive toplevel constraints
 
-    #print('hang my limbs')
-    top_solns = [] #nested list of toplevel types
-    for soln in solns:
-        stripped_solns = {} #copy the relevant entries which wont conflict with the top types
-        for kv in soln.items():
-            if(not kv[0] in bound_in_top):
-                stripped_solns[kv[0]] = kv[1]
-        #print(stripped_solns)
-        #top_solns.append(make_solns(soln_to_lookup(soln), top_constrs, 10))
-        top_solns.append(make_solns(
-            type_lookup, 
-            And(soln_to_constrs(stripped_solns, type_lookup), *top_constrs), 
-            MAX_DEPTH,
-            whitelist=[keys_in_dict(stripped_solns)]))#whitelist all assignments previously generated!  
+    # top_solns = [] #nested list of toplevel types
+    # for soln in solns:
+    #     stripped_solns = {} #copy the relevant entries which wont conflict with the top types
+    #     for kv in soln.items():
+    #         if(not kv[0] in bound_in_top):
+    #             stripped_solns[kv[0]] = kv[1]
+    #     #print(stripped_solns)
+    #     #top_solns.append(make_solns(soln_to_lookup(soln), top_constrs, 10))
+    #     top_solns.append(make_solns(
+    #         type_lookup, 
+    #         And(soln_to_constrs(stripped_solns, type_lookup), *top_constrs), 
+    #         MAX_DEPTH,
+    #         whitelist=[keys_in_dict(stripped_solns)]))#whitelist all assignments previously generated!  
     
     def key_in_or_none(d, k):
         if k in d:
@@ -258,11 +266,13 @@ def main():
 
     #top_solns.append(solns) # attach them incase all variables were solved in the first go (including the term type)
 
-    term_type_assignments = flatten(list(
-        map(lambda x: list(
-            map(lambda y: key_in_or_none(y, show_constrs(term_type)), solns_to_strs(x))), 
-                top_solns)))
+    # term_type_assignments = flatten(list(
+    #     map(lambda x: list(
+    #         map(lambda y: key_in_or_none(y, show_constrs(term_type)), solns_to_strs(x))), 
+    #             top_solns)))
     
+    term_type_assignments = list(map(lambda x: x[str(term_type)], solns))
+    print(term_type_assignments)
     #just take the uniques 
     uniques = {}
     uniqueList = []
@@ -277,10 +287,11 @@ def main():
         #'top': show_constrs(Or(top_constrs)),
         #'term': show_constrs(all_constrs),
         'sol': solns_to_strs(solns),
-        'top_solns': list(map(lambda x: solns_to_strs(x), top_solns)),
+        #'top_solns': list(map(lambda x: solns_to_strs(x), top_solns)),
         #'sol_conj': show_constrs(list(map(lambda x: soln_to_constrs(x, type_lookup), solns))),
         #'type_vars': type_list,
         'term_type_assignments': uniqueList,
+        'term_type_assignments_all': term_type_assignments,
         'bound_in_top': bound_in_top
     }
     #print(reply) #test to see if we can send the constraints back
