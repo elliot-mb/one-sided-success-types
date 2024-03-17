@@ -10,39 +10,59 @@ export class Rule {
     //static class for all the rules, each with its own shape 
     //all rules take a reference to the reconstructor (r), EmptyJudgement, and return a Judgement
 
-    static Ok = false; //just for demonstration purposes, showing to steven that it still works
+    /////////////////////////////////////////////////
+    ////                                         ////
+    ////                INNER RULES              ////
+    //// those rules which just add their        ////
+    //// constraints. they must add their own    ////
+    //// anders.                                 ////
+    /////////////////////////////////////////////////
+
+
+    static Ok = (conclusn, X) => {
+        conclusn.addAnder();
+        conclusn.addToLast(new Constraint(X, new OkT()));
+    }
+
+    static OkC1 = (conclusn, X) => {
+        
+    }
+
+    /////////////////////////////////////////////////
+    ////                                         ////
+    ////                SHAPE RULES              ////
+    //// those rules that apply directly to the  ////
+    //// grammar                                 ////       
+    /////////////////////////////////////////////////
 
     static cTVar = (r, empty) => {
+        const X = new GenT(r.getFreshVar('X'));
         const typeInAssms = empty.variableType(empty.getSubterm('x'));
-        const conclusn = empty.constrain(new GenT(r.getFreshVar('X'))); //(CTVar)
+        const conclusn = empty.constrain(X); //(CTVar)
 
-        conclusn.addToLast(new Constraint(conclusn.termType, typeInAssms)); // X = Gamma(x)
-        // //(OK)
-        if(Rule.Ok){
-            conclusn.addAnder();
-            conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); // X = Ok
-        }
+        conclusn.addToLast(new Constraint(X, typeInAssms)); // X = Gamma(x)
+
+        Rule.Ok(conclusn, X);
 
         return conclusn;
     }
 
     static cTNum = (r, empty) => {
-        const conclusn = empty.constrain(new GenT(r.getFreshVar('X'))); 
+        const X = new GenT(r.getFreshVar('X'));
+        const conclusn = empty.constrain(X); 
 
-        conclusn.addToLast(new Constraint(conclusn.termType, new NumT()));
+        conclusn.addToLast(new Constraint(X, new NumT()));
         
-        if(Rule.Ok){
-            conclusn.addAnder();
-            conclusn.addToLast(new Constraint(conclusn.termType, new OkT()));
-        }
+        Rule.Ok(conclusn, X);
 
         return conclusn;
     }
 
     static cTNumOp = (r, empty) => { //CTNumOp
+        const X = new GenT(r.getFreshVar('X'));
         const premise1 = r.typecheck(empty.asSubterm('M'));
         const premise2 = r.typecheck(empty.asSubterm('N'));
-        const conclusn = empty.constrain(new GenT(r.getFreshVar('X')));
+        const conclusn = empty.constrain(X);
 
         conclusn.addToLast(premise1.constrs);
         conclusn.addToLast(premise2.constrs);
@@ -50,11 +70,7 @@ export class Rule {
         conclusn.addToLast(new Constraint(premise2.termType, new NumT()));
         conclusn.addToLast(new Constraint(conclusn.termType, new NumT()));
 
-        //(OK)
-        if(Rule.Ok){
-            conclusn.addAnder();
-            conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
-        }
+        Rule.Ok(conclusn, X);
 
         return conclusn; //when we add to the constraints we must do this and then return 
     }
@@ -69,12 +85,9 @@ export class Rule {
         const conclusn = empty.constrain(X);
 
         conclusn.addToLast(premise1.constrs); //make sure to add the premise constraints (where )
-        conclusn.addToLast(new Constraint(conclusn.termType, new ArrowT(Y, premise1.termType)));
-         //(OK)
-        if(Rule.Ok){
-            conclusn.addAnder();
-            conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
-        }
+        conclusn.addToLast(new Constraint(X, new ArrowT(Y, premise1.termType)));
+         
+        Rule.Ok(conclusn, X);
 
         return conclusn;
     }
@@ -89,11 +102,7 @@ export class Rule {
         conclusn.addToLast(premise2.constrs);
         conclusn.addToLast(new Constraint(premise1.termType, new ArrowT(premise2.termType, X)));
 
-        //(OK)
-        if(Rule.Ok){
-            conclusn.addAnder();
-            conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
-        }
+        Rule.Ok(conclusn, X);
 
         return conclusn;
     }
@@ -105,19 +114,14 @@ export class Rule {
         const premise3 = r.typecheck(empty.asSubterm('P'));
         const conclusn = empty.constrain(X);
 
-        conclusn.addToLast(premise1.constrs);
+        conclusn.addToLast(premise1.constrs); //this will be handled in a complement rule 
         conclusn.addToLast(premise2.constrs);
         conclusn.addToLast(premise3.constrs);
-        conclusn.addToLast(new Constraint(premise1.termType, new NumT()));
+        conclusn.addToLast(new Constraint(premise1.termType, new NumT())); //this is handled in a complement rule 
         conclusn.addToLast(new Constraint(premise2.termType, X));
         conclusn.addToLast(new Constraint(premise3.termType, X));
 
-        //(OK)
-        if(Rule.Ok){
-            conclusn.addAnder();
-            conclusn.addToLast(new Constraint(conclusn.termType, new OkT())); 
-        }
-        
+        Rule.Ok(conclusn, X);
         
         return conclusn;
     }

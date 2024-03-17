@@ -4,12 +4,18 @@ import { GenT, NumT, ArrowT, OkT, CompT } from './typevar.js';
 export class Test {
 
     static run(){
-        Test.testTypeEquality();
+        console.log('tests:')
+        Test.showAndRun(Test.testTypeEquality);
     }
 
     //assert true
     static assert(b1){
         if(!b1) throw Utils.makeErr(`assert: failed`);
+    }
+
+    static showAndRun(method){
+        method();
+        console.log(method.name);
     }
 
     static testTypeEquality(){
