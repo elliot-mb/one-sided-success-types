@@ -86,13 +86,15 @@ const replaceTypeStrings = (constr, solution) => {
 
 const test = async () => {
     const r = new Reconstructor();
-    const program = 'f => x => f(f(x))';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
+    const program = 'f => x => (f(f(x)))';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
     const done = r.reconstruct(program);
     //done.constrs.xs.pop();
     const t = done.termType;
+    //done.constrs.
     console.log(`${done.show()}`);
     const topLvls = done.constrs.toConstraintSet();
-    console.log(topLvls)
+
+    console.log(topLvls);
     const topAndConstrs = {'term_type': t, 'top_type': topLvls, 'constrs': done.constrs};
     console.log(JSON.stringify(topAndConstrs));
     const result = await sendConstrsToObj(topAndConstrs);

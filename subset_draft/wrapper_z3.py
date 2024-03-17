@@ -57,7 +57,8 @@ def unpack(joiner, const_lookup, JSTy):
         return to_type(joiner['A'], const_lookup, JSTy) == to_type(joiner['B'], const_lookup, JSTy)
     else:
          raise Exception( 'unpack(): unrecognised type \'' + join_t + '\'')
-    
+
+
 #
 #   
 #   utilities 
@@ -187,7 +188,7 @@ def vals_in_dict(d):
     return vals
 
 def main():
-    MAX_DEPTH = 4 # how many solutions can we find up to (square this number)
+    MAX_DEPTH = 20 # how many solutions can we find up to (square this number)
     recieved = None
     if(not args.constraint_file == None): 
         recieved_f = open(args.constraint_file, 'r')
@@ -232,6 +233,7 @@ def main():
     all_constrs = unpack(constrs, type_lookup, JSTy)
     top_constrs = list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs']))
     #print(top_constrs, term_type)
+    #print(all_constrs)
     bound_in_top = bound_in_constr_set(top_type)
     
     #solver.add(And(JSTy.Comp(JSTy.Comp(JSTy)) == JSTy))
