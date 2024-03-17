@@ -65,7 +65,7 @@ def unpack(joiner, const_lookup, JSTy):
 #
     
 def bound_in_constr_set(constr_set):
-    #print(constr_set)
+    ##print(constr_set)
     typevars = []
     if(not constr_set['type'] == args.constraint_set_type):
          raise Exception( 'bound_in_constr_set: constr_set must be of type constraint set')
@@ -121,10 +121,10 @@ def make_solns(const_lookup, constrs, count, whitelist = [], blacklist = []):
     illegal_assign = False
     max_solves = count
     solve_count = 0
-    #print(solver)
+    ##print(solver)
     while(solver.check() == sat and not illegal_assign and (max_solves > solve_count)):
         mod = solver.model()
-        print(solver)
+        #print(solver)
         #print(mod)
         mod_can_neg = []
         mod_must_neg = []
@@ -137,7 +137,7 @@ def make_solns(const_lookup, constrs, count, whitelist = [], blacklist = []):
                 if(not assStr in whitelist): #if its in the whitelist we shouldnt reassign
                     mod_can_neg.append(neg)
                 if(assStr in blacklist):
-                    print('MUST REASSIGN ' + assStr)
+                    #print('MUST REASSIGN ' + assStr)
                     mod_must_neg.append(neg)
             else:                     #print('reassign ' + assStr)
                 illegal_assign = True
@@ -191,7 +191,7 @@ def main():
     recieved = None
     if(not args.constraint_file == None): 
         recieved_f = open(args.constraint_file, 'r')
-        print(args.constraint_file)
+        #print(args.constraint_file)
         recieved_lns = ''    
         for ln in recieved_f:
             recieved_lns += ln + '\n'
@@ -231,7 +231,7 @@ def main():
     term_type = type_lookup[str(type_name(recieved['term_type']))] #get it out of type_lookup
     all_constrs = unpack(constrs, type_lookup, JSTy)
     top_constrs = list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs']))
-    print(top_constrs, term_type)
+    #print(top_constrs, term_type)
     bound_in_top = bound_in_constr_set(top_type)
     
     #solver.add(And(JSTy.Comp(JSTy.Comp(JSTy)) == JSTy))
@@ -271,8 +271,8 @@ def main():
     #         map(lambda y: key_in_or_none(y, show_constrs(term_type)), solns_to_strs(x))), 
     #             top_solns)))
     
-    term_type_assignments = list(map(lambda x: x[str(term_type)], solns))
-    print(term_type_assignments)
+    term_type_assignments = list(map(lambda x: str(x[str(term_type)]), solns))
+    #print(term_type_assignments)
     #just take the uniques 
     uniques = {}
     uniqueList = []
@@ -294,8 +294,8 @@ def main():
         'term_type_assignments_all': term_type_assignments,
         'bound_in_top': bound_in_top
     }
-    #print(reply) #test to see if we can send the constraints back
-    pprint.pprint(reply)
+    print(reply) #test to see if we can send the constraints back
+    #pprint.pprint(reply)
 
 
 if __name__ == '__main__':
