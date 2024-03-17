@@ -25,16 +25,22 @@ export class Rule {
     //// anders.                                 ////
     /////////////////////////////////////////////////
 
-    static Ok = (conclusn, X) => {
+    static Ok = (conclusn, X) => { //structural
         conclusn.addAnder();
         conclusn.addToLast(new Constraint(X, new OkT()));
     }
 
-    static OkC1 = (conclusn, assms) => {
+    static OkC1 = (conclusn, assms) => { //structural 
         conclusn.addAnder();
         const allVarTypes = assms.allTypings();
         const okCVarTypes = allVarTypes.map(x => new Constraint(x.lhs(), new CompT(new OkT())));
         okCVarTypes.map(x => conclusn.addToLast(x)); //make it so any can go wrong
+    }
+
+    // Disj is spread among the other rules
+
+    static App2 = (conclusn, X, T1, C1) => {
+
     }
 
     /////////////////////////////////////////////////
