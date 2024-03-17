@@ -1,9 +1,16 @@
 import {Constraint} from './constraint.js';
-import {GenT, NumT, ArrowT, OkT} from './typevar.js';
+import {GenT, NumT, ArrowT, OkT, CompT} from './typevar.js';
 import {Ander} from './ander.js';
 import {Orer} from './orer.js';
 import {Judgement, EmptyJudgement} from './judgement.js';
 
+//perhaps make one if you think it would help organisation 
+class InnerRule {
+    constructor(conclusn, X, assms){
+
+    }
+    
+}
 
 export class Rule {
 
@@ -18,14 +25,16 @@ export class Rule {
     //// anders.                                 ////
     /////////////////////////////////////////////////
 
-
     static Ok = (conclusn, X) => {
         conclusn.addAnder();
         conclusn.addToLast(new Constraint(X, new OkT()));
     }
 
-    static OkC1 = (conclusn, X) => {
-        
+    static OkC1 = (conclusn, assms) => {
+        conclusn.addAnder();
+        const allVarTypes = assms.allTypings();
+        const okCVarTypes = allVarTypes.map(x => new Constraint(x.lhs(), new CompT(new OkT())));
+        okCVarTypes.map(x => conclusn.addToLast(x)); //make it so any can go wrong
     }
 
     /////////////////////////////////////////////////
