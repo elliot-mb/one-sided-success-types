@@ -34,19 +34,19 @@ export class Rule {
 
     //assms should come from the judgement on the way up (empty) because this is what
     static addOkC1 = (assms) => { //structural 
-        const allVarTypes = assms.allTypings();
-        const okCVarTypes = allVarTypes.map(x => new Constraint(x.lhs(), Rule.okC()));
+        const assmTypings = assms.allTypings();
+        const okCVarTypes = Object.keys(assmTypings).map(x => new Constraint(assmTypings[x], Rule.okC()));
         return new Orer(...okCVarTypes.map(x => new Ander(x)));
     }
 
     //disjointness helper function
     static addDisj = (A, B) => {
-        const D = new GenT('D');
-        const E = new GenT('E');
-        const DtoE = new ArrowT(D, E);
+        const Z = new GenT(r.getFreshVar('Z'));
+        const W = new GenT(r.getFreshVar('W'));
+        const ZToW = new ArrowT(Z, W);
         return new Orer(
-            new Ander(new Constraint(A, new NumT), new Constraint(B, DtoE)),
-            new Ander(new Constraint(A, DtoE), new Constraint(B, new NumT)),
+            new Ander(new Constraint(A, new NumT), new Constraint(B, ZToW)),
+            new Ander(new Constraint(A, ZToW), new Constraint(B, new NumT)),
             new Ander(new Constraint(A, new CompT(B))),
             new Ander(new Constraint(new CompT(A), B))
         );

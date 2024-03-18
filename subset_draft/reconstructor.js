@@ -19,11 +19,6 @@ export class Reconstructor{
         this.lastUsedVar = String.fromCharCode(Utils.firstCharCode);
     }
 
-    getFreshVar(pfix) {
-        this.lastUsedVar = Utils.nextFreeTypeName(this.lastUsedVar);
-        return `${pfix}${this.lastUsedVar}`;
-    }
-
     /**
      * regular non-success type checker
      * @param {*} EmptyJudgement Γ ⊢ M 

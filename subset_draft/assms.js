@@ -31,7 +31,7 @@ export class Assms{
 
     //return a list of typings as constraints
     allTypings(){
-        return Object.keys(this.typings).map(k => new Constraint(new GenT(k), this.typings[k])); 
+        return this.typings; // return Object.keys(this.typings).map(k => new Constraint(new GenT(k), this.typings[k])); 
     }
 
 }

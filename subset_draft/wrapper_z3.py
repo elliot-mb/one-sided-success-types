@@ -48,7 +48,7 @@ def to_type(nested, const_lookup, JSTy, ComplTy):
 
 # joiner ::= Ander | Orer | Constraint 
 def unpack(joiner, const_lookup, JSTy, ComplTy):
-    print('JOINER ', joiner)
+    #    print('JOINER ', joiner)
 
     if(not ('type' in joiner or 'xs' in joiner)):
          raise Exception( 'unpack(): joiner must be Ander | Orer | Constraint (found without \'type\' or \'xs\' field)')
@@ -136,7 +136,7 @@ def show_constrs(constrs):
 
 # iteratively acquires more solutions by constraining assignments against what they come up as 
 # whitelist tells us which assignments to not try and negate (a list of variable names)
-def make_solns(const_lookup, constrs, count, whitelist = [], blacklist = []):
+def make_solns(const_lookup, constrs, count, blacklist = []):
     solns = [] # can be added to a dict, array of dicts  
     solver = Solver()
     solver.set(relevancy=2)
@@ -158,8 +158,7 @@ def make_solns(const_lookup, constrs, count, whitelist = [], blacklist = []):
             if(ass.arity() == 0): #reassign constants
                 sol[assStr] = mod[ass]
                 neg = const_lookup[assStr] != mod[ass]
-                if(not assStr in whitelist): #if its in the whitelist we shouldnt reassign
-                    mod_can_neg.append(neg)
+                mod_can_neg.append(neg)
                 if(assStr in blacklist):
                     #print('MUST REASSIGN ' + assStr)
                     mod_must_neg.append(neg)
@@ -245,24 +244,22 @@ def main():
     solver.set(relevancy=2)
     # the grammar for types 
     JSTy = Datatype('JSTy')
-    ComplTy = Datatype('ComplTy') # stops directly nested complements
 
-    ComplTy.declare('Num')
-    ComplTy.declare('Ok')
-    ComplTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
-    
-    JSTy.declare('Comp', ('comp', ComplTy))
+    JSTy.declare('Num')
+    JSTy.declare('Ok')
+    JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
+    JSTy.declare('Comp', ('comp', JSTy))
 
     #JSTy.declare('Var', ('ident', StringSort()))
-    JSTy, ComplTy = CreateDatatypes(JSTy, ComplTy)
+    JSTy = JSTy.create()
     for name in type_list:
-        type_lookup[name] = Const(name, ComplTy) # ComplTy can be put inside comps
-    type_lookup[args.ok_shape] = ComplTy.Ok
-    type_lookup[args.num_shape] = ComplTy.Num #adds an entry for constraints involving numbers and oks, without any extra logic 
+        type_lookup[name] = Const(name, JSTy) # ComplTy can be put inside comps
+    type_lookup[args.ok_shape] = JSTy.Ok
+    type_lookup[args.num_shape] = JSTy.Num #adds an entry for constraints involving numbers and oks, without any extra logic 
     #type_lookup[args.arrow_shape] JSTy.
     term_type = type_lookup[str(type_name(recieved['term_type']))] #get it out of type_lookup
-    all_constrs = unpack(constrs, type_lookup, JSTy, ComplTy)
-    top_constrs = list(map(lambda x: unpack(x, type_lookup, JSTy, ComplTy), top_type['xs']))
+    all_constrs = unpack(constrs, type_lookup, JSTy, JSTy)
+    top_constrs = list(map(lambda x: unpack(x, type_lookup, JSTy, JSTy), top_type['xs']))
     #print(top_constrs, term_type)
     #print(all_constrs)
     bound_in_top = bound_in_constr_set(top_type)
@@ -272,9 +269,9 @@ def main():
     
     #now show me its false
     #solver.add(to_type(top_type, type_lookup, JSTy) == JSTy.Comp(ComplTy.Ok))
-    show_me_false = term_type == JSTy.Comp(ComplTy.Ok)
-    # first pass 
-    solns = make_solns(type_lookup, And(all_constrs, show_me_false), MAX_DEPTH, whitelist = [], blacklist = [])
+    show_me_false = term_type == JSTy.Comp(JSTy.Ok)
+
+    solns = make_solns(type_lookup, And(all_constrs, show_me_false), MAX_DEPTH, blacklist = [])
     
     # all solutions that dont interfere with the disjunctive toplevel constraints
 
@@ -316,7 +313,7 @@ def main():
     reply = {
         #'reflect': recieved,
         #'term_type': show_constrs(term_type),
-        'top': str(Or(list(map(lambda x: unpack(x, type_lookup, JSTy, ComplTy), top_type['xs'])))),
+        'top': str(Or(list(map(lambda x: unpack(x, type_lookup, JSTy, JSTy), top_type['xs'])))),
         'constrs': show_constrs(all_constrs),
         'sol': solns_to_strs(solns),
         'top_solns': list(map(lambda x: solns_to_strs(x), top_solns)),
