@@ -30,24 +30,18 @@ def type_name(var):
     return var['id']
 
 # z3_vars is the map of vars
-def to_type(nested, const_lookup, JSTy, ComplTy, use_JSTy = False):
-    print(nested, use_JSTy)
-    create_with = ComplTy
-    if(use_JSTy):
-        create_with = JSTy # alternate these types
+def to_type(nested, const_lookup, JSTy, ComplTy):
     if(not args.shape_field in nested):
          raise Exception( 'to_type: supposed type \'nested\' has no shapeV field')
     shape = nested[args.shape_field]
     if(shape == args.arrow_shape):
-        return ComplTy.To(to_type(nested['A'], const_lookup, JSTy, ComplTy, True), 
-                       to_type(nested['B'], const_lookup, JSTy, ComplTy, True))
+        return ComplTy.To(to_type(nested['A'], const_lookup, JSTy, ComplTy), 
+                       to_type(nested['B'], const_lookup, JSTy, ComplTy))
     if(shape == args.comp_shape):
-        return JSTy.Comp(to_type(nested['A'], const_lookup, JSTy, ComplTy, False))
+        return JSTy.Comp(to_type(nested['A'], const_lookup, JSTy, ComplTy))
     if(shape == args.ok_shape):
-        print('create ok with ', create_with)
         return ComplTy.Ok
     if(shape == args.num_shape):
-        print('create num with ', create_with)
         return ComplTy.Num
     else: # no other types are nested so we are done 
         return const_lookup[type_name(nested)] 
