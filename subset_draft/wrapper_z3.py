@@ -262,6 +262,7 @@ def main():
     top_constrs = list(map(lambda x: unpack(x, type_lookup, JSTy, JSTy), top_type['xs']))
     #print(top_constrs, term_type)
     #print(all_constrs)
+    all_and_show_me_false = And(all_constrs, term_type == JSTy.Comp(JSTy.Ok))
     bound_in_top = bound_in_constr_set(top_type)
     
     #solver.add(And(JSTy.Comp(JSTy.Comp(JSTy)) == JSTy))
@@ -269,9 +270,9 @@ def main():
     
     #now show me its false
     #solver.add(to_type(top_type, type_lookup, JSTy) == JSTy.Comp(ComplTy.Ok))
-    show_me_false = term_type == JSTy.Comp(JSTy.Ok)
+    
 
-    solns = make_solns(type_lookup, And(all_constrs, show_me_false), MAX_DEPTH, blacklist = [])
+    solns = make_solns(type_lookup, all_and_show_me_false, MAX_DEPTH, blacklist = [])
     
     # all solutions that dont interfere with the disjunctive toplevel constraints
 
@@ -314,7 +315,7 @@ def main():
         #'reflect': recieved,
         #'term_type': show_constrs(term_type),
         'top': str(Or(list(map(lambda x: unpack(x, type_lookup, JSTy, JSTy), top_type['xs'])))),
-        'constrs': show_constrs(all_constrs),
+        'constrs': show_constrs(all_and_show_me_false),
         'sol': solns_to_strs(solns),
         'top_solns': list(map(lambda x: solns_to_strs(x), top_solns)),
         #'sol_conj': show_constrs(list(map(lambda x: soln_to_constrs(x, type_lookup), solns))),

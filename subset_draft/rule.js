@@ -3,6 +3,7 @@ import {GenT, NumT, ArrowT, OkT, CompT} from './typevar.js';
 import {Ander} from './ander.js';
 import {Orer} from './orer.js';
 import {Judgement, EmptyJudgement} from './judgement.js';
+import {Utils} from './utils.js';
 
 //perhaps make one if you think it would help organisation 
 class InnerRule {
@@ -17,6 +18,7 @@ export class Rule {
     //consts 
     static okC = () => new CompT(new OkT());
     static disjunctiveRules = true;
+    static disjTypeName = 'A';
 
     //static class for all the rules, each with its own shape 
     //all rules take a reference to the reconstructor (r), EmptyJudgement, and return a Judgement
@@ -39,8 +41,8 @@ export class Rule {
         return new Orer(...okCVarTypes.map(x => new Ander(x)));
     }
 
-    //disjointness helper function
-    static addDisj = (A, B) => {
+    //disjointness helper function (r is the reconstructor for fresh var tracking)
+    static addDisj = (A, B, r) => {
         const Z = new GenT(r.getFreshVar('Z'));
         const W = new GenT(r.getFreshVar('W'));
         const ZToW = new ArrowT(Z, W);
@@ -53,10 +55,10 @@ export class Rule {
     }
 
     //constraints like C1 are all orers
-    static addApp2 = (X, T1, C1) => {
+    static addApp2 = (X, T1, C1, r) => {
         return new Orer(
             new Ander(
-                Rule.addDisj(T1, new ArrowT(Rule.okC(), X)),
+                Rule.addDisj(T1, new ArrowT(Rule.okC(), X), r),
                 C1
             )
         );
@@ -95,14 +97,14 @@ export class Rule {
         );
     }
 
-    static addNumOp3 = (T1, T2, C1, C2) => {
+    static addNumOp3 = (T1, T2, C1, C2, r) => {
         return new Orer(
             new Ander(
-                Rule.addDisj(T1, new NumT()),
+                Rule.addDisj(T1, new NumT(), r),
                 C1
             ),
             new Ander(
-                Rule.addDisj(T2, new NumT()),
+                Rule.addDisj(T2, new NumT(), r),
                 C2
             )
         );
@@ -127,8 +129,11 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
-            conclusn.addAnder();
-            conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            if(empty.getAssms().count() > 0){
+                conclusn.addAnder();
+                conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            }
+
             //no other var rules 
         }
 
@@ -144,8 +149,10 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
-            conclusn.addAnder();
-            conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            if(empty.getAssms().count() > 0){
+                conclusn.addAnder();
+                conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            }
             //no other num rules 
         }
         
@@ -172,12 +179,14 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
-            conclusn.addAnder();
-            conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            if(empty.getAssms().count() > 0){
+                conclusn.addAnder();
+                conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            }
             conclusn.addAnder();
             conclusn.addToLast(Rule.addNumOp2(T1, T2, C1, C2));
             conclusn.addAnder();
-            conclusn.addToLast(Rule.addNumOp3(T1, T2, C1, C2));
+            conclusn.addToLast(Rule.addNumOp3(T1, T2, C1, C2, r));
         }
   
 
@@ -199,8 +208,10 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
-            conclusn.addAnder();
-            conclusn.addToLast(Rule.addOkC1(empty.getAssms())); 
+            if(empty.getAssms().count() > 0){
+                conclusn.addAnder();
+                conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            }
             //no other abs rules 
         }
         
@@ -225,10 +236,12 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
+            if(empty.getAssms().count() > 0){
+                conclusn.addAnder();
+                conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            }
             conclusn.addAnder();
-            conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
-            conclusn.addAnder();
-            conclusn.addToLast(Rule.addApp2(X, T1, C1));
+            conclusn.addToLast(Rule.addApp2(X, T1, C1, r));
             conclusn.addAnder();
             conclusn.addToLast(Rule.addApp3(T2, C2));
         }
@@ -250,13 +263,15 @@ export class Rule {
         const conclusn = empty.constrain(X);
 
         conclusn.addToLast(C1); //this will be handled in a complement rule 
-        conclusn.addToLast(addDisj(T1, new NumT())); //this is handled in a complement rule 
+        conclusn.addToLast(addDisj(T1, new NumT(), r)); //this is handled in a complement rule 
 
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
-            conclusn.addAnder();
-            conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            if(empty.getAssms().count() > 0){
+                conclusn.addAnder();
+                conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            }
             conclusn.addAnder();
             conclusn.addToLast(Rule.addIfZ2(X, T2, T3, C2, C3));
         }

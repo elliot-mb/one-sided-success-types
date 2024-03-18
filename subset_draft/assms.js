@@ -29,6 +29,10 @@ export class Assms{
         return listOfMe.show();
     }
 
+    count(){
+        return Object.keys(this.typings).length;
+    }
+
     //return a list of typings as constraints
     allTypings(){
         return this.typings; // return Object.keys(this.typings).map(k => new Constraint(new GenT(k), this.typings[k])); 
