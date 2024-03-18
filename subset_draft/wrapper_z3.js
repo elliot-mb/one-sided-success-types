@@ -45,7 +45,7 @@ const sendConstraints = (constraints) => {
 
 const sendConstrsToObj = async (constraints) => {
     const resp = await sendConstraints(JSON.stringify(constraints));
-    console.log(resp);
+    //console.log(resp);
     return JSON.parse(pyDictToJSON(resp));
 }
 
@@ -86,7 +86,7 @@ const replaceTypeStrings = (constr, solution) => {
 
 const test = async () => {
     const r = new Reconstructor();
-    const program = 'x => x <= 0 ? 0 : 1';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
+    const program = 'f => x => f(f(x))';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
     const done = r.reconstruct(program);
     //done.constrs.xs.pop();
     const t = done.termType;

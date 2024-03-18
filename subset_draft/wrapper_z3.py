@@ -149,7 +149,7 @@ def make_solns(const_lookup, constrs, count, whitelist = [], blacklist = []):
         if(len(mod_must_neg) > 0):
             solver.add(And(mod_must_neg))
         #print(mod_negation, list(map(lambda x: x, mod)))
-        solver.add(mod_negation)
+        #solver.add(mod_negation)
         #print(solver)
         solve_count += 1
 
@@ -187,8 +187,17 @@ def vals_in_dict(d):
         vals.append(kv[1])
     return vals
 
+def uniques_in_list(xs):
+    uniques = {}
+    unique_list = []
+    for i in range(len(xs)):
+        uniques[xs[i]] = None
+    for type_str_none in uniques.items():
+        unique_list.append(type_str_none[0])
+    return unique_list
+
 def main():
-    MAX_DEPTH = 20 # how many solutions can we find up to (square this number)
+    MAX_DEPTH = 4 # how many solutions can we find up to (square this number)
     recieved = None
     if(not args.constraint_file == None): 
         recieved_f = open(args.constraint_file, 'r')
@@ -243,56 +252,56 @@ def main():
     # solver.add(to_type(top_type, type_lookup, JSTy) == JSTy.Comp(ComplTy.Ok))
 
     # first pass 
-    solns = make_solns(type_lookup, all_constrs, MAX_DEPTH, whitelist = [], blacklist = [str(term_type)])
+    solns = make_solns(type_lookup, all_constrs, MAX_DEPTH, whitelist = [keys_in_dict(type_lookup)], blacklist = [str(term_type)])
     
     # all solutions that dont interfere with the disjunctive toplevel constraints
 
-    # top_solns = [] #nested list of toplevel types
-    # for soln in solns:
-    #     stripped_solns = {} #copy the relevant entries which wont conflict with the top types
-    #     for kv in soln.items():
-    #         if(not kv[0] in bound_in_top):
-    #             stripped_solns[kv[0]] = kv[1]
-    #     #print(stripped_solns)
-    #     #top_solns.append(make_solns(soln_to_lookup(soln), top_constrs, 10))
-    #     top_solns.append(make_solns(
-    #         type_lookup, 
-    #         And(soln_to_constrs(stripped_solns, type_lookup), *top_constrs), 
-    #         MAX_DEPTH,
-    #         whitelist=[keys_in_dict(stripped_solns)]))#whitelist all assignments previously generated!  
+    top_solns = [] #nested list of toplevel types
+    # reduce top constraints one by one down to zero 
+    # for i in range(len(top_constrs) + 1):
+    #     for soln in solns:
+    #         stripped_solns = {} #copy the relevant entries which wont conflict with the top types
+    #         for kv in soln.items():
+    #             if(not kv[0] in bound_in_top):
+    #                 stripped_solns[kv[0]] = kv[1]
+    #         #print(stripped_solns)
+    #         #top_solns.append(make_solns(soln_to_lookup(soln), top_constrs, 10))
+    #         top_solns.append(make_solns(
+    #             type_lookup, 
+    #             Or(And(soln_to_constrs(stripped_solns, type_lookup)), *top_constrs), 
+    #             MAX_DEPTH,
+    #             whitelist=[keys_in_dict(stripped_solns)],
+    #             blacklist=[bound_in_top])) 
+    #     if(len(top_constrs) > 0):
+    #         top_constrs.pop()
     
     def key_in_or_none(d, k):
         if k in d:
             return d[k]
         return 'Untypable' # no solution to constraints leads to assignment to result type 
 
-    #top_solns.append(solns) # attach them incase all variables were solved in the first go (including the term type)
-
-    # term_type_assignments = flatten(list(
+    # top_solns.append(solns) # attach them incase all variables were solved in the first go (including the term type)
+    # top_type_assignments = flatten(list(
     #     map(lambda x: list(
     #         map(lambda y: key_in_or_none(y, show_constrs(term_type)), solns_to_strs(x))), 
     #             top_solns)))
     
     term_type_assignments = list(map(lambda x: str(x[str(term_type)]), solns))
-    #print(term_type_assignments)
     #just take the uniques 
-    uniques = {}
-    uniqueList = []
-    for i in range(len(term_type_assignments)):
-        uniques[term_type_assignments[i]] = None
-    for type_str_none in uniques.items():
-        uniqueList.append(type_str_none[0])
+    unique_term_type_ass = uniques_in_list(term_type_assignments)
+    #unique_top_type_ass = uniques_in_list(top_type_assignments)
 
     reply = {
         #'reflect': recieved,
         #'term_type': show_constrs(term_type),
-        #'top': show_constrs(Or(top_constrs)),
-        #'term': show_constrs(all_constrs),
+        'top': str(Or(list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs'])))),
+        'constrs': show_constrs(all_constrs),
         'sol': solns_to_strs(solns),
-        #'top_solns': list(map(lambda x: solns_to_strs(x), top_solns)),
+        'top_solns': list(map(lambda x: solns_to_strs(x), top_solns)),
         #'sol_conj': show_constrs(list(map(lambda x: soln_to_constrs(x, type_lookup), solns))),
         #'type_vars': type_list,
-        'term_type_assignments': uniqueList,
+        'term_type_assignments': unique_term_type_ass,
+        #'top_term_assignments': unique_top_type_ass,
         'term_type_assignments_all': term_type_assignments,
         'bound_in_top': bound_in_top
     }

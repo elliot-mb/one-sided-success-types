@@ -14,6 +14,8 @@ class InnerRule {
 
 export class Rule {
 
+    static disjunctiveRules = true;
+
     //static class for all the rules, each with its own shape 
     //all rules take a reference to the reconstructor (r), EmptyJudgement, and return a Judgement
 
@@ -88,8 +90,10 @@ export class Rule {
 
         conclusn.addToLast(new Constraint(X, typeInAssms)); // X = Gamma(x)
 
-        conclusn.addAnder();
-        conclusn.addToLast(Rule.addOk(X));
+        if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOk(X));
+        }
 
         return conclusn;
     }
@@ -100,8 +104,11 @@ export class Rule {
 
         conclusn.addToLast(new Constraint(X, new NumT()));
         
-        conclusn.addAnder();
-        conclusn.addToLast(Rule.addOk(X));
+        if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOk(X));
+        }
+        
 
         return conclusn;
     }
@@ -118,8 +125,11 @@ export class Rule {
         conclusn.addToLast(new Constraint(premise2.termType, new NumT()));
         conclusn.addToLast(new Constraint(conclusn.termType, new NumT()));
 
-        conclusn.addAnder();
-        conclusn.addToLast(Rule.addOk(X));
+        if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOk(X));
+        }
+  
 
         return conclusn; //when we add to the constraints we must do this and then return 
     }
@@ -136,8 +146,11 @@ export class Rule {
         conclusn.addToLast(premise1.constrs); //make sure to add the premise constraints (where )
         conclusn.addToLast(new Constraint(X, new ArrowT(Y, premise1.termType)));
          
-        conclusn.addAnder();
-        conclusn.addToLast(Rule.addOk(X));
+        if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOk(X));
+        }
+        
 
         return conclusn;
     }
@@ -152,8 +165,10 @@ export class Rule {
         conclusn.addToLast(premise2.constrs);
         conclusn.addToLast(new Constraint(premise1.termType, new ArrowT(premise2.termType, X)));
 
-        conclusn.addAnder();
-        conclusn.addToLast(Rule.addOk(X));
+        if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOk(X));
+        }
 
         return conclusn;
     }
@@ -172,8 +187,10 @@ export class Rule {
         conclusn.addToLast(new Constraint(premise2.termType, X));
         conclusn.addToLast(new Constraint(premise3.termType, X));
 
-        conclusn.addAnder();
-        conclusn.addToLast(Rule.addOk(X));
+        if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOk(X));
+        }
         
         return conclusn;
     }
