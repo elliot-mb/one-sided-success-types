@@ -39,14 +39,16 @@ def to_type(nested, const_lookup, JSTy, ComplTy, use_JSTy = False):
          raise Exception( 'to_type: supposed type \'nested\' has no shapeV field')
     shape = nested[args.shape_field]
     if(shape == args.arrow_shape):
-        return create_with.To(to_type(nested['A'], const_lookup, JSTy, ComplTy, True), 
+        return ComplTy.To(to_type(nested['A'], const_lookup, JSTy, ComplTy, True), 
                        to_type(nested['B'], const_lookup, JSTy, ComplTy, True))
     if(shape == args.comp_shape):
         return JSTy.Comp(to_type(nested['A'], const_lookup, JSTy, ComplTy, False))
     if(shape == args.ok_shape):
-        return create_with.Ok
+        print('create ok with ', create_with)
+        return ComplTy.Ok
     if(shape == args.num_shape):
-        return create_with.Num
+        print('create num with ', create_with)
+        return ComplTy.Num
     else: # no other types are nested so we are done 
         return const_lookup[type_name(nested)] 
 
@@ -255,10 +257,8 @@ def main():
     ComplTy.declare('Ok')
     ComplTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
     
-    JSTy.declare('Num')
-    JSTy.declare('Ok')
     JSTy.declare('Comp', ('comp', ComplTy))
-    JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
+
     #JSTy.declare('Var', ('ident', StringSort()))
     JSTy, ComplTy = CreateDatatypes(JSTy, ComplTy)
     for name in type_list:
