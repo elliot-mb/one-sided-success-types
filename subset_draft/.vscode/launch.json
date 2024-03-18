@@ -1,6 +1,5 @@
 {
     "configurations": [
-        
         {
             "type": "bun",
             "internalConsoleOptions": "neverOpen",
@@ -10,6 +9,13 @@
             "cwd": "${workspaceFolder}",
             "stopOnEntry": false,
             "watchMode": false
+        },
+        {
+            "name": "Python Debugger: Python File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}"
+            
         }
     ]
 }

@@ -88,9 +88,8 @@ const test = async () => {
     const r = new Reconstructor();
     const program = 'f => x => f(f(x))';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
     const done = r.reconstruct(program);
-    //done.constrs.xs.pop();
+    //console.log(JSON.stringify(done.constrs));
     const t = done.termType;
-    //done.constrs.
     console.log(`${done.show()}`);
     const topLvls = done.constrs.toConstraintSet();
 

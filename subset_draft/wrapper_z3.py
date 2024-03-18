@@ -10,6 +10,7 @@ parser.add_argument('-orer_type', '-o', type=str, default='orer')
 parser.add_argument('-constraint_type', '-ct', type=str, default='constraint')
 parser.add_argument('-constraint_set_type', '-cst', type=str, default='constraintset')
 parser.add_argument('-shape_field', '-s', type=str, default='shapeV')
+parser.add_argument('-comp_shape', '-cs', type=str, default='!A')
 parser.add_argument('-general_shape', '-g', type=str, default='A')
 parser.add_argument('-ok_shape', '-k', type=str, default='Ok')
 parser.add_argument('-num_shape', '-n', type=str, default='Num')
@@ -29,32 +30,45 @@ def type_name(var):
     return var['id']
 
 # z3_vars is the map of vars
-def to_type(nested, const_lookup, JSTy):
+def to_type(nested, const_lookup, JSTy, ComplTy, use_JSTy = False):
+    print(nested, use_JSTy)
+    create_with = ComplTy
+    if(use_JSTy):
+        create_with = JSTy # alternate these types
     if(not args.shape_field in nested):
          raise Exception( 'to_type: supposed type \'nested\' has no shapeV field')
     shape = nested[args.shape_field]
     if(shape == args.arrow_shape):
-        return JSTy.To(to_type(nested['A'], const_lookup, JSTy), to_type(nested['B'], const_lookup, JSTy))
-    else: # no other types are nested so we are done (HAVENT ACCOUNTED FOR COMPLEMENT)
-        return const_lookup[type_name(nested)]
+        return create_with.To(to_type(nested['A'], const_lookup, JSTy, ComplTy, True), 
+                       to_type(nested['B'], const_lookup, JSTy, ComplTy, True))
+    if(shape == args.comp_shape):
+        return JSTy.Comp(to_type(nested['A'], const_lookup, JSTy, ComplTy, False))
+    if(shape == args.ok_shape):
+        return create_with.Ok
+    if(shape == args.num_shape):
+        return create_with.Num
+    else: # no other types are nested so we are done 
+        return const_lookup[type_name(nested)] 
 
 # joiner ::= Ander | Orer | Constraint 
-def unpack(joiner, const_lookup, JSTy):
+def unpack(joiner, const_lookup, JSTy, ComplTy):
+    print('JOINER ', joiner)
+
     if(not ('type' in joiner or 'xs' in joiner)):
          raise Exception( 'unpack(): joiner must be Ander | Orer | Constraint (found without \'type\' or \'xs\' field)')
     join_t = joiner['type']
     if(join_t == args.ander_type):
         xs = joiner['xs']
         if(len(xs) == 1):
-            return unpack(xs[0], const_lookup, JSTy)
-        return And(list(map(lambda x: unpack(x, const_lookup, JSTy), xs)))
+            return unpack(xs[0], const_lookup, JSTy, ComplTy)
+        return And(list(map(lambda x: unpack(x, const_lookup, JSTy, ComplTy), xs)))
     if(join_t == args.orer_type):
         xs = joiner['xs']
         if(len(xs) == 1):
-            return unpack(xs[0], const_lookup, JSTy)
-        return Or(list(map(lambda x: unpack(x, const_lookup, JSTy), xs))) 
+            return unpack(xs[0], const_lookup, JSTy, ComplTy)
+        return Or(list(map(lambda x: unpack(x, const_lookup, JSTy, ComplTy), xs))) 
     if(join_t == args.constraint_type):
-        return to_type(joiner['A'], const_lookup, JSTy) == to_type(joiner['B'], const_lookup, JSTy)
+        return to_type(joiner['A'], const_lookup, JSTy, ComplTy) == to_type(joiner['B'], const_lookup, JSTy, ComplTy)
     else:
          raise Exception( 'unpack(): unrecognised type \'' + join_t + '\'')
 
@@ -84,17 +98,31 @@ def flatten(xss):
             flat.append(x)
     return flat
 
-# joiner ::= Ander | Orer | Constraint | ArrowType | Typevar
+# joiner ::= Ander | Orer | Constraint | ArrowType | Typevar | Comp
 def unwrap(joiner):
     if(not 'type' in joiner):
         return []
     join_t = joiner['type']
+    #print(joiner)
     if(join_t != args.ander_type and join_t != args.orer_type):
-        if((not 'A' in joiner) and (not 'B' in joiner)):
-            return [joiner['id']] # nest against flattener so strings dont get flattened
+        if(args.shape_field in joiner):
+            shape = joiner[args.shape_field]
+            # Num | A -> B | A^c | Ok | A
+            if(shape == args.general_shape):
+                return [joiner['id']] # nest against flattener so strings dont get flattened
+            if(shape == args.arrow_shape):
+                return flatten([unwrap(joiner['A']), unwrap(joiner['B'])])
+            if(shape == args.comp_shape):
+                return flatten([unwrap(joiner['A'])])
+            if(shape == args.ok_shape):
+                return []
+            if(shape == args.num_shape):
+                return []
         else:
             # it is a constraint
+            #print(joiner)
             return flatten([unwrap(joiner['A']), unwrap(joiner['B'])])
+    #print(joiner)
     xs = joiner['xs'] # by the outer program, anything with type ander or orer will have an xs
     nested = list(map(lambda x: unwrap(x), xs))
     return flatten(nested)
@@ -222,6 +250,7 @@ def main():
     # the grammar for types 
     JSTy = Datatype('JSTy')
     ComplTy = Datatype('ComplTy') # stops directly nested complements
+
     ComplTy.declare('Num')
     ComplTy.declare('Ok')
     ComplTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
@@ -233,13 +262,13 @@ def main():
     #JSTy.declare('Var', ('ident', StringSort()))
     JSTy, ComplTy = CreateDatatypes(JSTy, ComplTy)
     for name in type_list:
-        type_lookup[name] = Const(name, JSTy)
-    type_lookup[args.ok_shape] = JSTy.Ok
-    type_lookup[args.num_shape] = JSTy.Num #adds an entry for constraints involving numbers and oks, without any extra logic 
+        type_lookup[name] = Const(name, ComplTy) # ComplTy can be put inside comps
+    type_lookup[args.ok_shape] = ComplTy.Ok
+    type_lookup[args.num_shape] = ComplTy.Num #adds an entry for constraints involving numbers and oks, without any extra logic 
     #type_lookup[args.arrow_shape] JSTy.
     term_type = type_lookup[str(type_name(recieved['term_type']))] #get it out of type_lookup
-    all_constrs = unpack(constrs, type_lookup, JSTy)
-    top_constrs = list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs']))
+    all_constrs = unpack(constrs, type_lookup, JSTy, ComplTy)
+    top_constrs = list(map(lambda x: unpack(x, type_lookup, JSTy, ComplTy), top_type['xs']))
     #print(top_constrs, term_type)
     #print(all_constrs)
     bound_in_top = bound_in_constr_set(top_type)
@@ -293,7 +322,7 @@ def main():
     reply = {
         #'reflect': recieved,
         #'term_type': show_constrs(term_type),
-        'top': str(Or(list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs'])))),
+        'top': str(Or(list(map(lambda x: unpack(x, type_lookup, JSTy, ComplTy), top_type['xs'])))),
         'constrs': show_constrs(all_constrs),
         'sol': solns_to_strs(solns),
         'top_solns': list(map(lambda x: solns_to_strs(x), top_solns)),
