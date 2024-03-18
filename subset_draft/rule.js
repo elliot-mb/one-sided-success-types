@@ -21,25 +21,56 @@ export class Rule {
     ////                                         ////
     ////                INNER RULES              ////
     //// those rules which just add their        ////
-    //// constraints. they must add their own    ////
-    //// anders.                                 ////
+    //// constraints. they all return orers      ////
     /////////////////////////////////////////////////
 
-    static Ok = (conclusn, X) => { //structural
-        conclusn.addAnder();
-        conclusn.addToLast(new Constraint(X, new OkT()));
+    static addOk = (X) => { //structural
+        return new Orer(new Ander(new Constraint(X, new OkT())));
     }
 
-    static OkC1 = (conclusn, assms) => { //structural 
-        conclusn.addAnder();
+    static addOkC1 = (assms) => { //structural 
         const allVarTypes = assms.allTypings();
         const okCVarTypes = allVarTypes.map(x => new Constraint(x.lhs(), new CompT(new OkT())));
-        okCVarTypes.map(x => conclusn.addToLast(x)); //make it so any can go wrong
+        return new Orer(okCVarTypes.map(x => new Ander(x)));
+    }
+
+    //disjointness 
+    static addDisj = (A, B) => {
+        const D = new GenT('D');
+        const E = new GenT('E');
+        const DtoE = new ArrowT(D, E);
+        return new Orer(
+            new Ander(new Constraint(A, new NumT), new Constraint(B, DtoE)),
+            new Ander(new Constraint(A, DtoE), new Constraint(B, new NumT)),
+            new Ander(new Constraint(A, new CompT(B))),
+            new Ander(new Constraint(new CompT(A), B))
+        );
     }
 
     // Disj is spread among the other rules
 
-    static App2 = (conclusn, X, T1, C1) => {
+    static addApp2 = (X, T1, C1) => {
+        return new Orer(
+            new Ander(
+                new Constraint(T1, new CompT(new ArrowT(new CompT(new OkT()), X))),
+                new Orer(C1, new Ander(addDisj()))
+            )
+        );
+    }
+
+    static addApp3 = (T2, C2) => {
+
+    }
+
+    static addIfZ2 = (X, T1, T2, C1, C2) => {
+
+    }
+
+    static addNumOp2 = (T1, T2, C1, C2) => {
+
+    }
+
+    static addNumOp3 = (X, T1, T2, C1, C2) => {
 
     }
 
@@ -57,7 +88,8 @@ export class Rule {
 
         conclusn.addToLast(new Constraint(X, typeInAssms)); // X = Gamma(x)
 
-        Rule.Ok(conclusn, X);
+        conclusn.addAnder();
+        conclusn.addToLast(Rule.addOk(X));
 
         return conclusn;
     }
@@ -68,7 +100,8 @@ export class Rule {
 
         conclusn.addToLast(new Constraint(X, new NumT()));
         
-        Rule.Ok(conclusn, X);
+        conclusn.addAnder();
+        conclusn.addToLast(Rule.addOk(X));
 
         return conclusn;
     }
@@ -85,7 +118,8 @@ export class Rule {
         conclusn.addToLast(new Constraint(premise2.termType, new NumT()));
         conclusn.addToLast(new Constraint(conclusn.termType, new NumT()));
 
-        Rule.Ok(conclusn, X);
+        conclusn.addAnder();
+        conclusn.addToLast(Rule.addOk(X));
 
         return conclusn; //when we add to the constraints we must do this and then return 
     }
@@ -102,7 +136,8 @@ export class Rule {
         conclusn.addToLast(premise1.constrs); //make sure to add the premise constraints (where )
         conclusn.addToLast(new Constraint(X, new ArrowT(Y, premise1.termType)));
          
-        Rule.Ok(conclusn, X);
+        conclusn.addAnder();
+        conclusn.addToLast(Rule.addOk(X));
 
         return conclusn;
     }
@@ -117,7 +152,8 @@ export class Rule {
         conclusn.addToLast(premise2.constrs);
         conclusn.addToLast(new Constraint(premise1.termType, new ArrowT(premise2.termType, X)));
 
-        Rule.Ok(conclusn, X);
+        conclusn.addAnder();
+        conclusn.addToLast(Rule.addOk(X));
 
         return conclusn;
     }
@@ -136,7 +172,8 @@ export class Rule {
         conclusn.addToLast(new Constraint(premise2.termType, X));
         conclusn.addToLast(new Constraint(premise3.termType, X));
 
-        Rule.Ok(conclusn, X);
+        conclusn.addAnder();
+        conclusn.addToLast(Rule.addOk(X));
         
         return conclusn;
     }
