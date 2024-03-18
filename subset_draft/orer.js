@@ -2,6 +2,8 @@ import {Ander} from './ander.js';
 import {Utils} from './utils.js';
 import {TypedList} from './typedlist.js';
 import {ConstraintSet} from './constraint_set.js';
+import {Constraint } from './constraint.js';
+
 
 export class Orer extends TypedList{
     static type = 'orer';
@@ -50,5 +52,19 @@ export class Orer extends TypedList{
         if(!this.isInDNF()) throw Utils.makeErr(`toConstraintSets: constraint sets cannot encode disjunction; this disjunction is not in DNF`);
         if(this.isEmpty()) return [new ConstraintSet()];
         return this.getAnds().map(x => new ConstraintSet(x.getOrs())); //the ors returned here should all be constraints 
+    }
+
+    /**
+     * convert take out just the unit anders from the top level rule (for final constraint resolution/unification)
+     * these are stored in a single constraintset to be observed disjunctively 
+     */
+    toConstraintSet(){
+        const JUST_ONE = 1;
+        const constrs = this.getAnds()
+            //must be single constraints
+            .filter(x => x.getOrs().length === JUST_ONE && x.getOrs()[0].type === Constraint.type)
+            //get the constraint out
+            .map(x => x.getOrs()[0]);
+        return new ConstraintSet(constrs);
     }
 }

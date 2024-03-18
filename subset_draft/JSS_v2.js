@@ -54,7 +54,7 @@
  */
 
 import { toASTTree } from './wrapper_acorn.js';
-import { GenT, NumT, ArrowT, OkT } from './typevar.js';
+import { GenT, NumT, ArrowT, OkT, CompT } from './typevar.js';
 import { Constraint } from './constraint.js';
 import { ConstraintSet } from './constraint_set.js';
 import { Utils } from './utils.js';
@@ -246,6 +246,11 @@ const removeRepeatsTest = () => {
     console.log(types.map(t => t.show()));
 }   
 
+const compTest = () => {
+    const compType = new CompT(new ArrowT(new CompT(new OkT()), new GenT('A')));
+    console.log(compType.show());
+}
+
 // testTypeCheck();
 // testTypeVar();
 //combinedTest();
@@ -253,7 +258,8 @@ const removeRepeatsTest = () => {
 //swapTest();
 //rolloverTest();
 //equalsTest();
-bulkTest();
+// bulkTest();
+compTest();
 //removeRepeatsTest();
 //orSetAndSetTest();
 

@@ -28,5 +28,9 @@ export class ConstraintSet extends Stack{ //this is a stack because of how we us
         this.xs.map(x => x.swapWith(tA, tB));
     }
 
+    getConstraints(){
+        return this.xs;//from typedlist
+    }
+
 }
 

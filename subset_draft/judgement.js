@@ -45,9 +45,9 @@ export class EmptyJudgement{
     }
 
     //returns a Judgement with its type instantiated, and any immediate constraints in an OrList of AndLists
-    constrain(termType, constrs = new Orer()){
+    constrain(termType){
         //Utils.typeIsOrCrash(ej, EmptyJudgement.type);
-        return new Judgement(this.term, termType, this.assms, constrs);
+        return new Judgement(this.term, termType, this.assms);
     }
 }
 
@@ -63,13 +63,13 @@ export class Judgement extends EmptyJudgement{
      * @param {*} termType is the type of term
      * @param {*} constrs constraints in and lists in an orlist [optional]
      */
-    constructor(term, termType, assms = new Assms(), constrs = new Orer()){
+    constructor(term, termType, assms = new Assms()){
         super(term, assms);
         Utils.typeVarOrCrash(termType);
-        Utils.typeIsOrCrash(constrs, Orer.type);
         this.termType = termType;
-        this.constrs = constrs;
+        this.constrs = new Orer();
         this.type = Judgement.type;
+        this.constrs.add(new Ander()); //all constraints have at least one clause
     }
 
     /**
@@ -77,7 +77,7 @@ export class Judgement extends EmptyJudgement{
      * @returns last Ander of the constrs Orer
      */
     lastAnder(){
-        if(Utils.isEmpty(this.constrs.getAnds())) this.addAnder();
+        //if(Utils.isEmpty(this.constrs.getAnds())) this.addAnder();
         return Utils.last(this.constrs.getAnds());
     }
 
@@ -98,7 +98,11 @@ export class Judgement extends EmptyJudgement{
     addToLast(constr){
         Utils.typeIsOrCrash(constr, Orer.type, Constraint.type);
         //this.constrs.combine(new ConstraintSet([constr]));
-        if(constr.type === Constraint.type || !constr.isEmpty()) this.lastAnder().add(constr);
+        if(constr.type === Constraint.type || constr.type === Orer.type) {
+            this.lastAnder().add(constr);
+            return;
+        }
+        throw Utils.makeErr('addToLast: only constraints or orers may be added, not \'' + constr.show() + '\'');
     }
 
     /**
