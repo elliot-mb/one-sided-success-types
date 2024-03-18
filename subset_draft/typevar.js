@@ -20,7 +20,7 @@ export class GenT{
     static okShape = 'Ok';
     static numShape = 'Num';
     static arrowShape = 'A -> B';
-    static compShape = 'Aᶜ';
+    static compShape = '!A';
     
     constructor(id){
         this.id = id;
@@ -123,7 +123,7 @@ export class CompT extends GenT{
     }
 
     show(){
-        return `(${this.getA().show()})ᶜ`;
+        return `!(${this.getA().show()})`;
     }
 
 }

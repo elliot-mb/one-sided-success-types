@@ -16,7 +16,7 @@ export class Rule {
 
     //consts 
     static okC = () => new CompT(new OkT());
-    static disjunctiveRules = false;
+    static disjunctiveRules = true;
 
     //static class for all the rules, each with its own shape 
     //all rules take a reference to the reconstructor (r), EmptyJudgement, and return a Judgement
@@ -32,10 +32,11 @@ export class Rule {
         return new Orer(new Ander(new Constraint(X, new OkT())));
     }
 
+    //assms should come from the judgement on the way up (empty) because this is what
     static addOkC1 = (assms) => { //structural 
         const allVarTypes = assms.allTypings();
-        const okCVarTypes = allVarTypes.map(x => new Constraint(x.lhs(), new CompT(new OkT())));
-        return new Orer(okCVarTypes.map(x => new Ander(x)));
+        const okCVarTypes = allVarTypes.map(x => new Constraint(x.lhs(), Rule.okC()));
+        return new Orer(...okCVarTypes.map(x => new Ander(x)));
     }
 
     //disjointness helper function
@@ -55,7 +56,7 @@ export class Rule {
     static addApp2 = (X, T1, C1) => {
         return new Orer(
             new Ander(
-                addDisj(T1, new ArrowT(Rule.okC(), X)),
+                Rule.addDisj(T1, new ArrowT(Rule.okC(), X)),
                 C1
             )
         );
@@ -97,11 +98,11 @@ export class Rule {
     static addNumOp3 = (T1, T2, C1, C2) => {
         return new Orer(
             new Ander(
-                addDisj(T1, new NumT()),
+                Rule.addDisj(T1, new NumT()),
                 C1
             ),
             new Ander(
-                addDisj(T2, new NumT()),
+                Rule.addDisj(T2, new NumT()),
                 C2
             )
         );
@@ -199,7 +200,7 @@ export class Rule {
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
             conclusn.addAnder();
-            conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            conclusn.addToLast(Rule.addOkC1(empty.getAssms())); 
             //no other abs rules 
         }
         
@@ -249,11 +250,7 @@ export class Rule {
         const conclusn = empty.constrain(X);
 
         conclusn.addToLast(C1); //this will be handled in a complement rule 
-        conclusn.addToLast(C2);
-        conclusn.addToLast(C3);
-        conclusn.addToLast(new Constraint(T1, new NumT())); //this is handled in a complement rule 
-        conclusn.addToLast(new Constraint(T2, X));
-        conclusn.addToLast(new Constraint(T3, X));
+        conclusn.addToLast(addDisj(T1, new NumT())); //this is handled in a complement rule 
 
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
