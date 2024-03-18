@@ -51,17 +51,23 @@ export class Rule {
 
     // Disj is spread among the other rules
 
+    //constraints like C1 are all orers
     static addApp2 = (X, T1, C1) => {
         return new Orer(
             new Ander(
-                new Constraint(T1, new CompT(new ArrowT(new CompT(new OkT()), X))),
-                new Orer(C1, new Ander(addDisj()))
+                addDisj(T1, new ArrowT(new CompT(new OkT()), X)),
+                C1
             )
         );
     }
 
     static addApp3 = (T2, C2) => {
-
+        return new Orer(
+            new Ander(
+                new Constraint(T2, new CompT(new OkT())),
+                C2 //orer 
+            )
+        );
     }
 
     static addIfZ2 = (X, T1, T2, C1, C2) => {

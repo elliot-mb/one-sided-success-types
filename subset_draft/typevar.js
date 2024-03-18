@@ -92,6 +92,7 @@ export class CompT extends GenT{
     constructor(A, id = GenT.compShape){
         super(id);
         Utils.typeVarsOrCrash(A, A);
+        if(A.shapeV === GenT.compShape) throw Utils.makeErr('CompT: cannot contain a CompT');
         this.A = A;
         this.shapeV = GenT.compShape;
     }
