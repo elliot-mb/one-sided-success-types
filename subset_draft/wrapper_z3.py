@@ -250,7 +250,7 @@ def main():
     show_me_false = term_type == JSTy.Comp(JSTy.Ok)
 
     # add show me false back into the constraints asap
-    solns = make_solns(type_lookup, And(all_constrs, show_me_false), MAX_DEPTH, whitelist = [], blacklist = [str(term_type)])
+    solns = make_solns(type_lookup, And(all_constrs, show_me_false), MAX_DEPTH, whitelist = [], blacklist = [])
     
     # all solutions that dont interfere with the disjunctive toplevel constraints
 
