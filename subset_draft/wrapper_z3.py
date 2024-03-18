@@ -197,7 +197,7 @@ def uniques_in_list(xs):
     return unique_list
 
 def main():
-    MAX_DEPTH = 4 # how many solutions can we find up to (square this number)
+    MAX_DEPTH = 10 # how many solutions can we find up to (square this number)
     recieved = None
     if(not args.constraint_file == None): 
         recieved_f = open(args.constraint_file, 'r')
@@ -248,11 +248,11 @@ def main():
     #solver.add(And(JSTy.Comp(JSTy.Comp(JSTy)) == JSTy))
     solver.add(all_constrs)#Or(And(b == JSTy.To(a, c), (a == type_lookup[args.num_shape])), (type_lookup[args.ok_shape] == b)))
     
-    # now show me its false
-    # solver.add(to_type(top_type, type_lookup, JSTy) == JSTy.Comp(ComplTy.Ok))
-
+    #now show me its false
+    #solver.add(to_type(top_type, type_lookup, JSTy) == JSTy.Comp(ComplTy.Ok))
+    show_me_false = term_type == JSTy.Comp(ComplTy.Ok)
     # first pass 
-    solns = make_solns(type_lookup, all_constrs, MAX_DEPTH, whitelist = [keys_in_dict(type_lookup)], blacklist = [str(term_type)])
+    solns = make_solns(type_lookup, And(all_constrs, show_me_false), MAX_DEPTH, whitelist = [], blacklist = [])
     
     # all solutions that dont interfere with the disjunctive toplevel constraints
 
