@@ -14,7 +14,7 @@ class InnerRule {
 
 export class Rule {
 
-    static disjunctiveRules = false;
+    static disjunctiveRules = true;
 
     //static class for all the rules, each with its own shape 
     //all rules take a reference to the reconstructor (r), EmptyJudgement, and return a Judgement

@@ -222,17 +222,14 @@ def main():
     solver.set(relevancy=2)
     # the grammar for types 
     JSTy = Datatype('JSTy')
-    ComplTy = Datatype('ComplTy') # stops directly nested complements
-    ComplTy.declare('Num')
-    ComplTy.declare('Ok')
-    ComplTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
     
     JSTy.declare('Num')
     JSTy.declare('Ok')
-    JSTy.declare('Comp', ('comp', ComplTy))
+    JSTy.declare('Comp', ('comp', JSTy))
     JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
+
     #JSTy.declare('Var', ('ident', StringSort()))
-    JSTy, ComplTy = CreateDatatypes(JSTy, ComplTy)
+    JSTy = JSTy.create()
     for name in type_list:
         type_lookup[name] = Const(name, JSTy)
     type_lookup[args.ok_shape] = JSTy.Ok
@@ -250,9 +247,10 @@ def main():
     
     #now show me its false
     #solver.add(to_type(top_type, type_lookup, JSTy) == JSTy.Comp(ComplTy.Ok))
-    show_me_false = term_type == JSTy.Comp(ComplTy.Ok)
-    # first pass 
-    solns = make_solns(type_lookup, And(all_constrs, show_me_false), MAX_DEPTH, whitelist = [], blacklist = [])
+    show_me_false = term_type == JSTy.Comp(JSTy.Ok)
+
+    # add show me false back into the constraints asap
+    solns = make_solns(type_lookup, And(all_constrs), MAX_DEPTH, whitelist = [], blacklist = [str(term_type)])
     
     # all solutions that dont interfere with the disjunctive toplevel constraints
 
