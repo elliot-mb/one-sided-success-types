@@ -70,13 +70,13 @@ export class Rule {
         );
     }
 
-    static addIfZ2 = (X, T1, T2, C1, C2) => {
+    static addIfZ2 = (X, T2, T3, C2, C3) => {
         return new Orer(
             new Ander(
-                new Constraint(T1, T2),
-                new Constraint(T1, X),
-                C1,
-                C2
+                new Constraint(T2, T3),
+                new Constraint(T2, X),
+                C2,
+                C3
             )
         );
     }
@@ -107,6 +107,8 @@ export class Rule {
         );
     }
 
+
+
     /////////////////////////////////////////////////
     ////                                         ////
     ////                SHAPE RULES              ////
@@ -124,8 +126,9 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
-            // conclusn.addAnder();
-            // conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            //no other var rules 
         }
 
         return conclusn;
@@ -140,6 +143,9 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            //no other num rules 
         }
         
 
@@ -150,6 +156,10 @@ export class Rule {
         const X = new GenT(r.getFreshVar('X'));
         const premise1 = r.typecheck(empty.asSubterm('M'));
         const premise2 = r.typecheck(empty.asSubterm('N'));
+        const T1 = premise1.termType;
+        const T2 = premise2.termType;
+        const C1 = premise1.constrs;
+        const C2 = premise2.constrs;
         const conclusn = empty.constrain(X);
 
         conclusn.addToLast(premise1.constrs);
@@ -161,6 +171,12 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addNumOp2(T1, T2, C1, C2));
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addNumOp3(T1, T2, C1, C2));
         }
   
 
@@ -182,6 +198,9 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            //no other abs rules 
         }
         
 
@@ -192,6 +211,10 @@ export class Rule {
         const X = new GenT(r.getFreshVar('X'));
         const premise1 = r.typecheck(empty.asSubterm('M'));
         const premise2 = r.typecheck(empty.asSubterm('N'));
+        const T1 = premise1.termType;
+        const T2 = premise2.termType;
+        const C1 = premise1.constrs;
+        const C2 = premise2.constrs;
         const conclusn = empty.constrain(X);
 
         conclusn.addToLast(premise1.constrs);
@@ -201,6 +224,12 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addApp2(X, T1, C1));
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addApp3(T2, C2));
         }
 
         return conclusn;
@@ -211,18 +240,28 @@ export class Rule {
         const premise1 = r.typecheck(empty.asSubterm('M'));
         const premise2 = r.typecheck(empty.asSubterm('N'));
         const premise3 = r.typecheck(empty.asSubterm('P'));
+        const T1 = premise1.termType;
+        const T2 = premise2.termType;
+        const T3 = premise3.termType;
+        const C1 = premise1.constrs;
+        const C2 = premise2.constrs;
+        const C3 = premise3.constrs;
         const conclusn = empty.constrain(X);
 
-        conclusn.addToLast(premise1.constrs); //this will be handled in a complement rule 
-        conclusn.addToLast(premise2.constrs);
-        conclusn.addToLast(premise3.constrs);
-        conclusn.addToLast(new Constraint(premise1.termType, new NumT())); //this is handled in a complement rule 
-        conclusn.addToLast(new Constraint(premise2.termType, X));
-        conclusn.addToLast(new Constraint(premise3.termType, X));
+        conclusn.addToLast(C1); //this will be handled in a complement rule 
+        conclusn.addToLast(C2);
+        conclusn.addToLast(C3);
+        conclusn.addToLast(new Constraint(T1, new NumT())); //this is handled in a complement rule 
+        conclusn.addToLast(new Constraint(T2, X));
+        conclusn.addToLast(new Constraint(T3, X));
 
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addIfZ2(X, T2, T3, C2, C3));
         }
         
         return conclusn;
