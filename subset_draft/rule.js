@@ -14,6 +14,8 @@ class InnerRule {
 
 export class Rule {
 
+    //consts 
+    static okC = () => new CompT(new OkT());
     static disjunctiveRules = false;
 
     //static class for all the rules, each with its own shape 
@@ -36,7 +38,7 @@ export class Rule {
         return new Orer(okCVarTypes.map(x => new Ander(x)));
     }
 
-    //disjointness 
+    //disjointness helper function
     static addDisj = (A, B) => {
         const D = new GenT('D');
         const E = new GenT('E');
@@ -49,13 +51,11 @@ export class Rule {
         );
     }
 
-    // Disj is spread among the other rules
-
     //constraints like C1 are all orers
     static addApp2 = (X, T1, C1) => {
         return new Orer(
             new Ander(
-                addDisj(T1, new ArrowT(new CompT(new OkT()), X)),
+                addDisj(T1, new ArrowT(Rule.okC(), X)),
                 C1
             )
         );
@@ -64,22 +64,47 @@ export class Rule {
     static addApp3 = (T2, C2) => {
         return new Orer(
             new Ander(
-                new Constraint(T2, new CompT(new OkT())),
+                new Constraint(T2, Rule.okC()),
                 C2 //orer 
             )
         );
     }
 
     static addIfZ2 = (X, T1, T2, C1, C2) => {
-
+        return new Orer(
+            new Ander(
+                new Constraint(T1, T2),
+                new Constraint(T1, X),
+                C1,
+                C2
+            )
+        );
     }
 
-    static addNumOp2 = (T1, T2, C1, C2) => {
-
+    static addNumOp2 = (T1, T2, C1, C2) => { // not expected to make a difference 
+        return new Orer(
+            new Ander(
+                new Constraint(T1, Rule.okC()),
+                C1
+            ),
+            new Ander(
+                new Constraint(T2, Rule.okC()),
+                C2
+            )
+        );
     }
 
-    static addNumOp3 = (X, T1, T2, C1, C2) => {
-
+    static addNumOp3 = (T1, T2, C1, C2) => {
+        return new Orer(
+            new Ander(
+                addDisj(T1, new NumT()),
+                C1
+            ),
+            new Ander(
+                addDisj(T2, new NumT()),
+                C2
+            )
+        );
     }
 
     /////////////////////////////////////////////////
@@ -99,6 +124,8 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
+            // conclusn.addAnder();
+            // conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
         }
 
         return conclusn;
