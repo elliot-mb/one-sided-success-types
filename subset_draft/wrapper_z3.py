@@ -58,7 +58,6 @@ def unpack(joiner, const_lookup, JSTy):
     else:
          raise Exception( 'unpack(): unrecognised type \'' + join_t + '\'')
 
-
 #
 #   
 #   utilities 
