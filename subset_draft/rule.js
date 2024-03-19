@@ -3,6 +3,7 @@ import {GenT, NumT, ArrowT, OkT, CompT} from './typevar.js';
 import {Ander} from './ander.js';
 import {Orer} from './orer.js';
 import {Judgement, EmptyJudgement} from './judgement.js';
+import {Assms} from './assms.js';
 import {Utils} from './utils.js';
 
 //perhaps make one if you think it would help organisation 
@@ -17,7 +18,7 @@ export class Rule {
 
     //consts 
     static okC = () => new CompT(new OkT());
-    static disjunctiveRules = true;
+    static disjunctiveRules = false;
     static disjTypeName = 'A';
 
     //static class for all the rules, each with its own shape 
@@ -35,8 +36,13 @@ export class Rule {
     }
 
     //assms should come from the judgement on the way up (empty) because this is what
+    //this means we cant run it where we run most other rules, because assumptions
+    //come from rules above that we wouldnt be able to see otherwise when
+    //executing the rule on the way up. This stops incorrectly showing things are
+    //Ok^c, hopefully
     static addOkC1 = (assms) => { //structural 
-        const assmTypings = assms.allTypings();
+        Utils.typeIsOrCrash(assms, Assms.type);
+        const assmTypings = assms.getTypings();
         const okCVarTypes = Object.keys(assmTypings).map(x => new Constraint(assmTypings[x], Rule.okC()));
         return new Orer(...okCVarTypes.map(x => new Ander(x)));
     }
@@ -78,6 +84,7 @@ export class Rule {
             new Ander(
                 new Constraint(T2, T3),
                 new Constraint(T2, X),
+                //new Constraint(T3, X), transitivity 
                 C2,
                 C3
             )
@@ -120,6 +127,7 @@ export class Rule {
     /////////////////////////////////////////////////
 
     static cTVar = (r, empty) => {
+        const OkC1Constrs = Rule.addOkC1(empty.getAssms());
         const X = new GenT(r.getFreshVar('X'));
         const typeInAssms = empty.variableType(empty.getSubterm('x'));
         const conclusn = empty.constrain(X); //(CTVar)
@@ -129,9 +137,9 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
-            if(empty.getAssms().count() > 0){
+            if(!OkC1Constrs.isEmpty()){
                 conclusn.addAnder();
-                conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+                conclusn.addToLast(OkC1Constrs);
             }
 
             //no other var rules 
@@ -141,6 +149,7 @@ export class Rule {
     }
 
     static cTNum = (r, empty) => {
+        const OkC1Constrs = Rule.addOkC1(empty.getAssms());
         const X = new GenT(r.getFreshVar('X'));
         const conclusn = empty.constrain(X); 
 
@@ -149,9 +158,9 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
-            if(empty.getAssms().count() > 0){
+            if(!OkC1Constrs.isEmpty()){
                 conclusn.addAnder();
-                conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+                conclusn.addToLast(OkC1Constrs);
             }
             //no other num rules 
         }
@@ -161,6 +170,7 @@ export class Rule {
     }
 
     static cTNumOp = (r, empty) => { //CTNumOp
+        const OkC1Constrs = Rule.addOkC1(empty.getAssms());
         const X = new GenT(r.getFreshVar('X'));
         const premise1 = r.typecheck(empty.asSubterm('M'));
         const premise2 = r.typecheck(empty.asSubterm('N'));
@@ -179,9 +189,9 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
-            if(empty.getAssms().count() > 0){
+            if(!OkC1Constrs.isEmpty()){
                 conclusn.addAnder();
-                conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+                conclusn.addToLast(OkC1Constrs);
             }
             conclusn.addAnder();
             conclusn.addToLast(Rule.addNumOp2(T1, T2, C1, C2));
@@ -194,6 +204,7 @@ export class Rule {
     }
 
     static cTAbsInf = (r, empty) => { //CTAbsInf
+        const OkC1Constrs = Rule.addOkC1(empty.getAssms());
         const X = new GenT(r.getFreshVar('X'));
         const Y = new GenT(r.getFreshVar('Y'));
         const body = empty.asSubterm('M');
@@ -208,9 +219,9 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
-            if(empty.getAssms().count() > 0){
+            if(!OkC1Constrs.isEmpty()){ // we forbid this from running here because it will infer on types it didnt have access to 
                 conclusn.addAnder();
-                conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+                conclusn.addToLast(OkC1Constrs);
             }
             //no other abs rules 
         }
@@ -220,6 +231,7 @@ export class Rule {
     }
 
     static cTApp = (r, empty) => { //CTApp
+        const OkC1Constrs = Rule.addOkC1(empty.getAssms());
         const X = new GenT(r.getFreshVar('X'));
         const premise1 = r.typecheck(empty.asSubterm('M'));
         const premise2 = r.typecheck(empty.asSubterm('N'));
@@ -236,9 +248,9 @@ export class Rule {
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
-            if(empty.getAssms().count() > 0){
+            if(!OkC1Constrs.isEmpty()){
                 conclusn.addAnder();
-                conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+                conclusn.addToLast(OkC1Constrs);
             }
             conclusn.addAnder();
             conclusn.addToLast(Rule.addApp2(X, T1, C1, r));
@@ -249,7 +261,8 @@ export class Rule {
         return conclusn;
     }
 
-    static cTIfLeZ = (r, empty) => { //IfLez
+    static cTIfZ = (r, empty) => { //IfLez
+        const OkC1Constrs = Rule.addOkC1(empty.getAssms());
         const X = new GenT(r.getFreshVar('X'));
         const premise1 = r.typecheck(empty.asSubterm('M'));
         const premise2 = r.typecheck(empty.asSubterm('N'));
@@ -263,14 +276,14 @@ export class Rule {
         const conclusn = empty.constrain(X);
 
         conclusn.addToLast(C1); //this will be handled in a complement rule 
-        conclusn.addToLast(addDisj(T1, new NumT(), r)); //this is handled in a complement rule 
+        conclusn.addToLast(Rule.addDisj(T1, new NumT(), r)); //this is handled in a complement rule 
 
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
-            if(empty.getAssms().count() > 0){
+            if(!OkC1Constrs.isEmpty()){
                 conclusn.addAnder();
-                conclusn.addToLast(Rule.addOkC1(empty.getAssms()));
+                conclusn.addToLast(OkC1Constrs);
             }
             conclusn.addAnder();
             conclusn.addToLast(Rule.addIfZ2(X, T2, T3, C2, C3));
@@ -293,7 +306,7 @@ export class Rule {
         ruleFor[Rule.op]  = Rule.cTNumOp;
         ruleFor[Rule.abs] = Rule.cTAbsInf;
         ruleFor[Rule.app] = Rule.cTApp;
-        ruleFor[Rule.iflz]= Rule.cTIfLeZ;
+        ruleFor[Rule.iflz]= Rule.cTIfZ;
         return ruleFor;
     })();
 }

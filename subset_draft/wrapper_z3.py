@@ -310,12 +310,12 @@ def main():
     #just take the uniques 
     unique_term_type_ass = uniques_in_list(term_type_assignments)
     #unique_top_type_ass = uniques_in_list(top_type_assignments)
-
+    
     reply = {
         #'reflect': recieved,
         #'term_type': show_constrs(term_type),
         'top': str(Or(list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs'])))),
-        'constrs': show_constrs(all_and_show_me_false),
+        'constrs': str(all_and_show_me_false),#show_constrs(all_and_show_me_false),
         'sol': solns_to_strs(solns),
         'top_solns': list(map(lambda x: solns_to_strs(x), top_solns)),
         #'sol_conj': show_constrs(list(map(lambda x: soln_to_constrs(x, type_lookup), solns))),

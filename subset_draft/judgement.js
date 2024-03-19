@@ -21,6 +21,7 @@ export class EmptyJudgement{
     }
 
     getAssms(){
+        console.log(this.assms);
         return this.assms;
     }
 

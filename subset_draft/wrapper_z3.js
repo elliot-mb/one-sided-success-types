@@ -86,7 +86,7 @@ const replaceTypeStrings = (constr, solution) => {
 
 const test = async () => {
     const r = new Reconstructor();
-    const program = 'x => 0';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
+    const program = '0 <= 0 ? (x => x) : 0';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
     const done = r.reconstruct(program);
     //console.log(JSON.stringify(done.constrs));
     const t = done.termType;
@@ -98,6 +98,7 @@ const test = async () => {
     console.log(JSON.stringify(topAndConstrs));
     const result = await sendConstrsToObj(topAndConstrs);
     console.log(pretty(result));
+    console.log(result['constrs']);
     console.log(`${program}:`);
     const typeStrings = result['term_type_assignments'];
     typeStrings.map(x => console.log(`\t${x}`));
