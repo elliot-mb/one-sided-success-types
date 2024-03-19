@@ -18,7 +18,7 @@ export class Rule {
 
     //consts 
     static okC = () => new CompT(new OkT());
-    static disjunctiveRules = false;
+    static disjunctiveRules = true;
     static disjTypeName = 'A';
 
     //static class for all the rules, each with its own shape 
@@ -30,6 +30,10 @@ export class Rule {
     //// those rules which just add their        ////
     //// constraints. they all return orers      ////
     /////////////////////////////////////////////////
+
+    static addFreeX = (X, r) => {
+        return new Orer(new Constraint(X, r.getFreshVar('F'))); //F for free
+    }
 
     static addOk = (X) => { //structural
         return new Orer(new Ander(new Constraint(X, new OkT())));
@@ -253,7 +257,7 @@ export class Rule {
                 conclusn.addToLast(OkC1Constrs);
             }
             conclusn.addAnder();
-            conclusn.addToLast(Rule.addApp2(X, T1, C1, r));
+            conclusn.addToLast(Rule.addApp2(X, T1, C1, r)); 
             conclusn.addAnder();
             conclusn.addToLast(Rule.addApp3(T2, C2));
         }
