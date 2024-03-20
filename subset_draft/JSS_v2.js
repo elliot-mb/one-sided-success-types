@@ -62,6 +62,7 @@ import { Reconstructor } from './reconstructor.js';
 import {showsTree} from './wrapper_acorn.js';
 import { Orer } from './orer.js';
 import { Ander } from './ander.js';
+import {Solver} from './solver.js';
 
 const testTypeCheck = () => {
     console.log(typecheck(toASTTree('s => y => z => (s(z))(y(z))'), new ConstraintSet()).constraints.show());
@@ -251,6 +252,11 @@ const compTest = () => {
     console.log(compType.show());
 }
 
+const typeTest = async () => {
+    const is = await Solver.isTypableAsOkC('6 + ((x => x)(0))');
+    console.log(is);
+}
+
 // testTypeCheck();
 // testTypeVar();
 //combinedTest();
@@ -259,7 +265,8 @@ const compTest = () => {
 //rolloverTest();
 //equalsTest();
 // bulkTest();
-compTest();
+//compTest();
+typeTest();
 //removeRepeatsTest();
 //orSetAndSetTest();
 
