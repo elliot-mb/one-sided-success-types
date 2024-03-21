@@ -3,11 +3,14 @@ import { Utils } from './utils.js';
 import { Reconstructor } from './reconstructor.js';
 import { pretty } from './wrapper_acorn.js';
 import {Constraint} from './constraint.js';
+import {writeFileSync} from 'fs';
 // import {}
 
 const { spawn } = modRequire('node:child_process');
 
 export class Solver{
+
+    static transferFile = 'python_subp_constraints.json';
 
     static spawnGetString = (program, args) => {
 
@@ -31,9 +34,10 @@ export class Solver{
         });
     }
 
-    static sendConstraints = (constraints) => {
+    static sendConstraints = async (constraints) => {
         if(typeof(constraints) !== 'string') throw Utils.makeErr('sendConstraints: must be a string');
-        return Solver.spawnGetString('python3', ['./wrapper_z3.py', '-constraints', constraints]);
+        writeFileSync(Solver.transferFile, constraints);
+        return Solver.spawnGetString('python3', ['./wrapper_z3.py', '-cf', Solver.transferFile]);
     }
 
     static sendConstrsToObj = async (constraints) => {
@@ -61,11 +65,11 @@ export class Solver{
         console.log(`${done.show()}`);
         const topLvls = done.constrs.toConstraintSet();
 
-        console.log(topLvls);
+        //console.log(topLvls);
         const topAndConstrs = {'term_type': t, 'top_type': topLvls, 'constrs': done.constrs};
-        console.log(JSON.stringify(topAndConstrs));
+        //console.log(JSON.stringify(topAndConstrs));
         const result = await Solver.sendConstrsToObj(topAndConstrs);
-        console.log(pretty(result));
+        //console.log(pretty(result));
         // console.log(result['constrs']);
         console.log(`${program}:`);
         const typeStrings = result['term_type_assignments'];
