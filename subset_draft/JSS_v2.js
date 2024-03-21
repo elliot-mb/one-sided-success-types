@@ -257,6 +257,10 @@ const typeTest = async () => {
     console.log(is);
 }
 
+const testInspection = async () => {
+    await Solver.isTypableAsOkC('(x => x)(0)');
+}
+
 // testTypeCheck();
 // testTypeVar();
 //combinedTest();
@@ -266,7 +270,8 @@ const typeTest = async () => {
 //equalsTest();
 // bulkTest();
 //compTest();
-typeTest();
+//typeTest();
+testInspection();
 //removeRepeatsTest();
 //orSetAndSetTest();
 

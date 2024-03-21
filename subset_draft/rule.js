@@ -29,11 +29,12 @@ export class Rule {
     ////                INNER RULES              ////
     //// those rules which just add their        ////
     //// constraints. they all return orers      ////
+    ////                                         ////
     /////////////////////////////////////////////////
 
-    static addFreeX = (X, r) => {
-        return new Orer(new Constraint(X, r.getFreshVar('F'))); //F for free
-    }
+    // static addFreeX = (X, r) => {
+    //     return new Orer(new Constraint(X, r.getFreshVar('F'))); //F for free
+    // }
 
     static addOk = (X) => { //structural
         return new Orer(new Ander(new Constraint(X, new OkT())));
@@ -53,6 +54,12 @@ export class Rule {
 
     //disjointness helper function (r is the reconstructor for fresh var tracking)
     static addDisj = (A, B, r) => {
+        if(A.shape() === GenT.compShape){
+            throw Utils.makeErr(`addDisj: Disj shouldnt have complemented types as inputs, A is ${A.show()}`);
+        }
+        if(B.shape() === GenT.compShape){
+            throw Utils.makeErr(`addDisj: Disj shouldnt have complemented types as inputs, B is ${B.show()}`);
+        }
         const Z = new GenT(r.getFreshVar('Z'));
         const W = new GenT(r.getFreshVar('W'));
         const ZToW = new ArrowT(Z, W);
@@ -127,7 +134,8 @@ export class Rule {
     ////                                         ////
     ////                SHAPE RULES              ////
     //// those rules that apply directly to the  ////
-    //// grammar                                 ////       
+    //// grammar                                 ////    
+    ////                                         ////   
     /////////////////////////////////////////////////
 
     static cTVar = (r, empty) => {

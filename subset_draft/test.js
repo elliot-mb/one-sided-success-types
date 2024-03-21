@@ -1,6 +1,7 @@
 import {Utils} from './utils.js';
 import { GenT, NumT, ArrowT, OkT, CompT } from './typevar.js';
 import {Solver} from './solver.js';
+import {Reconstructor} from './reconstructor.js';
 
 export class Test {
 
@@ -14,6 +15,8 @@ export class Test {
         await this.testTypeEquality();
         await this.testUntypability();
         await this.testTypability();
+        await this.testFreshTypes();
+        await this.testCheckTypeShape();
         if(this.failures.length > 0) this.showFailures();
     }
 
@@ -84,6 +87,22 @@ export class Test {
         this.assert(await Solver.isTypableAsOkC('0 - (x => x <= 0 ? 1 : 0)'));
         this.assert(await Solver.isTypableAsOkC('(x => x) - (y => y)'));
         this.assert(await Solver.isTypableAsOkC('(f => x => 0 - f(x)(0)) <= 0 ? 0 : 0'));
+    }
+
+    async testFreshTypes(){
+        const typeMap = {}; // uniques
+        const count = 260;
+        const prefixes = ['X', 'Y', 'Z'];
+        const r = new Reconstructor();
+        for(let i = 0; i < count; i++){
+            prefixes.map(x => typeMap[r.getFreshVar(x)] = null);
+        }
+        this.assert(Object.keys(typeMap).length === count * prefixes.length);
+    }
+
+    async testCheckTypeShape(){
+        this.assert(new CompT(new GenT('A')).shape() === GenT.compShape);
+        this.assert(new ArrowT(new GenT('A'), new GenT('B')).shape() === GenT.arrowShape);
     }
 }
 
