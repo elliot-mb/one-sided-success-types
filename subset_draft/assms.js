@@ -38,6 +38,12 @@ export class Assms{
         return this.typings; // return Object.keys(this.typings).map(k => new Constraint(new GenT(k), this.typings[k])); 
     }
 
+    deepCopy(){
+        const newAssms = new Assms();
+        Object.keys(this.getTypings()).map(x => newAssms.add(x, this.get(x)));
+        return newAssms;
+    }
+
 }
 
 

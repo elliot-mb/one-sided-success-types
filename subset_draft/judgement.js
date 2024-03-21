@@ -21,7 +21,7 @@ export class EmptyJudgement{
     }
 
     getAssms(){
-        console.log(this.assms);
+        //console.log('getAssms: ' + this.assms.show());
         return this.assms;
     }
 
@@ -37,7 +37,8 @@ export class EmptyJudgement{
 
     //tries to return the subterm as an empty judgement but may fail if e.g. we are getting a var name 
     asSubterm(shape){
-        return new EmptyJudgement(this.getSubterm(shape), this.assms);
+        //                                                  vv this must be copied! 
+        return new EmptyJudgement(this.getSubterm(shape), this.assms.deepCopy());
     }
 
     //add a new assm to assms 
@@ -95,6 +96,18 @@ export class Judgement extends EmptyJudgement{
 
     show(){
         return `${this.assms.show()} ⊢ ${this.shape} : ${this.termType.show()} | ${this.constrs.show()}`;
+    }
+
+    //'conflicts' in typings wont occur when used normally (the upper tree always discovers the types)
+    addAssmsFromJudgement(full){
+        Utils.typeIsOrCrash(full, Judgement.type);
+        const theirAssms = full.getAssms();
+        Object.keys(theirAssms.getTypings()).map(k => {
+            if(this.assms.isIn(k) && !this.assms.get(k).equals(theirAssms.get(k))){
+                throw Utils.makeErr(`addAssmsFromJudgement: '${k}' is not free in theirAssms ${theirAssms.show()}, and has a conflicting type '${this.assms.get(k).show()}'`);
+            } 
+            this.assms.add(k, theirAssms.get(k));
+        });
     }
 
     /**

@@ -244,11 +244,17 @@ def main():
     solver.set(relevancy=2)
     # the grammar for types 
     JSTy = Datatype('JSTy')
+    # JSTyC = Datatype('JSTyC')
 
     JSTy.declare('Num')
     JSTy.declare('Ok')
     JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
-    JSTy.declare('Comp', ('comp', JSTy))
+    JSTy.declare('Comp', ('comp', JSTy))#C))
+
+    # JSTyC.declare('Num')
+    # JSTyC.declare('Ok')
+    # JSTyC.declare('To', ('lft', JSTy), ('rgt', JSTy))
+
 
     #JSTy.declare('Var', ('ident', StringSort()))
     JSTy = JSTy.create()

@@ -29,11 +29,12 @@ export class Rule {
     ////                INNER RULES              ////
     //// those rules which just add their        ////
     //// constraints. they all return orers      ////
+    ////                                         ////
     /////////////////////////////////////////////////
 
-    static addFreeX = (X, r) => {
-        return new Orer(new Constraint(X, r.getFreshVar('F'))); //F for free
-    }
+    // static addFreeX = (X, r) => {
+    //     return new Orer(new Constraint(X, r.getFreshVar('F'))); //F for free
+    // }
 
     static addOk = (X) => { //structural
         return new Orer(new Ander(new Constraint(X, new OkT())));
@@ -53,6 +54,12 @@ export class Rule {
 
     //disjointness helper function (r is the reconstructor for fresh var tracking)
     static addDisj = (A, B, r) => {
+        if(A.shape() === GenT.compShape){
+            throw Utils.makeErr(`addDisj: Disj shouldnt have complemented types as inputs, A is ${A.show()}`);
+        }
+        if(B.shape() === GenT.compShape){
+            throw Utils.makeErr(`addDisj: Disj shouldnt have complemented types as inputs, B is ${B.show()}`);
+        }
         const Z = new GenT(r.getFreshVar('Z'));
         const W = new GenT(r.getFreshVar('W'));
         const ZToW = new ArrowT(Z, W);
@@ -127,7 +134,8 @@ export class Rule {
     ////                                         ////
     ////                SHAPE RULES              ////
     //// those rules that apply directly to the  ////
-    //// grammar                                 ////       
+    //// grammar                                 ////    
+    ////                                         ////   
     /////////////////////////////////////////////////
 
     static cTVar = (r, empty) => {
@@ -182,7 +190,11 @@ export class Rule {
         const T2 = premise2.termType;
         const C1 = premise1.constrs;
         const C2 = premise2.constrs;
+
         const conclusn = empty.constrain(X);
+
+        // conclusn.addAssmsFromJudgement(premise1);
+        // conclusn.addAssmsFromJudgement(premise2); 
 
         conclusn.addToLast(premise1.constrs);
         conclusn.addToLast(premise2.constrs);
@@ -216,6 +228,10 @@ export class Rule {
         const premise1 = r.typecheck(body);
 
         const conclusn = empty.constrain(X);
+        //copy the variables into our conclusion, even with just one premise
+        //this must be done otherwise we wont transfer assumptions down, but do
+        // we even need to?
+        // conclusn.addAssmsFromJudgement(premise1);
 
         conclusn.addToLast(premise1.constrs); //make sure to add the premise constraints (where )
         conclusn.addToLast(new Constraint(X, new ArrowT(Y, premise1.termType)));
@@ -237,13 +253,18 @@ export class Rule {
     static cTApp = (r, empty) => { //CTApp
         const OkC1Constrs = Rule.addOkC1(empty.getAssms());
         const X = new GenT(r.getFreshVar('X'));
-        const premise1 = r.typecheck(empty.asSubterm('M'));
+        const premise1 = r.typecheck(empty.asSubterm('M')); //asSubterm returns a copy 
         const premise2 = r.typecheck(empty.asSubterm('N'));
         const T1 = premise1.termType;
         const T2 = premise2.termType;
         const C1 = premise1.constrs;
         const C2 = premise2.constrs;
+        
         const conclusn = empty.constrain(X);
+
+        //copy the variables into our conclusion (after we run both)
+        // conclusn.addAssmsFromJudgement(premise1);
+        // conclusn.addAssmsFromJudgement(premise2); 
 
         conclusn.addToLast(premise1.constrs);
         conclusn.addToLast(premise2.constrs);
@@ -277,7 +298,12 @@ export class Rule {
         const C1 = premise1.constrs;
         const C2 = premise2.constrs;
         const C3 = premise3.constrs;
+
         const conclusn = empty.constrain(X);
+
+        // conclusn.addAssmsFromJudgement(premise1);
+        // conclusn.addAssmsFromJudgement(premise2); 
+        // conclusn.addAssmsFromJudgement(premise3);
 
         conclusn.addToLast(C1); //this will be handled in a complement rule 
         conclusn.addToLast(Rule.addDisj(T1, new NumT(), r)); //this is handled in a complement rule 
