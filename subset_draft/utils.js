@@ -39,6 +39,11 @@ export class Utils{
         return xs[xs.length - 1];
     }
 
+    static getPfixFreshVar(pfix, lastUsedVar) {
+        lastUsedVar = Utils.nextFreeTypeName(lastUsedVar);
+        return `${pfix}${lastUsedVar}`;
+    }
+
     /**
      * returns either a string or '#' signifying it has rolled over (we obviously know what it will be?)
      * **/

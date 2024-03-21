@@ -21,6 +21,10 @@ export class TypedList{
         return this.xs.length;
     }
 
+    isEmpty(){
+        return this.size() === 0;
+    }
+
     //no need to override ever
     /**
      * 

@@ -20,6 +20,11 @@ export class EmptyJudgement{
         this.type = EmptyJudgement.type;
     }
 
+    getAssms(){
+        console.log(this.assms);
+        return this.assms;
+    }
+
     variableType(name){
         if(!this.assms.isIn(name)) throw Utils.makeErr(`typecheck: term variable '${name}' is free; unbound in function`);
         return this.assms.get(name);

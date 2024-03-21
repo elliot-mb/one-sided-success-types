@@ -6,6 +6,7 @@ import {EmptyJudgement, Judgement} from './judgement.js';
 import {Rule} from './rule.js';
 import {Untypable} from './typevar.js';
 import {Orer} from './orer.js';
+import {GenT} from './typevar.js';
 
 export class Reconstructor{
     static type = 'reconstructor';
@@ -19,7 +20,7 @@ export class Reconstructor{
         this.lastUsedVar = String.fromCharCode(Utils.firstCharCode);
     }
 
-    getFreshVar(pfix) {
+    getFreshVar(pfix    ) {
         this.lastUsedVar = Utils.nextFreeTypeName(this.lastUsedVar);
         return `${pfix}${this.lastUsedVar}`;
     }
@@ -79,7 +80,8 @@ export class Reconstructor{
         //console.log(empty.show());
         const full = this.typecheck(empty);
         //console.log(full.show());
-        
+        //const F = new GenT(this.getFreshVar('F'));
+        //full.addToLast(new Constraint(full.termType, F));
         return full;
 
         const roughType = full.termType;

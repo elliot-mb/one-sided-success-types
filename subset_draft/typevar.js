@@ -20,7 +20,7 @@ export class GenT{
     static okShape = 'Ok';
     static numShape = 'Num';
     static arrowShape = 'A -> B';
-    static compShape = 'Aᶜ';
+    static compShape = '!A';
     
     constructor(id){
         this.id = id;
@@ -92,6 +92,7 @@ export class CompT extends GenT{
     constructor(A, id = GenT.compShape){
         super(id);
         Utils.typeVarsOrCrash(A, A);
+        if(A.shapeV === GenT.compShape) throw Utils.makeErr('CompT: cannot contain a CompT');
         this.A = A;
         this.shapeV = GenT.compShape;
     }
@@ -122,7 +123,7 @@ export class CompT extends GenT{
     }
 
     show(){
-        return `(${this.getA().show()})ᶜ`;
+        return `!(${this.getA().show()})`;
     }
 
 }

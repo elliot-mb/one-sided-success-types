@@ -10,6 +10,7 @@ parser.add_argument('-orer_type', '-o', type=str, default='orer')
 parser.add_argument('-constraint_type', '-ct', type=str, default='constraint')
 parser.add_argument('-constraint_set_type', '-cst', type=str, default='constraintset')
 parser.add_argument('-shape_field', '-s', type=str, default='shapeV')
+parser.add_argument('-comp_shape', '-cs', type=str, default='!A')
 parser.add_argument('-general_shape', '-g', type=str, default='A')
 parser.add_argument('-ok_shape', '-k', type=str, default='Ok')
 parser.add_argument('-num_shape', '-n', type=str, default='Num')
@@ -34,12 +35,21 @@ def to_type(nested, const_lookup, JSTy):
          raise Exception( 'to_type: supposed type \'nested\' has no shapeV field')
     shape = nested[args.shape_field]
     if(shape == args.arrow_shape):
-        return JSTy.To(to_type(nested['A'], const_lookup, JSTy), to_type(nested['B'], const_lookup, JSTy))
-    else: # no other types are nested so we are done (HAVENT ACCOUNTED FOR COMPLEMENT)
-        return const_lookup[type_name(nested)]
+        return JSTy.To(to_type(nested['A'], const_lookup, JSTy), 
+                       to_type(nested['B'], const_lookup, JSTy))
+    if(shape == args.comp_shape):
+        return JSTy.Comp(to_type(nested['A'], const_lookup, JSTy))
+    if(shape == args.ok_shape):
+        return JSTy.Ok
+    if(shape == args.num_shape):
+        return JSTy.Num
+    else: # no other types are nested so we are done 
+        return const_lookup[type_name(nested)] 
 
 # joiner ::= Ander | Orer | Constraint 
 def unpack(joiner, const_lookup, JSTy):
+    #    print('JOINER ', joiner)
+
     if(not ('type' in joiner or 'xs' in joiner)):
          raise Exception( 'unpack(): joiner must be Ander | Orer | Constraint (found without \'type\' or \'xs\' field)')
     join_t = joiner['type']
@@ -57,7 +67,6 @@ def unpack(joiner, const_lookup, JSTy):
         return to_type(joiner['A'], const_lookup, JSTy) == to_type(joiner['B'], const_lookup, JSTy)
     else:
          raise Exception( 'unpack(): unrecognised type \'' + join_t + '\'')
-
 
 #
 #   
@@ -85,17 +94,31 @@ def flatten(xss):
             flat.append(x)
     return flat
 
-# joiner ::= Ander | Orer | Constraint | ArrowType | Typevar
+# joiner ::= Ander | Orer | Constraint | ArrowType | Typevar | Comp
 def unwrap(joiner):
     if(not 'type' in joiner):
         return []
     join_t = joiner['type']
+    #print(joiner)
     if(join_t != args.ander_type and join_t != args.orer_type):
-        if((not 'A' in joiner) and (not 'B' in joiner)):
-            return [joiner['id']] # nest against flattener so strings dont get flattened
+        if(args.shape_field in joiner):
+            shape = joiner[args.shape_field]
+            # Num | A -> B | A^c | Ok | A
+            if(shape == args.general_shape):
+                return [joiner['id']] # nest against flattener so strings dont get flattened
+            if(shape == args.arrow_shape):
+                return flatten([unwrap(joiner['A']), unwrap(joiner['B'])])
+            if(shape == args.comp_shape):
+                return flatten([unwrap(joiner['A'])])
+            if(shape == args.ok_shape):
+                return []
+            if(shape == args.num_shape):
+                return []
         else:
             # it is a constraint
+            #print(joiner)
             return flatten([unwrap(joiner['A']), unwrap(joiner['B'])])
+    #print(joiner)
     xs = joiner['xs'] # by the outer program, anything with type ander or orer will have an xs
     nested = list(map(lambda x: unwrap(x), xs))
     return flatten(nested)
@@ -113,7 +136,7 @@ def show_constrs(constrs):
 
 # iteratively acquires more solutions by constraining assignments against what they come up as 
 # whitelist tells us which assignments to not try and negate (a list of variable names)
-def make_solns(const_lookup, constrs, count, whitelist = [], blacklist = []):
+def make_solns(const_lookup, constrs, count, blacklist = []):
     solns = [] # can be added to a dict, array of dicts  
     solver = Solver()
     solver.set(relevancy=2)
@@ -135,8 +158,7 @@ def make_solns(const_lookup, constrs, count, whitelist = [], blacklist = []):
             if(ass.arity() == 0): #reassign constants
                 sol[assStr] = mod[ass]
                 neg = const_lookup[assStr] != mod[ass]
-                if(not assStr in whitelist): #if its in the whitelist we shouldnt reassign
-                    mod_can_neg.append(neg)
+                mod_can_neg.append(neg)
                 if(assStr in blacklist):
                     #print('MUST REASSIGN ' + assStr)
                     mod_must_neg.append(neg)
@@ -149,7 +171,7 @@ def make_solns(const_lookup, constrs, count, whitelist = [], blacklist = []):
         if(len(mod_must_neg) > 0):
             solver.add(And(mod_must_neg))
         #print(mod_negation, list(map(lambda x: x, mod)))
-        #solver.add(mod_negation)
+        solver.add(mod_negation)
         #print(solver)
         solve_count += 1
 
@@ -222,19 +244,16 @@ def main():
     solver.set(relevancy=2)
     # the grammar for types 
     JSTy = Datatype('JSTy')
-    ComplTy = Datatype('ComplTy') # stops directly nested complements
-    ComplTy.declare('Num')
-    ComplTy.declare('Ok')
-    ComplTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
-    
+
     JSTy.declare('Num')
     JSTy.declare('Ok')
-    JSTy.declare('Comp', ('comp', ComplTy))
     JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
+    JSTy.declare('Comp', ('comp', JSTy))
+
     #JSTy.declare('Var', ('ident', StringSort()))
-    JSTy, ComplTy = CreateDatatypes(JSTy, ComplTy)
+    JSTy = JSTy.create()
     for name in type_list:
-        type_lookup[name] = Const(name, JSTy)
+        type_lookup[name] = Const(name, JSTy) # ComplTy can be put inside comps
     type_lookup[args.ok_shape] = JSTy.Ok
     type_lookup[args.num_shape] = JSTy.Num #adds an entry for constraints involving numbers and oks, without any extra logic 
     #type_lookup[args.arrow_shape] JSTy.
@@ -243,6 +262,7 @@ def main():
     top_constrs = list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs']))
     #print(top_constrs, term_type)
     #print(all_constrs)
+    all_and_show_me_false = And(all_constrs, term_type == JSTy.Comp(JSTy.Ok))
     bound_in_top = bound_in_constr_set(top_type)
     
     #solver.add(And(JSTy.Comp(JSTy.Comp(JSTy)) == JSTy))
@@ -250,9 +270,9 @@ def main():
     
     #now show me its false
     #solver.add(to_type(top_type, type_lookup, JSTy) == JSTy.Comp(ComplTy.Ok))
-    show_me_false = term_type == JSTy.Comp(ComplTy.Ok)
-    # first pass 
-    solns = make_solns(type_lookup, And(all_constrs, show_me_false), MAX_DEPTH, whitelist = [], blacklist = [])
+    
+
+    solns = make_solns(type_lookup, all_and_show_me_false, MAX_DEPTH, blacklist = [])
     
     # all solutions that dont interfere with the disjunctive toplevel constraints
 
@@ -290,12 +310,12 @@ def main():
     #just take the uniques 
     unique_term_type_ass = uniques_in_list(term_type_assignments)
     #unique_top_type_ass = uniques_in_list(top_type_assignments)
-
+    
     reply = {
         #'reflect': recieved,
         #'term_type': show_constrs(term_type),
         'top': str(Or(list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs'])))),
-        'constrs': show_constrs(all_constrs),
+        'constrs': str(all_and_show_me_false),#show_constrs(all_and_show_me_false),
         'sol': solns_to_strs(solns),
         'top_solns': list(map(lambda x: solns_to_strs(x), top_solns)),
         #'sol_conj': show_constrs(list(map(lambda x: soln_to_constrs(x, type_lookup), solns))),

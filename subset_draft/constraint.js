@@ -61,7 +61,7 @@ export class Constraint{
     }
 
     show(){
-        return `${this.A.show()} = ${this.B.show()}`;
+        return `${this.A.show()} == ${this.B.show()}`;
     }
 
     swapWith(tA, tB){
