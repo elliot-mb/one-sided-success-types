@@ -11,16 +11,17 @@ export class Test {
     async run(){
         this.failures = [];
         await this.testTypeEquality();
+        await this.testUntypability();
         await this.testTypability();
-        this.showFailures();
+        if(this.failures.length > 0) this.showFailures();
     }
 
     showFailures(){
-        console.log('failures:');
-        console.log(`\t${this.failures.join('\n')}`);
+        const errStr = `\x1b[31m failures (${this.failures.length}):\n \t${this.failures.join('\n\t')} \x1b[0m`;
+        console.log(errStr);
     }
 
-    //assert true
+    //assert true (and add a line number and method name to list of fails)
     assert(b1){
         if(!b1) {
             const failStr = new Error().stack.split('\n')[2];
@@ -47,10 +48,24 @@ export class Test {
         this.assert(new CompT(new GenT('B')).equals(new GenT('A')) === false);
     }
 
-    async testTypability(){
+    async testUntypability(){ //inconclusive
+        this.assert(!(await Solver.isTypableAsOkC('f => x => f(f(x))')));
+        this.assert(!(await Solver.isTypableAsOkC('(f => g => f + g)')));
+        this.assert(!(await Solver.isTypableAsOkC('(f => g => f + g)(0)(0)')));
+        this.assert(!(await Solver.isTypableAsOkC('(f => g => f + g(0))(0)(x => x)')));
+        this.assert(!(await Solver.isTypableAsOkC('(x => x)(0) + 0')));
+        this.assert(!(await Solver.isTypableAsOkC('(x => x)')));
+        this.assert(!(await Solver.isTypableAsOkC('(x => x)(0)')));
+        this.assert(!(await Solver.isTypableAsOkC('(x => x)(x => x)')));
+        this.assert(!(await Solver.isTypableAsOkC('0 + 0')));
+    }
+
+    async testTypability(){ //as OkC
         this.assert(await Solver.isTypableAsOkC('0(0)'));
         this.assert(await Solver.isTypableAsOkC('(x => x) + 0'));
-        this.assert(!(await Solver.isTypableAsOkC('(x => x)(0) + 0')));
+        this.assert(await Solver.isTypableAsOkC('(x => x <= 0 ? 0 : 0)(y => y)'));
+        this.assert(await Solver.isTypableAsOkC('(f => g => f + g)(0)(x => x)'));
+        this.assert(await Solver.isTypableAsOkC('0 - (x => x <= 0 ? 1 : 0)'));
     }
 }
 
