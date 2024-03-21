@@ -29,7 +29,7 @@ export class Test {
         await this.testTypability();
         await this.testFreshTypes();
         await this.testCheckTypeShape();
-        if(this.failures.length > 0) this.showFailures();
+        this.showFailures();
     }
 
     showFailures(){
@@ -99,6 +99,7 @@ export class Test {
         this.assert(await Solver.isTypableAsOkC('0 - (x => x <= 0 ? 1 : 0)'));
         this.assert(await Solver.isTypableAsOkC('(x => x) - (y => y)'));
         this.assert(await Solver.isTypableAsOkC('(f => x => 0 - f(x)(0)) <= 0 ? 0 : 0'));
+        this.assert(await Solver.isTypableAsOkC('(y => x => y(1) + y(x))(x => x + 1)((z => z <= 0 ? (x => x) : (y => y))(0))'));
     }
 
     async testFreshTypes(){
