@@ -18,6 +18,7 @@ export class Solver{
     
         proc.on('close', (code, signal) => {
             console.log(`spawnGetString: program '${program}' emitted signal ${signal} threw code ${code}`);
+            if(code !== 0) throw Utils.makeErr('spawnGetString: subprocess crashed with code ' + code);
         });
     
         return new Promise(resolve => {

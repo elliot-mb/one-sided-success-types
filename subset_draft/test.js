@@ -12,15 +12,32 @@ export class Test {
 
     async run(){
         this.failures = [];
+        // try{
+        // await Promise.all([
+        //     this.testTypeEquality(), 
+        //     this.testUntypability(),
+        //     this.testTypability(),
+        //     this.testFreshTypes(),
+        //     this.testCheckTypeShape()
+        // ]).then(r => {
+        //     if(this.failures.length > 0) this.showResults();
+        // }).catch(err => {
+        //     console.log('run: ' + err);
+        //     this.showResults();
+        //     return;
+        // });
         await this.testTypeEquality();
         await this.testUntypability();
         await this.testTypability();
         await this.testFreshTypes();
         await this.testCheckTypeShape();
-        if(this.failures.length > 0) this.showFailures();
+        
+        if(this.failures.length > 0) this.showResults();
+
+        
     }
 
-    showFailures(){
+    showResults(){
         const total = this.failures.length + this.successes.length;
         const errStr = `\x1b[31m failures (${this.failures.length}/${total}):\n \t${this.failures.join('\n\t')} \x1b[0m`;
         const sucStr = `\x1b[32m successes (${this.successes.length}/${total}):\n \t${this.successes.join('\n\t')} \x1b[0m`;
