@@ -259,6 +259,7 @@ const typeTest = async () => {
 
 const testInspection = async () => {
     await Solver.isTypableAsOkC('(x => x)(0)');
+
 }
 
 // testTypeCheck();
