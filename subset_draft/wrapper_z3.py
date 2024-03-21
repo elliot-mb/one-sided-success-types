@@ -71,7 +71,19 @@ def unpack(joiner, const_lookup, JSTy, JSTyC):
             return unpack(xs[0], const_lookup, JSTy, JSTyC)
         return Or(list(map(lambda x: unpack(x, const_lookup, JSTy, JSTyC), xs))) 
     if(join_t == args.constraint_type):
-        return to_type(joiner['A'], const_lookup, JSTy, JSTyC) == to_type(joiner['B'], const_lookup, JSTy, JSTyC)
+        left_type = to_type(joiner['A'], const_lookup, JSTy, JSTyC)
+        right_type = to_type(joiner['B'], const_lookup, JSTy, JSTyC)
+        if(left_type.sort() != right_type.sort()):
+            # convert the one which is JSTyC, because they will always be 
+            # convertable to JSTy. JSTy.Comp(...) cannot be converted to
+            # JSTyC, but this should be fine because there are two cases:
+            # 1) one sort is JSTy and the other is JSTyC. we simply convert
+            #    the one that is JSTyC to JSTy.
+            # 2) they are both JSTy in which case we do not need to convert 
+            #    them because there is no type mismatch in the first place 
+            if(left_type.sort() == JSTyC):
+                
+        # return to_type(joiner['A'], const_lookup, JSTy, JSTyC) == to_type(joiner['B'], const_lookup, JSTy, JSTyC)
     else:
          raise Exception( 'unpack(): unrecognised type \'' + join_t + '\'')
 
@@ -256,7 +268,7 @@ def main():
     JSTy.declare('Num')
     JSTy.declare('Ok')
     JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
-    JSTy.declare('Comp', ('comp', JSTyC))
+    JSTy.declare('Comp', ('comp', JSTyC)) # cannot be converted to a JSTyC 
     
     JSTyC.declare('Num')
     JSTyC.declare('Ok')
