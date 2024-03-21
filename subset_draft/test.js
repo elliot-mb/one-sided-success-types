@@ -12,6 +12,18 @@ export class Test {
 
     async run(){
         this.failures = [];
+        /** fast test
+         *         await Promise.all([
+            this.testTypeEquality(),
+            this.testUntypability(),
+            this.testTypability(),
+            this.testFreshTypes(),
+            this.testCheckTypeShape()
+        ]).then(r => {
+            this.showFailures();
+        })
+
+         */
         await this.testTypeEquality();
         await this.testUntypability();
         await this.testTypability();
