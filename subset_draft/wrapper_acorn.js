@@ -5,6 +5,8 @@
 import { Parser } from 'acorn';
 import { full } from 'acorn-walk';
 import { modRequire } from './module_require.js';
+import {writeFileSync} from 'fs';
+import {Utils} from './utils.js';
 
 const parse = (prog) => Parser.parse(prog, {ecmaVersion: 2023});
 const PROGRAM_T = 'Program';
@@ -239,5 +241,6 @@ export const toASTTree = (program, justFirstExpression = true, enforceGrammar = 
 
 export const showsTree = async (name, program) => {
     const f = `./${name}.json`;
-    await Bun.write(f, pretty(toASTTree(program, true, false)));
+    writeFileSync(f, pretty(toASTTree(program, false, false)));
+    //await Bun.write(f, pretty(toASTTree(program, true, false)));
 }

@@ -69,7 +69,7 @@ export class Solver{
         const topLvls = done.constrs.toConstraintSet();
         const topAndConstrs = {'term_type': t, 'top_type': topLvls, 'constrs': done.constrs};
         const result = await Solver.sendConstrsToObj(topAndConstrs);
-        //console.log(pretty(result['']));
+        //console.log(pretty(result));
         console.log(`${program}:`);
         const typeStrings = result['term_type_assignments'];
         const untypable = typeStrings.length === 0;

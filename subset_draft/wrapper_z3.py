@@ -252,9 +252,22 @@ def main():
     solver.add(all_constrs)
 
     solns = make_solns(type_lookup, all_and_show_me_false, MAX_DEPTH)
+    #all_solns = make_solns(type_lookup, all_constrs, MAX_DEPTH)
+
+    def term_ass(xs): 
+        result = []
+        for x in xs:
+            xb = 'None'
+            if str(term_type) in x:
+                xb = str(x[str(term_type)])
+            result.append(xb)
+        return result
+        #list(map(lambda x: if str(term_type) in x: str(x[str(term_type)]), xs))
     
-    term_type_assignments = list(map(lambda x: str(x[str(term_type)]), solns))
+    term_type_assignments = term_ass(solns)
+    #all_term_type_assignments = term_ass(all_solns)
     #just take the uniques 
+    #unique_all_term_type_ass = uniques_in_list(all_term_type_assignments)
     unique_term_type_ass = uniques_in_list(term_type_assignments)
     #unique_top_type_ass = uniques_in_list(top_type_assignments)
     
@@ -266,7 +279,7 @@ def main():
         #'type_vars': type_list,
         'term_type_assignments': unique_term_type_ass,
         #'top_term_assignments': unique_top_type_ass,
-        'term_type_assignments_all': term_type_assignments,
+        #'term_type_assignments_all': unique_all_term_type_ass,
         #'bound_in_top': bound_in_top
     }
     print(reply) #test to see if we can send the constraints back

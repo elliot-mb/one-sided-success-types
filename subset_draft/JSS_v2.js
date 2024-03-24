@@ -63,6 +63,7 @@ import {showsTree} from './wrapper_acorn.js';
 import { Orer } from './orer.js';
 import { Ander } from './ander.js';
 import {Solver} from './solver.js';
+import {writeFileSync} from 'fs';
 
 const testTypeCheck = () => {
     console.log(typecheck(toASTTree('s => y => z => (s(z))(y(z))'), new ConstraintSet()).constraints.show());
@@ -168,8 +169,7 @@ const orSetAndSetTest = () => {
     const o = new Orer(
         new Ander(new Constraint(new GenT('A'), new GenT('B')), new Constraint(new GenT('A'), new GenT('B'))),
         new Ander(new Constraint(new GenT('A'), new GenT('B')), new Constraint(new GenT('A'), new GenT('B'))));
-    console.log(o.show());
-
+    console.log(o.show());//add(0, 𝜆𝑥 . 𝑥) ⇓ 𝜆𝑥 . 𝑥
 }
 
 const equalsTest = () => {
@@ -273,21 +273,49 @@ const testInspection = async () => {
 //compTest();
 //typeTest();
 testInspection();
+
 //removeRepeatsTest();
 //orSetAndSetTest();
 
 //nullTest();
 
-//showsTree('nullTree', 'null');
+showsTree('composTree', 'const n = 1; n;');
+showsTree('composTree2', 'const p = () => {const n = 1; return n;}');
+
+// shapes: new grammar       
+//  E, F ::= const f = M; E | empty
+//  M, N ::= x | n | M num_op N | x => M | x => {E return M;} | M(N) | M <= 0 ? N : P        --terms
+// This grammar adds 4 extra shapes of term and two new categories/program variables R, E and F
+// 'const f = M; E' is the same as letrec, 'f = M; E' is similar to the partial
+// map in the second two sided system in the paper, 'return M' and 'x => {E_1...} are 
+// all brand-new shapes and would require their own two-sided then one-sided rules 
 /**
- * adding 'null' to our language would look like this! 
+ * Examples
+ * const f = x => y => {
+ *      const g = 0;
+ *      const h = x => x + 1;
+ *      return h(x) + g + h(y);
+ * }
  * 
- * {
-  "type": "Literal",
-  "start": 0,
-  "end": 4,
-  "value": null,
-  "raw": "null"
-}
- * updating the json files accordingly... its another lite
+ * const c = 10;
+ * const f = x => {
+ *      c = c - 1; //illegal
+ *      return x;
+ * }
+ * f(0);
+ * 
  */
+
+
+// /**
+//  * adding 'null' to our language would look like this! 
+//  * 
+//  * {
+//   "type": "Literal",
+//   "start": 0,
+//   "end": 4,
+//   "value": null,
+//   "raw": "null"
+// }
+//  * updating the json files accordingly... its another lite
+// */
