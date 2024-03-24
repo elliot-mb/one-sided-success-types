@@ -282,13 +282,7 @@ testInspection();
 showsTree('composTree', 'const n = 1; n;');
 showsTree('composTree2', 'const p = () => {const n = 1; return n;}');
 
-// shapes: new grammar       
-//  E, F ::= const f = M; E | empty
-//  M, N ::= x | n | M num_op N | x => M | x => {E return M;} | M(N) | M <= 0 ? N : P        --terms
-// This grammar adds 4 extra shapes of term and two new categories/program variables R, E and F
-// 'const f = M; E' is the same as letrec, 'f = M; E' is similar to the partial
-// map in the second two sided system in the paper, 'return M' and 'x => {E_1...} are 
-// all brand-new shapes and would require their own two-sided then one-sided rules 
+
 /**
  * Examples
  * const f = x => y => {
