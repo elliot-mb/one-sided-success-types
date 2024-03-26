@@ -2,6 +2,25 @@
 // the ast walker https://github.com/acornjs/acorn/tree/master/acorn-walk/
 // testing with bun
 
+
+/**
+ * 
+ * final grammar for functions
+ * 
+ * structural
+ * 
+ * P, Q ::= const x = M; P | M; P | empty
+ * converted to
+ * Program ::= E[]
+ * 
+ * rules for
+ * 
+ * E, F ::= const x = M; E | return M;
+ * M, N ::= x | n | M o N | x => M | {E} | M(N) | M <= 0 ? N : P
+ * V, W ::= x | n | x => M 
+ * 
+ */
+
 import { Parser } from 'acorn';
 import { full } from 'acorn-walk';
 import { modRequire } from './module_require.js';
@@ -96,6 +115,13 @@ const ruleNameArg = rule => {
     return {"name": name, "arg": arg};
 }
 
+const deleteSpecials = (original, special) => {
+    const afterDeletes = Array.from(original)
+        .filter(c => c === special ? '' : c)
+        .reduce((xs, x) => `${xs}${x}`, '');
+    return afterDeletes;
+}
+
 //rule is the current level we are in the rule chain (element of the rules array)
 //value is initially the value of the field the rules are applied to, but it changes
 //depending on whether any property accesses are made (its then set to that property value)
@@ -105,11 +131,24 @@ const checkRule = (rule, objOrValue, fieldname) => {
     // specification: "F" as a key => value is an object of <function name> : <operand> 
     //                "P" as a key => value is an object of <property name> : <requirement>
     //                <requirement> is an object with either "F" or "P" as a single key
+    const special = '%'; //expands to special accessors
     const func = 'F';
     const prop = 'P';
+    const propAccessors = {
+        'last': xs => {
+                if(xs.length === undefined) throw new Utils.makeErr('checkRule: requires the property is a list');
+                if(xs.length === 0) throw new Utils.makeErr('checkRule: the property is a list of length at least one');
+                return `${xs.length - 1}`;
+            }
+    }
     const funcs = { //all functions referred to in the type_require.json
         'equals': v => x => v === x, //take the value and the argument of the rule
-        'typeof': v => x => typeof(v) === x
+        'typeof': v => x => typeof(v) === x,
+        // 'lastEquals': v => xs => {
+        //     if(xs.length === undefined) throw new Utils.makeErr('checkRule.funcs[\'last\'] requires the property is a list');
+        //     if(xs.length === 0) throw new Utils.makeErr('checkRule.funcs[\'last\'] requires the property is a list of length at least one');
+        //     return v === xs[xs.length - 1];
+        // }
     };
 
     if(rule === undefined) throw Utils.makeErr(`checkRule: rule not defined`);
@@ -120,6 +159,7 @@ const checkRule = (rule, objOrValue, fieldname) => {
         const funcNameArg = rule[func];
         const funcNames = Object.keys(funcNameArg);
         if(funcNames.length !== 1) throw Utils.makeErr(`checkRule: function specifier has the wrong number of fields`);
+
         const funcName = funcNames[0];
         const useFunc = funcs[funcName]; //function to use the value and arg with
         const funcArg = funcNameArg[funcName]; //gets the function argument from the pair
@@ -133,8 +173,12 @@ const checkRule = (rule, objOrValue, fieldname) => {
         const propNames = Object.keys(propNameRule);
         if(propNames.length !== 1) throw Utils.makeErr(`checkRule: property specifier has the wrong number of fields`);
         const propName = propNames[0];
-        const newRule = propNameRule[propName];
-        const newObjOrValue = objOrValue[propName];
+        const newRule = propNameRule[propName]; //recurses inside the rule spec
+        let newObjOrValue;
+        if(propName[0] === special){
+            afterDeletes = deleteSpecials(propName, special);
+            newObjOrValue = objOrValue[propAccessors[afterDeletes]];
+        }else { newObjOrValue = objOrValue[propName]; } //fetches current obj context
         checkRule(newRule, newObjOrValue, propName);
         return;
     }
@@ -147,7 +191,7 @@ export const checkTerm = term => {
      * {
      *      <ast_type> : {
      *          <field_rules_are_applied_to>: {
-     *              "satisfies": "ANY" | "ALL", 
+     *              "satisfies": "ANY" | "ALL" | "NONE", 
      *              "rules": <requirement>[]
      *          },
      *          <field_rules_are_applied_to>: {...}
@@ -157,54 +201,83 @@ export const checkTerm = term => {
      */
 
     //tokens for the specification
+    const special = '%'; //this is ignored when checking field names which 
+    //allows us to have more than one set of rules for the same field name 
     const stfy = 'satisfies';
     const ruls = 'rules';
     const sAny = 'ANY';
     const sAll = 'ALL';
+    const sNone = 'NONE';
     const rAny = x => y => x || y;
     const rAll = x => y => x && y;
+    const rNone = x => y => x && !y;
+    const sRMap = {
+        'ANY': rAny,
+        'ALL': rAll,
+        'NONE': rNone
+    };
+    const sAccMap = { //what we start the accumulator as 
+        'ANY': false,
+        'ALL': true,
+        'NONE': true
+    }
+
     if(term === undefined) throw Utils.makeErr(`checkTerm: term not defined`);
     if(term.type === undefined) throw Utils.makeErr(`checkTerm: term.type not defined`);
     const checkFields = typeToProperties[term.type]; 
     if(checkFields === undefined) throw Utils.makeErr(`checkTerm: there is no term of type '${term.type}' in the grammar`);
-    Object.keys(checkFields).map(field => { //field under this type of term in the AST
+    //remove the special characters from the field names 
+    const propsEnforced = Object.keys(checkFields)
+        .map(x => deleteSpecials(x, special));
+
+    propsEnforced.map(field => { //field under this type of term in the AST
         const ruleset = checkFields[field];
-        if(ruleset[stfy] === undefined) throw Utils.makeErr(`checkTerm: ruleset is missing the 'satisfies' property`);
-        const reducer = ruleset[stfy] === sAny ? rAny : rAll;   
+        const sat = ruleset[stfy];
+        if(sat === undefined) throw Utils.makeErr(`checkTerm: ruleset is missing the 'satisfies' property`);
+        const reducer = sRMap[sat];
+        //console.log(reducer, ruleset[stfy])   ;
         if(ruleset[ruls].length === 0) throw Utils.makeErr(`checkTerm: rulesets must have at least one rule`);
         const fails = [];
         const isOk = ruleset[ruls]
             .map((rule, i) => {
-                //console.log('here');
                 try{
                     checkRule(rule, term[field], field);
                 }catch(err){
-                    //console.log(err);
                     fails.push(`${i}: ${err}`);
                     return false;
                 }
                 return true; //we need to not crash out in teh case that rAny is selected
             })
-            .reduce((acc, x) => reducer(acc)(x));
+            .reduce((acc, x) => reducer(acc)(x), sAccMap[sat]);
         if(!isOk) throw Utils.makeErr(`checkTerm: '${ruleset[stfy]}' rule(s) in ruleset not met:\r\n${fails.join('\r\n')}`);
 
     });
 }
 
+//                           v allows us to specify what we do not want 
+const getSomeSubterms = (ast, except = []) => {
+    const subtermNames = Object.keys(typeToSubterms[ast.type]).filter(n => !Utils.any(except.map(x => x === n)));
+    //console.log(subtermNames + 'without' + except);
+    return subtermNames.map(subtermName => getSubterm(ast, subtermName));
+}
+
 //verifies that the term uses just the expected shapes of subterms all the way down
-export const checkGrammar = term => {
+export const checkGrammar = (term, initialDeclr = false) => {
     if(term === undefined) throw Utils.makeErr(`checkGrammar: term is not defined`);
     //base case where the term evalutes to raw strings or numbers
     if(typeof(term) !== 'object') return;
-
+    //console.log(term);
     if(term.type === undefined) throw Utils.makeErr(`checkGrammar: term has no 'type' field`);
     if(typeToSubterms[term.type] === undefined) throw Utils.makeErr(`checkGrammar: there is no term of type '${term.type}' in the grammar`);
-    const subtermNames = Object.keys(typeToSubterms[term.type]);
+    //gets set false as soon as we pass the first (toplevel) const
     let subterms;
     try{
         checkTerm(term);  
-        subterms = subtermNames.map(subtermName => getSubterm(term, subtermName));
-        subterms.map(subterm => checkGrammar(subterm));
+        subterms = getSomeSubterms(term, initialDeclr ? ['E'] : []);
+        if(termShape(term) === 'const x = M; E'){
+            initialDeclr = false;
+        }
+        subterms.map(subterm => checkGrammar(subterm, initialDeclr));
     }catch(err){
         throw Utils.makeErr(`checkGrammar: term shape '${typeToGrammar[term.type]}' failed since ${err}`);
     }
@@ -223,24 +296,50 @@ export const checkGrammar = term => {
 //     subterms.map(subterm => checkGrammar(subterm));
 // }
 
+/**
+ * recurseAST is supposed to recurse the arrays inside blockstatements to use
+ * letrec type reasoning 
+ * we dont recurse on 'E' in var declarations  
+ * @param {*} ast 
+ */
+const recurseAST = (ast) => {
+    const astType = ast.type;
+    if(astType === undefined) return;
+    if(termShape(ast) === '{E}'){
+        const xs = getSubterm(ast, 'E'); //each term in the body
+        const fst = xs[0];
+        for(let i = 0; i < xs.length - 1; i++){
+            recurseAST(xs[i]);
+            xs[i]['next'] = xs[i + 1];
+        }
+        ast[typeToSubterms[astType]['E']] = fst;
+        return;
+    }
+    const subterms = getSomeSubterms(ast, ['E']);
+    subterms.map(x => recurseAST(x));
+}
+
 //just first expression argument is there while we only have single expressions
-export const toASTTree = (program, justFirstExpression = true, enforceGrammar = true) => {
+export const toASTTrees = (program, justFirstExpression = true, enforceGrammar = true) => {
     //console.log(`${program} to AST Tree`);
     let tree = {};
+    let ret = {};
     full(parse(program), (node) => {
         if(node.type === PROGRAM_T){
             tree = node;
         }
     });
-
-    if(justFirstExpression) tree = tree['body'][0]['expression'];
-    if(enforceGrammar) checkGrammar(tree);
-
-    return tree;
+    ret = tree['body'];
+    ret.map(x => recurseAST(x));
+    //console.log(pretty(tree['body']));
+    if(enforceGrammar) ret.map(x => checkGrammar(x, true));
+    if(justFirstExpression) ret = ret[0]['expression'];
+    
+    return ret;
 }
 
 export const showsTree = async (name, program) => {
     const f = `./${name}.json`;
-    writeFileSync(f, pretty(toASTTree(program, false, false)));
+    writeFileSync(f, pretty(toASTTrees(program, false, false)));
     //await Bun.write(f, pretty(toASTTree(program, true, false)));
 }

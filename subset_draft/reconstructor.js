@@ -1,5 +1,5 @@
 import {Utils} from './utils.js';
-import {toASTTree, getSubterm, termShape} from './wrapper_acorn.js';
+import {toASTTrees, getSubterm, termShape} from './wrapper_acorn.js';
 import {Constraint} from './constraint.js';
 import {ConstraintSet} from './constraint_set.js';
 import {EmptyJudgement, Judgement} from './judgement.js';
@@ -7,6 +7,7 @@ import {Rule} from './rule.js';
 import {Untypable} from './typevar.js';
 import {Orer} from './orer.js';
 import {GenT} from './typevar.js';
+import {Assms} from './assms.js';
 
 export class Reconstructor{
     static type = 'reconstructor';
@@ -31,6 +32,10 @@ export class Reconstructor{
      * @returns {*} Judgement object 
      */
     typecheck(empty){
+        console.log(empty.show());
+        if(empty.shape === Rule.expSmt){
+            empty = new EmptyJudgement(empty.getSubterm(Rule.expSmt), empty.getAssms());
+        }
         const maybeRule = Rule.appliesTo[empty.shape];
         if(maybeRule !== undefined){
             const full = maybeRule(this, empty);
@@ -75,14 +80,31 @@ export class Reconstructor{
     reconstruct(program){
         this.rstFreshVar();
         // console.log(toASTTree(program));
-        const empty = new EmptyJudgement(toASTTree(program));
+        const exps = toASTTrees(program, false, true);
+        let idents = []; 
+        for(let i = 0; i < exps.length; i++){
+            const exp = exps[i];
+            if(termShape(exp) === 'const x = M; E'){
+                idents.push(getSubterm(exp, 'x'));
+            }
+        }
+        //what we build up as we process each line
+        const accumulator = new Assms();
+        const fulls = [];
+        for(let i = 0; i < exps.length; i++){
+            const empty = new EmptyJudgement(exps[i], accumulator);
+            const full = this.typecheck(empty);
+            fulls.push(full);
+            accumulator.add(idents[i], full.termType);
+        }
+        //transfer identifier : type 
         
         //console.log(empty.show());
-        const full = this.typecheck(empty);
+       
         //console.log(full.show());
         //const F = new GenT(this.getFreshVar('F'));
         //full.addToLast(new Constraint(full.termType, F));
-        return full;
+        return fulls;
 
         const roughType = full.termType;
         const constrs = full.constrs;

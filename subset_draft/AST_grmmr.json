@@ -5,5 +5,9 @@
     "ArrowFunctionExpression": "x => M",
     "CallExpression": "M(N)",
     "ConditionalExpression": "M <= 0 ? N : P",
-    "Identifier": "x"
+    "Identifier": "x",
+    "VariableDeclaration": "const x = M; E",
+    "BlockStatement": "{E}",
+    "ReturnStatement": "return M;",
+    "ExpressionStatement": "M"
 }

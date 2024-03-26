@@ -49,7 +49,53 @@
         "name": {
             "satisfies": "ANY",
             "rules": [
-                {"P": {"length": {"F": {"equals": 1}}}}
+                {"P": {"length": {"F": {"typeof": "number"}}}}
+            ]
+        }
+    },
+    "VariableDeclaration":{
+        "kind":{
+            "satisfies": "ALL",
+            "rules": [
+                {"F": {"equals": "const"}}
+            ]
+        },
+        "declarations": {
+            "satisfies": "ALL",
+            "rules": [
+                {"P": {"length": {"F": {"equals": 1}}}},
+                {"P": {"0": {"P": {"type": {"F": {"equals": "VariableDeclarator"}}}}}}
+            ]
+        }
+        
+    },
+    "BlockStatement":{
+        "body": {
+            "satisfies": "NONE",
+            "rules": [
+                {"P": {"length": {"F": {"equals": 0}}}}
+            ]
+        },
+        "body%": {
+            "satisfies": "ALL",
+            "rules": [
+                {"P": {"%last": {"P": {"type": {"F": {"equals": "ReturnStatement"}}}}}}
+            ]
+        }
+    },
+    "ReturnStatement":{
+        "argument":{
+            "satisfies": "NONE",
+            "rules": [
+                {"F": {"typeof": "null"}}
+            ]
+        }
+    },
+    "ExpressionStatement":{
+        "type":{
+            "satisfies": "ANY",
+            "rules": [
+                {"F": {"equals": "ExpressionStatement"}}
             ]
         }
     }

@@ -25,5 +25,19 @@
     },
     "Identifier": {
         "x": ["name"]
+    },
+    "VariableDeclaration":{
+        "x": ["declarations", "0", "id"],
+        "M": ["declarations", "0", "init"],
+        "E": ["next"]
+    },
+    "BlockStatement": {
+        "E": ["body"]
+    },
+    "ReturnStatement": { 
+        "M": ["argument"]
+    },
+    "ExpressionStatement": {
+        "M": ["expression"]
     }
 }

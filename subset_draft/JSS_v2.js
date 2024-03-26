@@ -53,7 +53,7 @@
  * 
  */
 
-import { toASTTree } from './wrapper_acorn.js';
+import { toASTTrees } from './wrapper_acorn.js';
 import { GenT, NumT, ArrowT, OkT, CompT } from './typevar.js';
 import { Constraint } from './constraint.js';
 import { ConstraintSet } from './constraint_set.js';
@@ -66,7 +66,7 @@ import {Solver} from './solver.js';
 import {writeFileSync} from 'fs';
 
 const testTypeCheck = () => {
-    console.log(typecheck(toASTTree('s => y => z => (s(z))(y(z))'), new ConstraintSet()).constraints.show());
+    console.log(typecheck(toASTTrees('s => y => z => (s(z))(y(z))'), new ConstraintSet()).constraints.show());
 }
 
 const testTypeVar = () => {
@@ -162,7 +162,7 @@ const bulkTest = () => {
 }
 
 const nullTest = () => {
-    console.log(toASTTree('null'));
+    console.log(toASTTrees('null'));
 }
 
 const orSetAndSetTest = () => {
@@ -272,15 +272,17 @@ const testInspection = async () => {
 // bulkTest();
 //compTest();
 //typeTest();
-testInspection();
+//testInspection();
 
 //removeRepeatsTest();
 //orSetAndSetTest();
 
 //nullTest();
-
+showsTree('expTree', 'x => x');
 showsTree('composTree', 'const n = 1; n;');
-showsTree('composTree2', 'const p = () => {const n = 1; return n;}');
+showsTree('composTree2', 'const p = x => {const n = 1 + 1; return n + 1;}');
+showsTree('composCurryTree', 'const c = x => y => 0;');
+showsTree('composETree', 'const f = x => {const a = 1; const b = 2; const c = 3; return c;}')
 
 
 /**

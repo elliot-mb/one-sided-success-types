@@ -1,0 +1,68 @@
+{
+  "type": "Program",
+  "start": 0,
+  "end": 22,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 22,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 21,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 7,
+            "name": "c"
+          },
+          "init": {
+            "type": "ArrowFunctionExpression",
+            "start": 10,
+            "end": 21,
+            "id": null,
+            "expression": true,
+            "generator": false,
+            "async": false,
+            "params": [
+              {
+                "type": "Identifier",
+                "start": 10,
+                "end": 11,
+                "name": "x"
+              }
+            ],
+            "body": {
+              "type": "ArrowFunctionExpression",
+              "start": 15,
+              "end": 21,
+              "id": null,
+              "expression": true,
+              "generator": false,
+              "async": false,
+              "params": [
+                {
+                  "type": "Identifier",
+                  "start": 15,
+                  "end": 16,
+                  "name": "y"
+                }
+              ],
+              "body": {
+                "type": "Literal",
+                "start": 20,
+                "end": 21,
+                "value": 0,
+                "raw": "0"
+              }
+            }
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ],
+  "sourceType": "script"
+}

@@ -1,17 +1,17 @@
 {
   "type": "Program",
   "start": 0,
-  "end": 40,
+  "end": 47,
   "body": [
     {
       "type": "VariableDeclaration",
       "start": 0,
-      "end": 40,
+      "end": 47,
       "declarations": [
         {
           "type": "VariableDeclarator",
           "start": 6,
-          "end": 40,
+          "end": 47,
           "id": {
             "type": "Identifier",
             "start": 6,
@@ -21,57 +21,86 @@
           "init": {
             "type": "ArrowFunctionExpression",
             "start": 10,
-            "end": 40,
+            "end": 47,
             "id": null,
             "expression": false,
             "generator": false,
             "async": false,
             "params": [
-
+              {
+                "type": "Identifier",
+                "start": 10,
+                "end": 11,
+                "name": "x"
+              }
             ],
             "body": {
               "type": "BlockStatement",
-              "start": 16,
-              "end": 40,
-              "body": [
-                {
-                  "type": "VariableDeclaration",
-                  "start": 17,
-                  "end": 29,
-                  "declarations": [
-                    {
-                      "type": "VariableDeclarator",
-                      "start": 23,
-                      "end": 28,
-                      "id": {
-                        "type": "Identifier",
-                        "start": 23,
-                        "end": 24,
-                        "name": "n"
-                      },
-                      "init": {
+              "start": 15,
+              "end": 47,
+              "body": {
+                "type": "VariableDeclaration",
+                "start": 16,
+                "end": 32,
+                "declarations": [
+                  {
+                    "type": "VariableDeclarator",
+                    "start": 22,
+                    "end": 31,
+                    "id": {
+                      "type": "Identifier",
+                      "start": 22,
+                      "end": 23,
+                      "name": "n"
+                    },
+                    "init": {
+                      "type": "BinaryExpression",
+                      "start": 26,
+                      "end": 31,
+                      "left": {
                         "type": "Literal",
-                        "start": 27,
-                        "end": 28,
+                        "start": 26,
+                        "end": 27,
+                        "value": 1,
+                        "raw": "1"
+                      },
+                      "operator": "+",
+                      "right": {
+                        "type": "Literal",
+                        "start": 30,
+                        "end": 31,
                         "value": 1,
                         "raw": "1"
                       }
                     }
-                  ],
-                  "kind": "const"
-                },
-                {
+                  }
+                ],
+                "kind": "const",
+                "next": {
                   "type": "ReturnStatement",
-                  "start": 30,
-                  "end": 39,
+                  "start": 33,
+                  "end": 46,
                   "argument": {
-                    "type": "Identifier",
-                    "start": 37,
-                    "end": 38,
-                    "name": "n"
+                    "type": "BinaryExpression",
+                    "start": 40,
+                    "end": 45,
+                    "left": {
+                      "type": "Identifier",
+                      "start": 40,
+                      "end": 41,
+                      "name": "n"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "type": "Literal",
+                      "start": 44,
+                      "end": 45,
+                      "value": 1,
+                      "raw": "1"
+                    }
                   }
                 }
-              ]
+              }
             }
           }
         }
