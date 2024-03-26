@@ -90,33 +90,33 @@ export class Test {
     }
 
     async testUntypability(){ //inconclusive
-        this.assert(!(await Solver.isTypableAsOkC('f => x => f(f(x))')));
-        this.assert(!(await Solver.isTypableAsOkC('(f => g => f + g)')));
-        this.assert(!(await Solver.isTypableAsOkC('(f => g => f + g)(0)')));
-        this.assert(!(await Solver.isTypableAsOkC('(f => g => f + g)(0)(0)')));
-        this.assert(!(await Solver.isTypableAsOkC('(f => g => f + g(0))(0)(x => x)')));
-        this.assert(!(await Solver.isTypableAsOkC('(x => x)(0) + 0')));
-        this.assert(!(await Solver.isTypableAsOkC('(x => x)')));
-        this.assert(!(await Solver.isTypableAsOkC('(x => x)(0)')));
-        this.assert(!(await Solver.isTypableAsOkC('(x => x)(x => x)')));
-        this.assert(!(await Solver.isTypableAsOkC('0 + 0')));
-        this.assert(!(await Solver.isTypableAsOkC('1 <= 0 ? 0(0) : 0'))); // we dont definitely know if this will go wrong! 
-        this.assert(!(await Solver.isTypableAsOkC('(f => x => f(f(x)))(y => y + 1)((x => 0)(1))')));
-        this.assert(!(await Solver.isTypableAsOkC('(f => x => f(f(x)))(y => x => y)(0)')));
-        this.assert(!(await Solver.isTypableAsOkC('x => 0(x)')));
+        this.assert(!(await Solver.isTypableAsOkC('f => x => f(f(x));')));
+        this.assert(!(await Solver.isTypableAsOkC('(f => g => f + g);')));
+        this.assert(!(await Solver.isTypableAsOkC('(f => g => f + g)(0);')));
+        this.assert(!(await Solver.isTypableAsOkC('(f => g => f + g)(0)(0);')));
+        this.assert(!(await Solver.isTypableAsOkC('(f => g => f + g(0))(0)(x => x);')));
+        this.assert(!(await Solver.isTypableAsOkC('(x => x)(0) + 0;')));
+        this.assert(!(await Solver.isTypableAsOkC('(x => x);')));
+        this.assert(!(await Solver.isTypableAsOkC('(x => x)(0);')));
+        this.assert(!(await Solver.isTypableAsOkC('(x => x)(x => x);')));
+        this.assert(!(await Solver.isTypableAsOkC('0 + 0;')));
+        this.assert(!(await Solver.isTypableAsOkC('1 <= 0 ? 0(0) : 0;'))); // we dont definitely know if this will go wrong! 
+        this.assert(!(await Solver.isTypableAsOkC('(f => x => f(f(x)))(y => y + 1)((x => 0)(1));')));
+        this.assert(!(await Solver.isTypableAsOkC('(f => x => f(f(x)))(y => x => y)(0);')));
+        this.assert(!(await Solver.isTypableAsOkC('x => 0(x);')));
     }
 
     async testTypability(){ //as OkC
-        this.assert(await Solver.isTypableAsOkC('0(0)'));
-        this.assert(await Solver.isTypableAsOkC('(x => x) + 0'));
-        this.assert(await Solver.isTypableAsOkC('(x => x <= 0 ? 0 : 0)(y => y)'));
-        this.assert(await Solver.isTypableAsOkC('(f => g => f + g)(0)(x => x)'));
-        this.assert(await Solver.isTypableAsOkC('0 - (x => x <= 0 ? 1 : 0)'));
-        this.assert(await Solver.isTypableAsOkC('(x => x) - (y => y)'));
-        this.assert(await Solver.isTypableAsOkC('(f => x => 0 - f(x)(0)) <= 0 ? 0 : 0'));
-        this.assert(await Solver.isTypableAsOkC('(y => x => y(1) + y(x))(x => x + 1)((z => z <= 0 ? (x => x) : (y => y))(0))'));        
-        this.assert(await Solver.isTypableAsOkC('((f => x => f(f(x)))(y => x => y(x))(0))(0)')); //weird case
-        this.assert(await Solver.isTypableAsOkC('(x => x(0))(0)'));
+        this.assert(await Solver.isTypableAsOkC('0(0);'));
+        this.assert(await Solver.isTypableAsOkC('(x => x) + 0;'));
+        this.assert(await Solver.isTypableAsOkC('(x => x <= 0 ? 0 : 0)(y => y);'));
+        this.assert(await Solver.isTypableAsOkC('(f => g => f + g)(0)(x => x);'));
+        this.assert(await Solver.isTypableAsOkC('0 - (x => x <= 0 ? 1 : 0);'));
+        this.assert(await Solver.isTypableAsOkC('(x => x) - (y => y);'));
+        this.assert(await Solver.isTypableAsOkC('(f => x => 0 - f(x)(0)) <= 0 ? 0 : 0;'));
+        this.assert(await Solver.isTypableAsOkC('(y => x => y(1) + y(x))(x => x + 1)((z => z <= 0 ? (x => x) : (y => y))(0));'));        
+        this.assert(await Solver.isTypableAsOkC('((f => x => f(f(x)))(y => x => y(x))(0))(0);')); //weird case
+        this.assert(await Solver.isTypableAsOkC('(x => x(0))(0);'));
     
     }
 

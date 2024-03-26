@@ -8,5 +8,6 @@
     "Identifier": "x",
     "VariableDeclaration": "const x = M; E",
     "BlockStatement": "{E}",
-    "ReturnStatement": "return M;"
+    "ReturnStatement": "return M;",
+    "ExpressionStatement": "M"
 }
