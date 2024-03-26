@@ -98,19 +98,5 @@
                 {"F": {"equals": "ExpressionStatement"}}
             ]
         }
-    },
-    "Program":{
-        "sourceType":{
-            "satisfies": "ALL",
-            "rules": [
-                {"F": {"equals": "script"}}
-            ]
-        },
-        "body":{
-            "satisfies": "NONE",
-            "rules": [
-                {"P": {"length": {"F": {"equals": 0}}}}
-            ]
-        }
     }
 }

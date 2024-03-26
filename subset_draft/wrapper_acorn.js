@@ -266,15 +266,17 @@ export const checkGrammar = (term, initialDeclr = false) => {
     if(term === undefined) throw Utils.makeErr(`checkGrammar: term is not defined`);
     //base case where the term evalutes to raw strings or numbers
     if(typeof(term) !== 'object') return;
-
+    console.log(term);
     if(term.type === undefined) throw Utils.makeErr(`checkGrammar: term has no 'type' field`);
     if(typeToSubterms[term.type] === undefined) throw Utils.makeErr(`checkGrammar: there is no term of type '${term.type}' in the grammar`);
     //gets set false as soon as we pass the first (toplevel) const
-    initialDeclr = initialDeclr && typeToGrammar[term.type] !== 'const x = M; E';
     let subterms;
     try{
         checkTerm(term);  
         subterms = getSomeSubterms(term, initialDeclr ? ['E'] : []);
+        if(termShape(term) === 'const x = M; E'){
+            initialDeclr = false;
+        }
         subterms.map(subterm => checkGrammar(subterm, initialDeclr));
     }catch(err){
         throw Utils.makeErr(`checkGrammar: term shape '${typeToGrammar[term.type]}' failed since ${err}`);
@@ -301,18 +303,16 @@ export const checkGrammar = (term, initialDeclr = false) => {
  * @param {*} ast 
  */
 const recurseAST = (ast) => {
-    if(ast.type === undefined) return;
-    if(termShape(ast) === '[E:F:...]'){
-        const xs = getSubterm(ast, 'E:F:...');
-        xs.map(x => recurseAST(x));
-        return;
-    }
+    const astType = ast.type;
+    if(astType === undefined) return;
     if(termShape(ast) === '{E}'){
         const xs = getSubterm(ast, 'E'); //each term in the body
+        const fst = xs[0];
         for(let i = 0; i < xs.length - 1; i++){
             recurseAST(xs[i]);
             xs[i]['next'] = xs[i + 1];
         }
+        ast[typeToSubterms[astType]['E']] = fst;
         return;
     }
     const subterms = getSomeSubterms(ast, ['E']);
@@ -329,11 +329,11 @@ export const toASTTree = (program, justFirstExpression = true, enforceGrammar = 
             tree = node;
         }
     });
-    recurseAST(tree);
+    tree['body'].map(x => recurseAST(x));
     console.log(pretty(tree['body']));
     ret = tree;
     if(justFirstExpression) ret = tree['body'][0]['expression'];
-    if(enforceGrammar) checkGrammar(tree, true);
+    if(enforceGrammar) tree['body'].map(x => checkGrammar(x, true));
 
     return ret;
 }

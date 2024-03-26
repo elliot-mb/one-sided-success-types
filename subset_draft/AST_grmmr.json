@@ -9,6 +9,5 @@
     "VariableDeclaration": "const x = M; E",
     "BlockStatement": "{E}",
     "ReturnStatement": "return M;",
-    "ExpressionStatement": "M",
-    "Program": "[E:F:...]"
+    "ExpressionStatement": "M"
 }
