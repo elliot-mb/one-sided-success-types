@@ -2,12 +2,14 @@ import {Utils} from './utils.js';
 import { GenT, NumT, ArrowT, OkT, CompT } from './typevar.js';
 import {Solver} from './solver.js';
 import {Reconstructor} from './reconstructor.js';
+import {toASTTree} from './wrapper_acorn.js'
 
 export class Test {
 
     constructor(){
         this.failures = [];
         this.successes = [];
+        //this.crashInfo = [];
     }
 
     async run(){
@@ -29,6 +31,7 @@ export class Test {
         await this.testTypability();
         await this.testFreshTypes();
         await this.testCheckTypeShape();
+        await this.testLongIdentifiers();
         this.showFailures();
     }
 
@@ -61,6 +64,14 @@ export class Test {
         }
     }
 
+    didCrash(callback){
+        try{
+            callback();
+            return false;
+        }catch(err){
+            return true;
+        }
+    }
 
     testTypeEquality(){
         this.assert(new GenT('A').equals(new GenT('A')));
@@ -123,6 +134,18 @@ export class Test {
     async testCheckTypeShape(){
         this.assert(new CompT(new GenT('A')).shape() === GenT.compShape);
         this.assert(new ArrowT(new GenT('A'), new GenT('B')).shape() === GenT.arrowShape);
+    }
+
+    async testLongIdentifiers(){
+        this.assert(!(await Solver.isTypableAsOkC('thing => thing')));
+        this.assert((await Solver.isTypableAsOkC('(cannotBeNum => cannotBeNum(0))(0)')));
+    }
+
+    async testValidityOfNewGrammar(){
+        this.assert(!this.didCrash(toASTTree('const f = x => x;', false, true)));
+        this.assert(!this.didCrash(toASTTree('const f = x => x; const g = y => y;', false, true)));
+        this.assert(!this.didCrash(toASTTree('const f = x => {return x;};', false, true)));
+        this.assert(!this.didCrash(toASTTree('const f = x => {const c = 1; return c + x;};', false, true)));
     }
 }
 

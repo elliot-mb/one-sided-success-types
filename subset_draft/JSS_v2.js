@@ -281,6 +281,8 @@ testInspection();
 
 showsTree('composTree', 'const n = 1; n;');
 showsTree('composTree2', 'const p = () => {const n = 1; return n;}');
+showsTree('composCurryTree', 'const c = x => y => 0;');
+showsTree('composETree', 'const f = x => {const a = 1; const b = 2; const c = 3; return c;}')
 
 
 /**
