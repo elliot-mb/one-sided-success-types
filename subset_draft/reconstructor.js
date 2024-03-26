@@ -1,5 +1,5 @@
 import {Utils} from './utils.js';
-import {toASTTree, getSubterm, termShape} from './wrapper_acorn.js';
+import {toASTTrees, getSubterm, termShape} from './wrapper_acorn.js';
 import {Constraint} from './constraint.js';
 import {ConstraintSet} from './constraint_set.js';
 import {EmptyJudgement, Judgement} from './judgement.js';
@@ -75,7 +75,7 @@ export class Reconstructor{
     reconstruct(program){
         this.rstFreshVar();
         // console.log(toASTTree(program));
-        const empty = new EmptyJudgement(toASTTree(program));
+        const empty = new EmptyJudgement(toASTTrees(program, false, true));
         
         //console.log(empty.show());
         const full = this.typecheck(empty);

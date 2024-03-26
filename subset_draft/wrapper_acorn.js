@@ -320,7 +320,7 @@ const recurseAST = (ast) => {
 }
 
 //just first expression argument is there while we only have single expressions
-export const toASTTree = (program, justFirstExpression = true, enforceGrammar = true) => {
+export const toASTTrees = (program, justFirstExpression = true, enforceGrammar = true) => {
     //console.log(`${program} to AST Tree`);
     let tree = {};
     let ret = {};
@@ -329,17 +329,17 @@ export const toASTTree = (program, justFirstExpression = true, enforceGrammar = 
             tree = node;
         }
     });
-    tree['body'].map(x => recurseAST(x));
+    ret = tree['body'];
+    ret.map(x => recurseAST(x));
     //console.log(pretty(tree['body']));
-    ret = tree;
-    if(justFirstExpression) ret = tree['body'][0]['expression'];
-    if(enforceGrammar) tree['body'].map(x => checkGrammar(x, true));
-
+    if(enforceGrammar) ret.map(x => checkGrammar(x, true));
+    if(justFirstExpression) ret = ret[0]['expression'];
+    
     return ret;
 }
 
 export const showsTree = async (name, program) => {
     const f = `./${name}.json`;
-    writeFileSync(f, pretty(toASTTree(program, false, false)));
+    writeFileSync(f, pretty(toASTTrees(program, false, false)));
     //await Bun.write(f, pretty(toASTTree(program, true, false)));
 }

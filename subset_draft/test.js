@@ -2,7 +2,7 @@ import {Utils} from './utils.js';
 import { GenT, NumT, ArrowT, OkT, CompT } from './typevar.js';
 import {Solver} from './solver.js';
 import {Reconstructor} from './reconstructor.js';
-import {toASTTree} from './wrapper_acorn.js'
+import {toASTTrees} from './wrapper_acorn.js'
 
 export class Test {
 
@@ -33,6 +33,7 @@ export class Test {
         await this.testCheckTypeShape();
         await this.testLongIdentifiers();
         await this.testValidityOfNewGrammar();
+        await this.testReconstrNewGrammarSucceeds();
         this.showFailures();
     }
 
@@ -65,14 +66,14 @@ export class Test {
         }
     }
 
-    didCrash(callback){
+    didntCrash(callback){
         try{
             callback();
-            return false;
+            return true;
         }catch(err){
             const {name, line} = this.getNameAndLine();
             console.log(`${name}: line ${line} used didCrash: '${err}'`);
-            return true;
+            return false;
         }
     }
 
@@ -145,11 +146,16 @@ export class Test {
     }
 
     async testValidityOfNewGrammar(){
-        this.assert(!this.didCrash(() => toASTTree('const f = x => x;', false, true)));
-        this.assert(!this.didCrash(() => toASTTree('const f = x => x; const g = y => y;', false, true)));
-        this.assert(!this.didCrash(() => toASTTree('const f = x => {return x;};', false, true)));
-        this.assert(!this.didCrash(() => toASTTree('const f = x => {const c = 1; return c + x;};', false, true)));
-        this.assert(!this.didCrash(() => toASTTree('const a = 1; const b = 2; const c = a + b;', false, true)));
+        this.assert(this.didntCrash(() => toASTTrees('const f = x => x;', false, true)));
+        this.assert(this.didntCrash(() => toASTTrees('const f = x => x; const g = y => y;', false, true)));
+        this.assert(this.didntCrash(() => toASTTrees('const f = x => {return x;};', false, true)));
+        this.assert(this.didntCrash(() => toASTTrees('const f = x => {const c = 1; return c + x;};', false, true)));
+        this.assert(this.didntCrash(() => toASTTrees('const a = 1; const b = 2; const c = a + b;', false, true)));
+    }
+
+    async testReconstrNewGrammarSucceeds(){
+        const r = new Reconstructor();
+        this.assert(this.didntCrash(() => r.reconstruct('const f = 0;')));
     }
 }
 
