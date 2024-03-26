@@ -32,6 +32,7 @@ export class Test {
         await this.testFreshTypes();
         await this.testCheckTypeShape();
         await this.testLongIdentifiers();
+        await this.testValidityOfNewGrammar();
         this.showFailures();
     }
 
@@ -69,6 +70,8 @@ export class Test {
             callback();
             return false;
         }catch(err){
+            const {name, line} = this.getNameAndLine();
+            console.log(`${name}: line ${line} used didCrash: '${err}'`);
             return true;
         }
     }
@@ -142,10 +145,10 @@ export class Test {
     }
 
     async testValidityOfNewGrammar(){
-        this.assert(!this.didCrash(toASTTree('const f = x => x;', false, true)));
-        this.assert(!this.didCrash(toASTTree('const f = x => x; const g = y => y;', false, true)));
-        this.assert(!this.didCrash(toASTTree('const f = x => {return x;};', false, true)));
-        this.assert(!this.didCrash(toASTTree('const f = x => {const c = 1; return c + x;};', false, true)));
+        this.assert(!this.didCrash(() => toASTTree('const f = x => x;', false, true)));
+        this.assert(!this.didCrash(() => toASTTree('const f = x => x; const g = y => y;', false, true)));
+        this.assert(!this.didCrash(() => toASTTree('const f = x => {return x;};', false, true)));
+        this.assert(!this.didCrash(() => toASTTree('const f = x => {const c = 1; return c + x;};', false, true)));
     }
 }
 

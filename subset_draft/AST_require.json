@@ -63,7 +63,7 @@
         "declarations": {
             "satisfies": "ALL",
             "rules": [
-                {"P": {"length": {"F": {"equals": "1"}}}},
+                {"P": {"length": {"F": {"equals": 1}}}},
                 {"P": {"0": {"P": {"type": {"F": {"equals": "VariableDeclarator"}}}}}}
             ]
         }
@@ -73,7 +73,7 @@
         "body": {
             "satisfies": "NONE",
             "rules": [
-                {"P": {"length": {"F": {"equals": "0"}}}}
+                {"P": {"length": {"F": {"equals": 0}}}}
             ]
         },
         "body%": {
