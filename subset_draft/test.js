@@ -149,6 +149,7 @@ export class Test {
         this.assert(!this.didCrash(() => toASTTree('const f = x => x; const g = y => y;', false, true)));
         this.assert(!this.didCrash(() => toASTTree('const f = x => {return x;};', false, true)));
         this.assert(!this.didCrash(() => toASTTree('const f = x => {const c = 1; return c + x;};', false, true)));
+        this.assert(!this.didCrash(() => toASTTree('const a = 1; const b = 2; const c = a + b;', false, true)));
     }
 }
 

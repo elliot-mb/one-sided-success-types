@@ -257,7 +257,7 @@ export const checkTerm = term => {
 //                           v allows us to specify what we do not want 
 const getSomeSubterms = (ast, except = []) => {
     const subtermNames = Object.keys(typeToSubterms[ast.type]).filter(n => !Utils.any(except.map(x => x === n)));
-    console.log(subtermNames + 'without' + except);
+    //console.log(subtermNames + 'without' + except);
     return subtermNames.map(subtermName => getSubterm(ast, subtermName));
 }
 
@@ -266,7 +266,7 @@ export const checkGrammar = (term, initialDeclr = false) => {
     if(term === undefined) throw Utils.makeErr(`checkGrammar: term is not defined`);
     //base case where the term evalutes to raw strings or numbers
     if(typeof(term) !== 'object') return;
-    console.log(term);
+    //console.log(term);
     if(term.type === undefined) throw Utils.makeErr(`checkGrammar: term has no 'type' field`);
     if(typeToSubterms[term.type] === undefined) throw Utils.makeErr(`checkGrammar: there is no term of type '${term.type}' in the grammar`);
     //gets set false as soon as we pass the first (toplevel) const
@@ -330,7 +330,7 @@ export const toASTTree = (program, justFirstExpression = true, enforceGrammar = 
         }
     });
     tree['body'].map(x => recurseAST(x));
-    console.log(pretty(tree['body']));
+    //console.log(pretty(tree['body']));
     ret = tree;
     if(justFirstExpression) ret = tree['body'][0]['expression'];
     if(enforceGrammar) tree['body'].map(x => checkGrammar(x, true));
