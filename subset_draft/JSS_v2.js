@@ -280,7 +280,7 @@ const testInspection = async () => {
 //nullTest();
 showsTree('expTree', 'x => x');
 showsTree('composTree', 'const n = 1; n;');
-showsTree('composTree2', 'const p = () => {const n = 1 + 1; return n + 1;}');
+showsTree('composTree2', 'const p = x => {const n = 1 + 1; return n + 1;}');
 showsTree('composCurryTree', 'const c = x => y => 0;');
 showsTree('composETree', 'const f = x => {const a = 1; const b = 2; const c = 3; return c;}')
 

@@ -38,34 +38,32 @@
               "type": "BlockStatement",
               "start": 15,
               "end": 65,
-              "body": [
-                {
-                  "type": "VariableDeclaration",
-                  "start": 16,
-                  "end": 28,
-                  "declarations": [
-                    {
-                      "type": "VariableDeclarator",
+              "body": {
+                "type": "VariableDeclaration",
+                "start": 16,
+                "end": 28,
+                "declarations": [
+                  {
+                    "type": "VariableDeclarator",
+                    "start": 22,
+                    "end": 27,
+                    "id": {
+                      "type": "Identifier",
                       "start": 22,
+                      "end": 23,
+                      "name": "a"
+                    },
+                    "init": {
+                      "type": "Literal",
+                      "start": 26,
                       "end": 27,
-                      "id": {
-                        "type": "Identifier",
-                        "start": 22,
-                        "end": 23,
-                        "name": "a"
-                      },
-                      "init": {
-                        "type": "Literal",
-                        "start": 26,
-                        "end": 27,
-                        "value": 1,
-                        "raw": "1"
-                      }
+                      "value": 1,
+                      "raw": "1"
                     }
-                  ],
-                  "kind": "const"
-                },
-                {
+                  }
+                ],
+                "kind": "const",
+                "next": {
                   "type": "VariableDeclaration",
                   "start": 29,
                   "end": 41,
@@ -89,46 +87,46 @@
                       }
                     }
                   ],
-                  "kind": "const"
-                },
-                {
-                  "type": "VariableDeclaration",
-                  "start": 42,
-                  "end": 54,
-                  "declarations": [
-                    {
-                      "type": "VariableDeclarator",
-                      "start": 48,
-                      "end": 53,
-                      "id": {
-                        "type": "Identifier",
+                  "kind": "const",
+                  "next": {
+                    "type": "VariableDeclaration",
+                    "start": 42,
+                    "end": 54,
+                    "declarations": [
+                      {
+                        "type": "VariableDeclarator",
                         "start": 48,
-                        "end": 49,
-                        "name": "c"
-                      },
-                      "init": {
-                        "type": "Literal",
-                        "start": 52,
                         "end": 53,
-                        "value": 3,
-                        "raw": "3"
+                        "id": {
+                          "type": "Identifier",
+                          "start": 48,
+                          "end": 49,
+                          "name": "c"
+                        },
+                        "init": {
+                          "type": "Literal",
+                          "start": 52,
+                          "end": 53,
+                          "value": 3,
+                          "raw": "3"
+                        }
+                      }
+                    ],
+                    "kind": "const",
+                    "next": {
+                      "type": "ReturnStatement",
+                      "start": 55,
+                      "end": 64,
+                      "argument": {
+                        "type": "Identifier",
+                        "start": 62,
+                        "end": 63,
+                        "name": "c"
                       }
                     }
-                  ],
-                  "kind": "const"
-                },
-                {
-                  "type": "ReturnStatement",
-                  "start": 55,
-                  "end": 64,
-                  "argument": {
-                    "type": "Identifier",
-                    "start": 62,
-                    "end": 63,
-                    "name": "c"
                   }
                 }
-              ]
+              }
             }
           }
         }
