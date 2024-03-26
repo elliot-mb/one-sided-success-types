@@ -15,8 +15,8 @@ used where packages were used (inc. AST inspection for javascript).~~
 
 # Adding terms to the language subset
 
-Currently, terms must be added by adding an entry to `type_grmmr.json`, `type_require.json`
-and `type_subtm.json`. Respectively, they:
+Currently, terms must be added by adding an entry to `AST_grmmr.json`, `AST_require.json`
+and `AST_subtm.json`. NB `AST_subtm.json` applies to just the modified AST where we recurse blocks for type checking. Respectively, they:
 
 - Map all AST types to a grammar shape 
 - Define rules that forbid terms which the AST type is too general to exclude, that are not in the grammar. These are used to check the grammatical/syntactic correctness of terms.
