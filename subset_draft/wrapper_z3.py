@@ -136,7 +136,7 @@ def show_constrs(constrs):
 
 # iteratively acquires more solutions by constraining assignments against what they come up as 
 # whitelist tells us which assignments to not try and negate (a list of variable names)
-def make_solns(const_lookup, constrs, count, blacklist = []):
+def make_solns(const_lookup, constrs, count):
     solns = [] # can be added to a dict, array of dicts  
     solver = Solver()
     solver.set(relevancy=2)
@@ -145,11 +145,8 @@ def make_solns(const_lookup, constrs, count, blacklist = []):
     illegal_assign = False
     max_solves = count
     solve_count = 0
-    ##print(solver)
     while(solver.check() == sat and not illegal_assign and (max_solves > solve_count)):
         mod = solver.model()
-        #print(solver)
-        #print(mod)
         mod_can_neg = []
         mod_must_neg = []
         sol = {} #new dict 
@@ -159,20 +156,14 @@ def make_solns(const_lookup, constrs, count, blacklist = []):
                 sol[assStr] = mod[ass]
                 neg = const_lookup[assStr] != mod[ass]
                 mod_can_neg.append(neg)
-                if(assStr in blacklist):
-                    #print('MUST REASSIGN ' + assStr)
-                    mod_must_neg.append(neg)
             else:                     #print('reassign ' + assStr)
                 illegal_assign = True
          
         mod_negation = Or(mod_can_neg)
-        #print(mod_negation)
         solns.append(sol) 
         if(len(mod_must_neg) > 0):
             solver.add(And(mod_must_neg))
-        #print(mod_negation, list(map(lambda x: x, mod)))
         solver.add(mod_negation)
-        #print(solver)
         solve_count += 1
 
     return solns
@@ -223,14 +214,12 @@ def main():
     recieved = None
     if(not args.constraint_file == None): 
         recieved_f = open(args.constraint_file, 'r')
-        #print(args.constraint_file)
         recieved_lns = ''    
         for ln in recieved_f:
             recieved_lns += ln + '\n'
         recieved = json.loads(recieved_lns)
     elif(not args.constraints == None):
         recieved = json.loads(args.constraints)
-    #print(recieved)
     if(recieved == None):
         raise Exception('main: no file or json specified or provided')
     constrs = recieved['constrs']
@@ -244,95 +233,56 @@ def main():
     solver.set(relevancy=2)
     # the grammar for types 
     JSTy = Datatype('JSTy')
-    # JSTyC = Datatype('JSTyC')
 
     JSTy.declare('Num')
     JSTy.declare('Ok')
     JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
     JSTy.declare('Comp', ('comp', JSTy))#C))
 
-    # JSTyC.declare('Num')
-    # JSTyC.declare('Ok')
-    # JSTyC.declare('To', ('lft', JSTy), ('rgt', JSTy))
-
-
-    #JSTy.declare('Var', ('ident', StringSort()))
     JSTy = JSTy.create()
     for name in type_list:
         type_lookup[name] = Const(name, JSTy) # ComplTy can be put inside comps
-    type_lookup[args.ok_shape] = JSTy.Ok
-    type_lookup[args.num_shape] = JSTy.Num #adds an entry for constraints involving numbers and oks, without any extra logic 
-    #type_lookup[args.arrow_shape] JSTy.
+
     term_type = type_lookup[str(type_name(recieved['term_type']))] #get it out of type_lookup
     all_constrs = unpack(constrs, type_lookup, JSTy)
-    top_constrs = list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs']))
-    #print(top_constrs, term_type)
-    #print(all_constrs)
+
     all_and_show_me_false = And(all_constrs, term_type == JSTy.Comp(JSTy.Ok))
-    bound_in_top = bound_in_constr_set(top_type)
+    #bound_in_top = bound_in_constr_set(top_type)
     
-    #solver.add(And(JSTy.Comp(JSTy.Comp(JSTy)) == JSTy))
-    solver.add(all_constrs)#Or(And(b == JSTy.To(a, c), (a == type_lookup[args.num_shape])), (type_lookup[args.ok_shape] == b)))
-    
-    #now show me its false
-    #solver.add(to_type(top_type, type_lookup, JSTy) == JSTy.Comp(ComplTy.Ok))
-    
+    solver.add(all_constrs)
 
-    solns = make_solns(type_lookup, all_and_show_me_false, MAX_DEPTH, blacklist = [])
-    
-    # all solutions that dont interfere with the disjunctive toplevel constraints
+    solns = make_solns(type_lookup, all_and_show_me_false, MAX_DEPTH)
+    #all_solns = make_solns(type_lookup, all_constrs, MAX_DEPTH)
 
-    top_solns = [] #nested list of toplevel types
-    # reduce top constraints one by one down to zero 
-    # for i in range(len(top_constrs) + 1):
-    #     for soln in solns:
-    #         stripped_solns = {} #copy the relevant entries which wont conflict with the top types
-    #         for kv in soln.items():
-    #             if(not kv[0] in bound_in_top):
-    #                 stripped_solns[kv[0]] = kv[1]
-    #         #print(stripped_solns)
-    #         #top_solns.append(make_solns(soln_to_lookup(soln), top_constrs, 10))
-    #         top_solns.append(make_solns(
-    #             type_lookup, 
-    #             Or(And(soln_to_constrs(stripped_solns, type_lookup)), *top_constrs), 
-    #             MAX_DEPTH,
-    #             whitelist=[keys_in_dict(stripped_solns)],
-    #             blacklist=[bound_in_top])) 
-    #     if(len(top_constrs) > 0):
-    #         top_constrs.pop()
+    def term_ass(xs): 
+        result = []
+        for x in xs:
+            xb = 'None'
+            if str(term_type) in x:
+                xb = str(x[str(term_type)])
+            result.append(xb)
+        return result
+        #list(map(lambda x: if str(term_type) in x: str(x[str(term_type)]), xs))
     
-    def key_in_or_none(d, k):
-        if k in d:
-            return d[k]
-        return 'Untypable' # no solution to constraints leads to assignment to result type 
-
-    # top_solns.append(solns) # attach them incase all variables were solved in the first go (including the term type)
-    # top_type_assignments = flatten(list(
-    #     map(lambda x: list(
-    #         map(lambda y: key_in_or_none(y, show_constrs(term_type)), solns_to_strs(x))), 
-    #             top_solns)))
-    
-    term_type_assignments = list(map(lambda x: str(x[str(term_type)]), solns))
+    term_type_assignments = term_ass(solns)
+    #all_term_type_assignments = term_ass(all_solns)
     #just take the uniques 
+    #unique_all_term_type_ass = uniques_in_list(all_term_type_assignments)
     unique_term_type_ass = uniques_in_list(term_type_assignments)
     #unique_top_type_ass = uniques_in_list(top_type_assignments)
     
     reply = {
-        #'reflect': recieved,
-        #'term_type': show_constrs(term_type),
-        'top': str(Or(list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs'])))),
-        'constrs': str(all_and_show_me_false),#show_constrs(all_and_show_me_false),
+        #'top': str(Or(list(map(lambda x: unpack(x, type_lookup, JSTy), top_type['xs'])))),
+        #'constrs': str(all_and_show_me_false),#show_constrs(all_and_show_me_false),
         'sol': solns_to_strs(solns),
-        'top_solns': list(map(lambda x: solns_to_strs(x), top_solns)),
         #'sol_conj': show_constrs(list(map(lambda x: soln_to_constrs(x, type_lookup), solns))),
         #'type_vars': type_list,
         'term_type_assignments': unique_term_type_ass,
         #'top_term_assignments': unique_top_type_ass,
-        'term_type_assignments_all': term_type_assignments,
-        'bound_in_top': bound_in_top
+        #'term_type_assignments_all': unique_all_term_type_ass,
+        #'bound_in_top': bound_in_top
     }
     print(reply) #test to see if we can send the constraints back
-    #pprint.pprint(reply)
 
 
 if __name__ == '__main__':
