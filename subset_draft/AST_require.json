@@ -90,5 +90,13 @@
                 {"F": {"typeof": "null"}}
             ]
         }
+    },
+    "ExpressionStatement":{
+        "type":{
+            "satisfies": "ANY",
+            "rules": [
+                {"F": {"equals": "ExpressionStatement"}}
+            ]
+        }
     }
 }
