@@ -322,6 +322,8 @@ export class Rule {
         return conclusn;
     }
 
+
+    static expSmt = 'M';
     static var = 'x';
     static num = 'n';
     static op = 'M o N';

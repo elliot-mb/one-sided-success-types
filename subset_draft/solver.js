@@ -62,19 +62,23 @@ export class Solver{
     static isTypableAsOkC = async (program) => {
         const r = new Reconstructor();
         //const program = '0 <= 0 ? (x => x) : 0';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
-        const done = r.reconstruct(program);
+        const dones = r.reconstruct(program);
         //console.log(JSON.stringify(done.constrs));
-        const t = done.termType;
-        //console.log(`${done.show()}`);
-        const topLvls = done.constrs.toConstraintSet();
-        const topAndConstrs = {'term_type': t, 'top_type': topLvls, 'constrs': done.constrs};
-        const result = await Solver.sendConstrsToObj(topAndConstrs);
-        //console.log(pretty(result));
-        console.log(`${program}:`);
-        const typeStrings = result['term_type_assignments'];
-        const untypable = typeStrings.length === 0;
-        typeStrings.map(x => console.log(`\t${x}`));
-        if(untypable) console.log('\tUntypable');
+        const untypable = (await Promise.all(dones.map(async done => {
+                const t = done.termType;
+                //console.log(`${done.show()}`);
+                const topLvls = done.constrs.toConstraintSet();
+                const topAndConstrs = {'term_type': t, 'top_type': topLvls, 'constrs': done.constrs};
+                const result = await Solver.sendConstrsToObj(topAndConstrs);
+                //console.log(pretty(result));
+                console.log(`${program}:`);
+                const typeStrings = result['term_type_assignments'];
+                const cantType = typeStrings.length === 0;
+                typeStrings.map(x => console.log(`\t${x}`));
+                if(cantType) console.log('\tUntypable');
+                return cantType;
+            }))).reduce((x, y) => x && y, true);
+
         return !untypable;
     }
 }
