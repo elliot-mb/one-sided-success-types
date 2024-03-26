@@ -7,6 +7,14 @@
  * 
  * final grammar for functions
  * 
+ * structural
+ * 
+ * P, Q ::= const x = M; P | M; P | empty
+ * converted to
+ * Program ::= E[]
+ * 
+ * rules for
+ * 
  * E, F ::= const x = M; E | return M;
  * M, N ::= x | n | M o N | x => M | {E} | M(N) | M <= 0 ? N : P
  * V, W ::= x | n | x => M 
@@ -208,6 +216,11 @@ export const checkTerm = term => {
         'ALL': rAll,
         'NONE': rNone
     };
+    const sAccMap = { //what we start the accumulator as 
+        'ANY': false,
+        'ALL': true,
+        'NONE': true
+    }
 
     if(term === undefined) throw Utils.makeErr(`checkTerm: term not defined`);
     if(term.type === undefined) throw Utils.makeErr(`checkTerm: term.type not defined`);
@@ -219,8 +232,9 @@ export const checkTerm = term => {
 
     propsEnforced.map(field => { //field under this type of term in the AST
         const ruleset = checkFields[field];
-        if(ruleset[stfy] === undefined) throw Utils.makeErr(`checkTerm: ruleset is missing the 'satisfies' property`);
-        const reducer = sRMap[ruleset[stfy]];
+        const sat = ruleset[stfy];
+        if(sat === undefined) throw Utils.makeErr(`checkTerm: ruleset is missing the 'satisfies' property`);
+        const reducer = sRMap[sat];
         //console.log(reducer, ruleset[stfy])   ;
         if(ruleset[ruls].length === 0) throw Utils.makeErr(`checkTerm: rulesets must have at least one rule`);
         const fails = [];
@@ -234,26 +248,34 @@ export const checkTerm = term => {
                 }
                 return true; //we need to not crash out in teh case that rAny is selected
             })
-            .reduce((acc, x) => reducer(acc)(x));
+            .reduce((acc, x) => reducer(acc)(x), sAccMap[sat]);
         if(!isOk) throw Utils.makeErr(`checkTerm: '${ruleset[stfy]}' rule(s) in ruleset not met:\r\n${fails.join('\r\n')}`);
 
     });
 }
 
+//                           v allows us to specify what we do not want 
+const getSomeSubterms = (ast, except = []) => {
+    const subtermNames = Object.keys(typeToSubterms[ast.type]).filter(n => !Utils.any(except.map(x => x === n)));
+    console.log(subtermNames + 'without' + except);
+    return subtermNames.map(subtermName => getSubterm(ast, subtermName));
+}
+
 //verifies that the term uses just the expected shapes of subterms all the way down
-export const checkGrammar = term => {
+export const checkGrammar = (term, initialDeclr = false) => {
     if(term === undefined) throw Utils.makeErr(`checkGrammar: term is not defined`);
     //base case where the term evalutes to raw strings or numbers
     if(typeof(term) !== 'object') return;
 
     if(term.type === undefined) throw Utils.makeErr(`checkGrammar: term has no 'type' field`);
     if(typeToSubterms[term.type] === undefined) throw Utils.makeErr(`checkGrammar: there is no term of type '${term.type}' in the grammar`);
-    const subtermNames = Object.keys(typeToSubterms[term.type]);
+    //gets set false as soon as we pass the first (toplevel) const
+    initialDeclr = initialDeclr && typeToGrammar[term.type] !== 'const x = M; E';
     let subterms;
     try{
         checkTerm(term);  
-        subterms = subtermNames.map(subtermName => getSubterm(term, subtermName));
-        subterms.map(subterm => checkGrammar(subterm));
+        subterms = getSomeSubterms(term, initialDeclr ? ['E'] : []);
+        subterms.map(subterm => checkGrammar(subterm, initialDeclr));
     }catch(err){
         throw Utils.makeErr(`checkGrammar: term shape '${typeToGrammar[term.type]}' failed since ${err}`);
     }
@@ -272,6 +294,31 @@ export const checkGrammar = term => {
 //     subterms.map(subterm => checkGrammar(subterm));
 // }
 
+/**
+ * recurseAST is supposed to recurse the arrays inside blockstatements to use
+ * letrec type reasoning 
+ * we dont recurse on 'E' in var declarations  
+ * @param {*} ast 
+ */
+const recurseAST = (ast) => {
+    if(ast.type === undefined) return;
+    if(termShape(ast) === '[E:F:...]'){
+        const xs = getSubterm(ast, 'E:F:...');
+        xs.map(x => recurseAST(x));
+        return;
+    }
+    if(termShape(ast) === '{E}'){
+        const xs = getSubterm(ast, 'E'); //each term in the body
+        for(let i = 0; i < xs.length - 1; i++){
+            recurseAST(xs[i]);
+            xs[i]['next'] = xs[i + 1];
+        }
+        return;
+    }
+    const subterms = getSomeSubterms(ast, ['E']);
+    subterms.map(x => recurseAST(x));
+}
+
 //just first expression argument is there while we only have single expressions
 export const toASTTree = (program, justFirstExpression = true, enforceGrammar = true) => {
     //console.log(`${program} to AST Tree`);
@@ -282,9 +329,11 @@ export const toASTTree = (program, justFirstExpression = true, enforceGrammar = 
             tree = node;
         }
     });
+    recurseAST(tree);
+    console.log(pretty(tree['body']));
     ret = tree;
     if(justFirstExpression) ret = tree['body'][0]['expression'];
-    if(enforceGrammar) tree['body'].map(declr => checkGrammar(declr));
+    if(enforceGrammar) checkGrammar(tree, true);
 
     return ret;
 }

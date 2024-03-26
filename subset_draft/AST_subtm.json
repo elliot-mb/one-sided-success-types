@@ -39,5 +39,8 @@
     },
     "ExpressionStatement": {
         "M": ["expression"]
+    },
+    "Program": {
+        "E:F:...": ["body"]
     }
 }
