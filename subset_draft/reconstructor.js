@@ -6,7 +6,7 @@ import {EmptyJudgement, Judgement} from './judgement.js';
 import {Rule} from './rule.js';
 import {Untypable} from './typevar.js';
 import {Orer} from './orer.js';
-import {GenT} from './typevar.js';
+import {GenT, ArrowT} from './typevar.js';
 import {Assms} from './assms.js';
 import {Ander} from './ander.js';
 
@@ -22,9 +22,13 @@ export class Reconstructor{
         this.lastUsedVar = String.fromCharCode(Utils.firstCharCode);
     }
 
-    getFreshVar(pfix    ) {
+    getFreshVar(pfix) {
         this.lastUsedVar = Utils.nextFreeTypeName(this.lastUsedVar);
         return `${pfix}${this.lastUsedVar}`;
+    }
+
+    peekNextVar(pfix) {
+        return `${pfix}${Utils.nextFreeTypeName(this.lastUsedVar)}`;
     }
 
     /**
@@ -99,16 +103,19 @@ export class Reconstructor{
         const fulls = [];
         for(let i = 0; i < exps.length; i++){
             const exp = exps[i];
-            const varType = new GenT(this.getFreshVar('V')); //a type insterted into assums to reference the assignment 
-            if(termShape(exp) === Rule.compo){
-                assAccumulator.add(idents[`${i}`], varType);
-            }
+            const varType = new ArrowT(new GenT(this.getFreshVar('V')), new GenT(this.getFreshVar('V'))); //a type insterted into assums to reference the assignment 
+            // if(termShape(exp) === Rule.compo){
+            //     assAccumulator.add(idents[`${i}`], varType);
+            // }
             const empty = new EmptyJudgement(exp, assAccumulator);
             const full = this.typecheck(empty.asSubterm('M')); 
-            full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, varType)))]);
+            //full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, varType)))]);
             full.conjoinOrer(constrAccumulator); //wrapped in a unit orer
             console.log(full.show());
             fulls.push(full);
+            if(idents[`${i}`] !== undefined){
+                assAccumulator.add(idents[`${i}`], full.termType);
+            }
             constrAccumulator.push(full.constrs);
         }
         //transfer identifier : type 

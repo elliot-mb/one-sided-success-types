@@ -63,22 +63,20 @@ export class Solver{
         const r = new Reconstructor();
         //const program = '0 <= 0 ? (x => x) : 0';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
         const dones = r.reconstruct(program);
+        console.log(dones);
         //console.log(JSON.stringify(done.constrs));
         const untypable = (await Promise.all(dones.map(async done => {
                 const t = done.termType;
-                //console.log(`${done.show()}`);
+                console.log(`${done.show()}`);
                 const topLvls = done.constrs.toConstraintSet();
                 const topAndConstrs = {'term_type': t, 'top_type': topLvls, 'constrs': done.constrs};
                 const result = await Solver.sendConstrsToObj(topAndConstrs);
                 //console.log(pretty(result));
-                console.log(`${program}:`);
-                const typeStrings = result['term_type_assignments'];
-                const cantType = typeStrings.length === 0;
-                typeStrings.map(x => console.log(`\t${x}`));
-                if(cantType) console.log('\tUntypable');
-                return cantType;
+                return result['term_type_assignments'].length === 0;
             }))).reduce((x, y) => x && y, true);
-
+        console.log(`${program}:`);
+        if(untypable) console.log('\tUntypable');
+        else console.log('\t Comp(Ok)')
         return !untypable;
     }
 }

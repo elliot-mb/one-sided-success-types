@@ -34,6 +34,8 @@ export class Test {
         await this.testLongIdentifiers();
         await this.testValidityOfNewGrammar();
         await this.testReconstrNewGrammarSucceeds();
+        await this.testUntypableNewGrammar();
+        await this.testTypeableNewGrammar();
         this.showFailures();
     }
 
@@ -194,11 +196,35 @@ export class Test {
         `)));
     }
 
-    // async testUntypableNewGrammar(){
-    //     this.assert(!(await Solver.isTypableAsOkC(`
-    //         const x = 
-    //     `)));
-    // }
+    async testUntypableNewGrammar(){
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const x = 0;
+        `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const x = y => y;
+            const z = w => {
+                return x(w);
+            }
+        `)));
+        // this.assert(!(await Solver.isTypableAsOkC(`
+        //     const mul = x => y => {
+        //         return x <= 0 ? y : y + mul(x - 1)(y);
+        //     }
+        // `)));
+    }
+
+    async testTypeableNewGrammar(){
+        // this.assert(await Solver.isTypableAsOkC(`
+        //     const mul = x => y => {
+        //         return 0(x) <= 0 ? y : y + mul(x - 1)(y);
+        //     }
+        // `));
+        this.assert(await Solver.isTypableAsOkC(`
+            const mul = x => y => {
+                return 0(x) <= 0 ? 0 : 0;
+            }
+        `));
+    }
 }
 
 const runTests = async () => {
