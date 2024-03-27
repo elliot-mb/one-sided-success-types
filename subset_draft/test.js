@@ -147,10 +147,26 @@ export class Test {
 
     async testValidityOfNewGrammar(){
         this.assert(this.didntCrash(() => toASTTrees('const f = x => x;', false, true)));
-        this.assert(this.didntCrash(() => toASTTrees('const f = x => x; const g = y => y;', false, true)));
-        this.assert(this.didntCrash(() => toASTTrees('const f = x => {return x;};', false, true)));
-        this.assert(this.didntCrash(() => toASTTrees('const f = x => {const c = 1; return c + x;};', false, true)));
-        this.assert(this.didntCrash(() => toASTTrees('const a = 1; const b = 2; const c = a + b;', false, true)));
+        this.assert(this.didntCrash(() => toASTTrees(
+           `const f = x => x; 
+            const g = y => y;`
+            , false, true)));
+        this.assert(this.didntCrash(() => toASTTrees(
+           `const f = x => {
+                return x;
+            };`
+            , false, true)));
+        this.assert(this.didntCrash(() => toASTTrees(
+           `const f = x => {
+                const c = 1; 
+                return c + x;
+            };`
+            , false, true)));
+        this.assert(this.didntCrash(() => toASTTrees(
+           `const a = 1; 
+            const b = 2; 
+            const c = a + b;`
+            , false, true)));
     }
 
     async testReconstrNewGrammarSucceeds(){

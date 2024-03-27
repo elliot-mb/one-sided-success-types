@@ -322,6 +322,73 @@ export class Rule {
         return conclusn;
     }
 
+    //when a statement evaulates pointlessly like "0;" without assignment 
+    static cTExpSmt = (r, empty) => {
+        return r.typecheck(empty.asSubterm(Rule.expSmt));
+    }
+
+    // just unpacks blocks like to show {E} : A show E : A
+    static cTBlock = (r, empty) => {
+        const OkC1Constrs = Rule.addOkC1(empty.getAssms());
+        const X = new GenT(r.getFreshVar('X'));
+        const premise1 = r.typecheck(empty.asSubterm('E'));
+        const C1 = premise1.constrs;
+        const conclusn = empty.constrain(X);
+
+        conclusn.addToLast(C1);
+        conclusn.addToLast(new Constraint(premise1.termType, X));
+
+        if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOk(X));
+            if(!OkC1Constrs.isEmpty()){
+                conclusn.addAnder();
+                conclusn.addToLast(OkC1Constrs);
+            }
+        }
+
+        return conclusn;
+    }
+    // just unpacks returns like to show return M; : A show M : A (might be able
+    // to simplify this and cTBlock to like cTExpSmt)
+    static cTRet = (r, empty) => {
+        const OkC1Constrs = Rule.addOkC1(empty.getAssms());
+        const X = new GenT(r.getFreshVar('X'));
+        const premise1 = r.typecheck(empty.asSubterm('M'));
+        const C1 = premise1.constrs;
+        const conclusn = empty.constrain(X);
+
+        conclusn.addToLast(C1);
+        conclusn.addToLast(new Constraint(premise1.termType, X));
+
+        if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOk(X));
+            if(!OkC1Constrs.isEmpty()){
+                conclusn.addAnder();
+                conclusn.addToLast(OkC1Constrs);
+            }
+        }
+
+        return conclusn;
+    }
+
+    static cTCompo = (r, empty) => {
+        const OkC1Constrs = Rule.addOkC1(empty.getAssms());
+        const X = new GenT(r.getFreshVar('X'));
+        const Y1 = new GenT(r.getFreshVar('Y'));
+        const Y2 = new GenT(r.getFreshVar('Y'));
+        const assignedTo = empty.asSubterm('x').getSubterm('x');
+        const body = empty.asSubterm('M');
+        body.addAssm(assignedTo, Y1);
+        const next = empty.asSubterm('E');
+        next.addAssm(assignedTo, Y2);
+        const premise1 = r.typecheck(body);
+        const premise2 = r.typecheck(next);
+
+        const conclusn = empty.constrain(X);
+        
+    }
 
     static expSmt = 'M';
     static var = 'x';
@@ -330,6 +397,9 @@ export class Rule {
     static abs = 'x => M';
     static app = 'M(N)';
     static iflz = 'M <= 0 ? N : P';
+    static block = '{E}';
+    static ret = 'return M;';
+    static compo = 'const x = M; E';
 
     static appliesTo = (() => {
         const ruleFor = {};
@@ -339,6 +409,9 @@ export class Rule {
         ruleFor[Rule.abs] = Rule.cTAbsInf;
         ruleFor[Rule.app] = Rule.cTApp;
         ruleFor[Rule.iflz]= Rule.cTIfZ;
+        ruleFor[Rule.expSmt] = Rule.cTExpSmt;
+        ruleFor[Rule.block] = Rule.cTBlock;
+        ruleFor[Rule.ret] = Rule.cTRet;
         return ruleFor;
     })();
 }

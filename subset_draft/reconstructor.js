@@ -33,9 +33,6 @@ export class Reconstructor{
      */
     typecheck(empty){
         console.log(empty.show());
-        if(empty.shape === Rule.expSmt){
-            empty = new EmptyJudgement(empty.getSubterm(Rule.expSmt), empty.getAssms());
-        }
         const maybeRule = Rule.appliesTo[empty.shape];
         if(maybeRule !== undefined){
             const full = maybeRule(this, empty);
@@ -94,6 +91,7 @@ export class Reconstructor{
         for(let i = 0; i < exps.length; i++){
             const empty = new EmptyJudgement(exps[i], accumulator);
             const full = this.typecheck(empty);
+            console.log(full.show());
             fulls.push(full);
             accumulator.add(idents[i], full.termType);
         }

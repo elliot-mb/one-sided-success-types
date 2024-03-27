@@ -320,7 +320,7 @@ const recurseAST = (ast) => {
 }
 
 //just first expression argument is there while we only have single expressions
-export const toASTTrees = (program, justFirstExpression = true, enforceGrammar = true) => {
+export const toASTTrees = (program, justFirstExpression = false, enforceGrammar = true) => {
     //console.log(`${program} to AST Tree`);
     let tree = {};
     let ret = {};
