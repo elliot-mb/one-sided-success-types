@@ -128,7 +128,27 @@ export class Rule {
         );
     }
 
+    static addCompo3 = (X, T2, C2) => {
+        return new Orer(
+            new Ander(
+                new Constraint(X, T2),
+                C2
+            )
+        );
+    }
 
+    static addCompo2 = (X, Y1, Y2, T1, T2, C1, C2) => {
+        return new Orer(
+            new Ander(
+                new Constraint(Y2, new CompT(Y1)),
+                new Constraint(Y2, T1),
+                Rule.addDisj(T2, Y1),
+                new Constraint(T2, X),
+                C1,
+                C2
+            )
+        );
+    }
 
     /////////////////////////////////////////////////
     ////                                         ////
@@ -383,11 +403,35 @@ export class Rule {
         body.addAssm(assignedTo, Y1);
         const next = empty.asSubterm('E');
         next.addAssm(assignedTo, Y2);
+
         const premise1 = r.typecheck(body);
         const premise2 = r.typecheck(next);
+        const C1 = premise1.constrs;
+        const C2 = premise2.constrs;
+        const T1 = premise1.termType;
+        const T2 = premise2.termType;
 
         const conclusn = empty.constrain(X);
-        
+        conclusn.addToLast(C1);
+        conclusn.addToLast(C2);
+        conclusn.addToLast(new Constraint(Y1, Y2));
+        conclusn.addToLast(new Constraint(T1, Y2));
+        conclusn.addToLast(new Constraint(X, T2)); //pass the type back up from return
+
+        if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOk(X));
+            if(!OkC1Constrs.isEmpty()){
+                conclusn.addAnder();
+                conclusn.addToLast(OkC1Constrs);
+            }
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addCompo3(X, T2, C2));
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addCompo2(X, Y1, Y2, T1, T2, C1, C2));
+        }
+
+        return conclusn;
     }
 
     static expSmt = 'M';
