@@ -137,12 +137,12 @@ export class Rule {
         );
     }
 
-    static addCompo2 = (X, Y1, Y2, T1, T2, C1, C2) => {
+    static addCompo2 = (X, Y1, Y2, T1, T2, C1, C2, r) => {
         return new Orer(
             new Ander(
                 new Constraint(Y2, new CompT(Y1)),
                 new Constraint(Y2, T1),
-                Rule.addDisj(T2, Y1),
+                Rule.addDisj(T2, Y1, r),
                 new Constraint(T2, X),
                 C1,
                 C2
@@ -239,7 +239,10 @@ export class Rule {
         return conclusn; //when we add to the constraints we must do this and then return 
     }
 
-    static cTAbsInf = (r, empty) => { //CTAbsInf
+    static cTAbsInf = (r, empty) => { //CTAbsInf 
+        const boundVar = empty.asSubterm('x').getSubterm('x');
+        //enforce x \not\in dom Gamma 
+        if(empty.getAssms().isIn(boundVar)) throw new Utils.makeErr(`cTAbsInf: bound to variable ${boundVar} which cannot occur in assumptions`);
         const OkC1Constrs = Rule.addOkC1(empty.getAssms());
         const X = new GenT(r.getFreshVar('X'));
         const Y = new GenT(r.getFreshVar('Y'));
@@ -394,15 +397,18 @@ export class Rule {
     }
 
     static cTCompo = (r, empty) => {
+        const boundVar = empty.asSubterm('x').getSubterm('x');
+        //enforce x \not\in dom Gamma 
+        if(empty.getAssms().isIn(boundVar)) throw new Utils.makeErr(`cTCompo: assigned to variable ${boundVar} which cannot occur in assumptions`);
+        
         const OkC1Constrs = Rule.addOkC1(empty.getAssms());
         const X = new GenT(r.getFreshVar('X'));
         const Y1 = new GenT(r.getFreshVar('Y'));
         const Y2 = new GenT(r.getFreshVar('Y'));
-        const assignedTo = empty.asSubterm('x').getSubterm('x');
         const body = empty.asSubterm('M');
-        body.addAssm(assignedTo, Y1);
+        body.addAssm(boundVar, Y1);
         const next = empty.asSubterm('E');
-        next.addAssm(assignedTo, Y2);
+        next.addAssm(boundVar, Y2);
 
         const premise1 = r.typecheck(body);
         const premise2 = r.typecheck(next);
@@ -428,11 +434,14 @@ export class Rule {
             conclusn.addAnder();
             conclusn.addToLast(Rule.addCompo3(X, T2, C2));
             conclusn.addAnder();
-            conclusn.addToLast(Rule.addCompo2(X, Y1, Y2, T1, T2, C1, C2));
+            conclusn.addToLast(Rule.addCompo2(X, Y1, Y2, T1, T2, C1, C2, r));
         }
 
         return conclusn;
     }
+
+    // //a rule to handle the case where 
+    // static cTCompoTop 
 
     static expSmt = 'M';
     static var = 'x';
@@ -456,6 +465,7 @@ export class Rule {
         ruleFor[Rule.expSmt] = Rule.cTExpSmt;
         ruleFor[Rule.block] = Rule.cTBlock;
         ruleFor[Rule.ret] = Rule.cTRet;
+        ruleFor[Rule.compo] = Rule.cTCompo;
         return ruleFor;
     })();
 }

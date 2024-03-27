@@ -171,8 +171,34 @@ export class Test {
 
     async testReconstrNewGrammarSucceeds(){
         const r = new Reconstructor();
-        this.assert(this.didntCrash(() => r.reconstruct('const f = 0;')));
+        this.assert(this.didntCrash(() => r.reconstruct('const f = 0; const g = 0;')));
+        this.assert(this.didntCrash(() => r.reconstruct(
+           `const f = x => {return x};
+            const g = f(0);`
+        )));
+        this.assert(this.didntCrash(() => r.reconstruct(
+            `const f = x => {
+                const h = y => {
+                    const z = y + 1;
+                    return z;
+                }
+                const w = h(x);
+                return w;
+            }
+            const g = f(0);`
+        )));
+        this.assert(this.didntCrash(() => r.reconstruct(`
+            const mul = x => y => {
+                return x <= 0 ? y : y + mul(x - 1)(y);
+            }
+        `)));
     }
+
+    // async testUntypableNewGrammar(){
+    //     this.assert(!(await Solver.isTypableAsOkC(`
+    //         const x = 
+    //     `)));
+    // }
 }
 
 const runTests = async () => {

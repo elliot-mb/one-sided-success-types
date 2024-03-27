@@ -8,6 +8,7 @@ import {Untypable} from './typevar.js';
 import {Orer} from './orer.js';
 import {GenT} from './typevar.js';
 import {Assms} from './assms.js';
+import {Ander} from './ander.js';
 
 export class Reconstructor{
     static type = 'reconstructor';
@@ -78,22 +79,37 @@ export class Reconstructor{
         this.rstFreshVar();
         // console.log(toASTTree(program));
         const exps = toASTTrees(program, false, true);
-        let idents = []; 
+        let idents = {}; 
         for(let i = 0; i < exps.length; i++){
             const exp = exps[i];
             if(termShape(exp) === 'const x = M; E'){
-                idents.push(getSubterm(exp, 'x'));
+                idents[`${i}`] = (getSubterm(getSubterm(exp, 'x'), 'x')); //take out the identifier and then its name
             }
         }
+        //console.log(exps); // <<
+        // all expressions in here are toplevel declrs, shape "const x = M;" (NB there is no E)
+        // or they are ExperssionStatements of shape "M".
+        // 
+        // this means means the type is solely dictated by M in both cases,
+        // so we unpack it below with empty.asSubterm('M')
+
         //what we build up as we process each line
-        const accumulator = new Assms();
+        const assAccumulator = new Assms();
+        const constrAccumulator = []; //array of orers for term con
         const fulls = [];
         for(let i = 0; i < exps.length; i++){
-            const empty = new EmptyJudgement(exps[i], accumulator);
-            const full = this.typecheck(empty);
+            const exp = exps[i];
+            const varType = new GenT(this.getFreshVar('V')); //a type insterted into assums to reference the assignment 
+            if(termShape(exp) === Rule.compo){
+                assAccumulator.add(idents[`${i}`], varType);
+            }
+            const empty = new EmptyJudgement(exp, assAccumulator);
+            const full = this.typecheck(empty.asSubterm('M')); 
+            full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, varType)))]);
+            full.conjoinOrer(constrAccumulator); //wrapped in a unit orer
             console.log(full.show());
             fulls.push(full);
-            accumulator.add(idents[i], full.termType);
+            constrAccumulator.push(full.constrs);
         }
         //transfer identifier : type 
         
