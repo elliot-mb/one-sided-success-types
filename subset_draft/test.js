@@ -26,6 +26,7 @@ export class Test {
         })
 
          */
+
         await this.testTypeEquality();
         await this.testUntypability();
         await this.testTypability();
@@ -34,6 +35,34 @@ export class Test {
         await this.testLongIdentifiers();
         await this.testValidityOfNewGrammar();
         await this.testReconstrNewGrammarSucceeds();
+        await this.testUntypableNewGrammar();
+        await this.testTypeableNewGrammar();
+        (await Solver.isTypableAsOkC(`
+            const pair = m => n => p => p(m)(n);
+            const div = n => d => q => {
+                const r = n - d; 
+                return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
+            }
+            const goodResult = div(10)(2)(0);
+        `)); //OKC which is wrong
+        (await Solver.isTypableAsOkC(`
+            const pair = m => n => p => p(m)(n);
+            const div = n => d => q => {
+                return n - d + 1 <= 0 ? pair(q)(n) : div(n - d)(d)(q + 1);
+            }
+            const goodResult = div(10)(2)(0);
+        `)); //UNTYPABLE as expected 
+        // (await Solver.isTypableAsOkC(`
+        //     const diverg = n => diverg(n);
+        //     diverg(0);
+        // `));
+        // !(await Solver.isTypableAsOkC(`
+        //     const mul = x => y => {
+        //         return x <= 0 ? y : y + mul(x - 1)(y);
+        //     }
+        //     const result = mul(2)(3);
+        // `));
+        await this.testProgramsRun();
         this.showFailures();
     }
 
@@ -147,15 +176,133 @@ export class Test {
 
     async testValidityOfNewGrammar(){
         this.assert(this.didntCrash(() => toASTTrees('const f = x => x;', false, true)));
-        this.assert(this.didntCrash(() => toASTTrees('const f = x => x; const g = y => y;', false, true)));
-        this.assert(this.didntCrash(() => toASTTrees('const f = x => {return x;};', false, true)));
-        this.assert(this.didntCrash(() => toASTTrees('const f = x => {const c = 1; return c + x;};', false, true)));
-        this.assert(this.didntCrash(() => toASTTrees('const a = 1; const b = 2; const c = a + b;', false, true)));
+        this.assert(this.didntCrash(() => toASTTrees(
+           `const f = x => x; 
+            const g = y => y;`
+            , false, true)));
+        this.assert(this.didntCrash(() => toASTTrees(
+           `const f = x => {
+                return x;
+            };`
+            , false, true)));
+        this.assert(this.didntCrash(() => toASTTrees(
+           `const f = x => {
+                const c = 1; 
+                return c + x;
+            };`
+            , false, true)));
+        this.assert(this.didntCrash(() => toASTTrees(
+           `const a = 1; 
+            const b = 2; 
+            const c = a + b;`
+            , false, true)));
     }
 
     async testReconstrNewGrammarSucceeds(){
         const r = new Reconstructor();
-        this.assert(this.didntCrash(() => r.reconstruct('const f = 0;')));
+        this.assert(this.didntCrash(() => r.reconstruct('const f = 0; const g = 0;')));
+        this.assert(this.didntCrash(() => r.reconstruct(
+           `const f = x => {return x};
+            const g = f(0);`
+        )));
+        this.assert(this.didntCrash(() => r.reconstruct(
+            `const f = x => {
+                const h = y => {
+                    const z = y + 1;
+                    return z;
+                }
+                const w = h(x);
+                return w;
+            }
+            const g = f(0);`
+        )));
+        this.assert(this.didntCrash(() => r.reconstruct(`
+            const mul = x => y => {
+                return x <= 0 ? y : y + mul(x - 1)(y);
+            }
+        `)));
+    }
+
+    async testUntypableNewGrammar(){
+
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const x = 0;
+        `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const x = y => y;
+            const z = w => {
+                return x(w);
+            }
+        `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const x = 0;
+        `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            x => x
+        `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const x = y => y;
+        `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const mul = x => y => {
+                return x <= 0 ? y : y + mul(x - 1)(y);
+            }
+        `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const mul = x => y => {
+                return x <= 0 ? y : y + mul(x - 1)(y);
+            }
+            const result = mul(2)(3);
+        `))); //if we dont use the function its fine!
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const pair = m => n => p => p(m)(n);
+            const div = n => d => q => {
+                const r = n - d; 
+                return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
+            }
+            const goodResult = div(10)(2)(0);
+        `))); //if we dont use the function its fine!
+        //chu wei   poster 
+        //pragye gurrung???? poster 
+    }
+
+    async testTypeableNewGrammar(){
+        // this.assert(await Solver.isTypableAsOkC(`
+        //     const mul = x => y => {
+        //         return 0(x) <= 0 ? y : y + mul(x - 1)(y);
+        //     }
+        // `));
+        this.assert(await Solver.isTypableAsOkC(`
+            const zeroer = x => y => {
+                return 0(x) <= 0 ? 0 : 0;
+            }
+            zeroer(0)(0);
+        `)); //actually using the function that goes wrong causes OkC
+        this.assert(await Solver.isTypableAsOkC(`
+            const mul = 0(0);
+        `));
+        this.assert(await Solver.isTypableAsOkC(`
+            const pair = m => n => p => p(m)(n);
+            const div = n => d => q => {
+                const r = n - d; 
+                return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
+            }
+            
+            const badResult = div(x => x)(10)(0);
+        `)); //if we dont use the function its fine!
+    }
+
+    async testProgramsRun(){
+        const goodDiv = () => {
+            const pair = m => n => p => p(m)(n);
+            const div = n => d => q => {
+                const r = n - d; 
+                return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
+            }
+            const goodResult = div(10)(2)(0);
+            // console.log(goodResult(x => y => x), goodResult(x => y => y));
+        }
+        this.assert(this.didntCrash(goodDiv));
     }
 }
 

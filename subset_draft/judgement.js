@@ -145,6 +145,21 @@ export class Judgement extends EmptyJudgement{
         }
     }
 
+    //adds another judgement's constraints onto these by putting them both in an
+    //ander and then that in a unit orer 
+    //
+    //1)     Orer(CS_1)        Orer(CS_2)
+    //2)     Ander(Orer(CS_1), Orer(CS_2))      
+    //3)     Orer(Ander(Orer(CS_1, Orer(CS_2))) -- NB this is so it can be stored as this judgement's constraints 
+    //                                             which only accept Orers (see constructor)
+    //
+    conjoinOrer(ors){
+        const joiner = new Ander();
+        joiner.add(this.constrs);
+        ors.map(or => joiner.add(or));
+        this.constrs = new Orer(joiner);
+    }
+
     // /**
     //  * 
     //  * @param {*} constraint set (ander full of orers or constraints)

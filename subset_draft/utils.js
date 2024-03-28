@@ -44,9 +44,6 @@ export class Utils{
         return `${pfix}${lastUsedVar}`;
     }
 
-    /**
-     * returns either a string or '#' signifying it has rolled over (we obviously know what it will be?)
-     * **/
     static nextFreeTypeName = (typeName) => {
         if(typeof(typeName) !== 'string') throw Utils.makeErr('nextFreeTypeName: typeName must be a string');
         let newName = `${typeName}`;
