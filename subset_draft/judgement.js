@@ -1,5 +1,5 @@
 import {Utils} from './utils.js';
-import {termShape, getSubterm} from './wrapper_acorn.js';
+import {termShape, getSubterm, typeToGrammar} from './wrapper_acorn.js';
 import {ConstraintSet} from './constraint_set.js';
 import {Constraint} from './constraint.js';
 import {Orer} from './orer.js';

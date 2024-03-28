@@ -65,7 +65,24 @@ const pret = (json, whitespace = '') => {  // gives an array of lines to the tre
 const typeToSubterms = modRequire('./AST_subtm.json');
 
 //a map from AST types to grammar shapes 
+/*
+ * E, F ::= const x = M; E | return M;
+ * M, N ::= x | n | M o N | x => M | {E} | M(N) | M <= 0 ? N : P (| M but not explicitly included)
+ * */
 export const typeToGrammar = modRequire('./AST_grmmr.json');
+export const E = [
+    typeToGrammar['VariableDeclaration'],
+    typeToGrammar['ReturnStatement'],
+];
+export const M = [
+    typeToGrammar['Literal'],
+    typeToGrammar['BinaryExpression'],
+    typeToGrammar['ArrayExpression'],
+    typeToGrammar['ArrowFunctionExpression'],
+    typeToGrammar['ConditionalExpression'],
+    typeToGrammar['Identifier'],
+    typeToGrammar['BlockStatement']
+]
 
 //a map from AST types to maps from specific fields to restrictions they must obey
 //in an effort to express whats permitted in the subset of the language

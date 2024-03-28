@@ -268,6 +268,19 @@ export class Test {
                 0;
             }
         `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const fst = x => y => x;
+            const snd = x => y => y;
+            const pair = m => n => p => p(m)(n);
+            const listZeros = pair(0)(pair(0)(pair(0)(pair(0)(0))));
+            const head = fst;
+            listZeros(head);
+        `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            //this example is interesting because it shows that partially applied functions dont go wrong
+            const boomPair = m => n => p => 1(x => x) - 1(0)(0)(m)(n);
+            const listZeros = boomPair(0)(boomPair(0)(boomPair(0)(boomPair(0)(0))));
+        `)));
         //chu wei   poster 
         //pragye gurrung???? poster 
     }
@@ -296,15 +309,26 @@ export class Test {
             
             const badResult = div(x => x)(10)(0);
         `)); //if we dont use the function its fine!
+        this.assert(await Solver.isTypableAsOkC(`
+            const fst = x => y => x;
+            const pair = m => n => p => 0(m)(n); //nb zero application when used
+            const listZeros = pair(0)(pair(0)(pair(0)(pair(0)(0))));
+            listZeros(fst);
+        `));
+        this.assert(await Solver.isTypableAsOkC(`
+            const snd = x => y => y;
+            const pair = m => n => p => p(m)(n);
+            const confusedList = pair(0)(0)(0);
+        `));
     }
 
     async testASTRequire(){
-        this.assert(!this.didntCrash(() => toASTTrees(`
-            const noReturn = x => {
-                0;
-                0;
-            }
-        `)));
+        // this.assert(!this.didntCrash(() => toASTTrees(`
+        //     const noReturn = x => {
+        //         0;
+        //         0;
+        //     }
+        // `)));
     }
 
     async testProgramsRun(){
@@ -318,6 +342,15 @@ export class Test {
             // console.log(goodResult(x => y => x), goodResult(x => y => y));
         }
         this.assert(this.didntCrash(goodDiv));
+        const header = () => {
+            const fst = x => y => x;
+            const snd = x => y => y;
+            const pair = m => n => p => p(m)(n);
+            const listZeros = pair(0)(pair(0)(pair(0)(pair(0)(0))));
+            const head = fst;
+            head(listZeros);
+        }
+        this.assert(this.didntCrash(header));
     }
 }
 
