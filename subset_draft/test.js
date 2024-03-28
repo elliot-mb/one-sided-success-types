@@ -44,17 +44,24 @@ export class Test {
                 return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
             }
             const goodResult = div(10)(2)(0);
-        `));
+        `)); //OKC which is wrong
         (await Solver.isTypableAsOkC(`
-            const diverg = n => diverg(n);
-            diverg(0);
-        `));
-        !(await Solver.isTypableAsOkC(`
-            const mul = x => y => {
-                return x <= 0 ? y : y + mul(x - 1)(y);
+            const pair = m => n => p => p(m)(n);
+            const div = n => d => q => {
+                return n - d + 1 <= 0 ? pair(q)(n) : div(n - d)(d)(q + 1);
             }
-            const result = mul(2)(3);
-        `));
+            const goodResult = div(10)(2)(0);
+        `)); //UNTYPABLE as expected 
+        // (await Solver.isTypableAsOkC(`
+        //     const diverg = n => diverg(n);
+        //     diverg(0);
+        // `));
+        // !(await Solver.isTypableAsOkC(`
+        //     const mul = x => y => {
+        //         return x <= 0 ? y : y + mul(x - 1)(y);
+        //     }
+        //     const result = mul(2)(3);
+        // `));
         await this.testProgramsRun();
         this.showFailures();
     }

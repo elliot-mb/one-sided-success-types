@@ -37,7 +37,7 @@ export class Reconstructor{
      * @returns {*} Judgement object 
      */
     typecheck(empty){
-        //console.log(empty.show());
+        console.log(empty.show());
         const maybeRule = Rule.appliesTo[empty.shape];
         if(maybeRule !== undefined){
             const full = maybeRule(this, empty);
@@ -122,7 +122,7 @@ export class Reconstructor{
 
             full.conjoinOrer(constrAccumulator); //wrapped in a unit orer, attach previous line's constraints 
             constrAccumulator.push(full.constrs);
-            //console.log(full.show());
+            console.log('_____________________________');
             fulls.push(full);
             //add the conclusion type to the accumulator after if we didnt add it as an arrow before
             //and dont reassign arrow 

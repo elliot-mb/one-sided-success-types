@@ -67,7 +67,7 @@ export class Solver{
         for(let i = 0; i < dones.length; i++){
             const done = dones[i];
             const t = done.termType;
-            console.log(`${done.show()}`);
+            //console.log(`${done.show()}`);
             const topLvls = done.constrs.toConstraintSet();
             const topAndConstrs = {'term_type': t, 'top_type': topLvls, 'constrs': done.constrs};
             const result = await Solver.sendConstrsToObj(topAndConstrs);
