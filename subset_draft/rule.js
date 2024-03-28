@@ -128,6 +128,11 @@ export class Rule {
         );
     }
 
+    /**
+     * gam jud E:A
+     * ________________________ (Compo3)
+     * gam jud const f = M; E:A
+     */
     static addCompo3 = (X, T2, C2) => {
         return new Orer(
             new Ander(
@@ -137,6 +142,12 @@ export class Rule {
         );
     }
 
+    /**
+     * gam, f:B jud M:!B
+     * gam, f:!B jud E:A
+     * ________________________ (Compo3)
+     * gam jud const f = M; E:A
+     */
     static addCompo2 = (X, Y1, Y2, T1, T2, C1, C2, r) => {
         return new Orer(
             new Ander(
@@ -258,7 +269,7 @@ export class Rule {
 
         conclusn.addToLast(premise1.constrs); //make sure to add the premise constraints (where )
         conclusn.addToLast(new Constraint(X, new ArrowT(Y, premise1.termType)));
-         
+       
         if(Rule.disjunctiveRules){
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
@@ -396,6 +407,12 @@ export class Rule {
         return conclusn;
     }
 
+    /**
+     * gam, f:B jud M:B
+     * gam, f:B jud E:A
+     * ________________________ (Compo1)
+     * gam jud const f = M; E:A
+     */
     static cTCompo = (r, empty) => {
         const boundVar = empty.asSubterm('x').getSubterm('x');
         //enforce x \not\in dom Gamma 

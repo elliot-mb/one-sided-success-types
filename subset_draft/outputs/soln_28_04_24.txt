@@ -1,0 +1,17 @@
+{'sol': 
+    [{'XO': 'Num', 
+    'YE': 'Num', 
+    'XN': 'To(Num, Comp(Ok))', 
+    'XF': 'Comp(Ok)', 
+    'XH': 'Num', 'XG': 'To(Num, Comp(Ok))', 
+    'WQ': 'Comp(Ok)', 
+    'ZP': 'Comp(Ok)', 
+    'WJ': 'Comp(Ok)', 
+    'ZI': 'Comp(Ok)', 
+    'TB': 'Num', 
+    'TC': 'Comp(Ok)', 
+    'XM': 'Comp(Ok)', 
+    'XD': 'To(Num, Comp(Ok))'}], 
+'term_type_assignments': 
+    ['Comp(Ok)']
+}

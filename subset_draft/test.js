@@ -26,6 +26,7 @@ export class Test {
         })
 
          */
+
         await this.testTypeEquality();
         await this.testUntypability();
         await this.testTypability();
@@ -36,6 +37,19 @@ export class Test {
         await this.testReconstrNewGrammarSucceeds();
         await this.testUntypableNewGrammar();
         await this.testTypeableNewGrammar();
+        (await Solver.isTypableAsOkC(`
+            const pair = m => n => p => p(m)(n);
+            const div = n => d => q => {
+                const r = n - d; 
+                return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
+            }
+            const goodResult = div(10)(2)(0);
+        `));
+        (await Solver.isTypableAsOkC(`
+            const diverg = n => diverg(n);
+            diverg(0);
+        `));
+        await this.testProgramsRun();
         this.showFailures();
     }
 
@@ -197,6 +211,7 @@ export class Test {
     }
 
     async testUntypableNewGrammar(){
+
         this.assert(!(await Solver.isTypableAsOkC(`
             const x = 0;
         `)));
@@ -206,11 +221,36 @@ export class Test {
                 return x(w);
             }
         `)));
-        // this.assert(!(await Solver.isTypableAsOkC(`
-        //     const mul = x => y => {
-        //         return x <= 0 ? y : y + mul(x - 1)(y);
-        //     }
-        // `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const x = 0;
+        `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            x => x
+        `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const x = y => y;
+        `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const mul = x => y => {
+                return x <= 0 ? y : y + mul(x - 1)(y);
+            }
+        `))); //if we dont use the function its fine!
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const mul = x => y => {
+                return x <= 0 ? y : y + mul(x - 1)(y);
+            }
+            mul(2)(3);
+        `))); //if we dont use the function its fine!
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const pair = m => n => p => p(m)(n);
+            const div = n => d => q => {
+                const r = n - d; 
+                return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
+            }
+            const goodResult = div(10)(2)(0);
+        `))); //if we dont use the function its fine!
+        //chu wei   poster 
+        //pragye gurrung???? poster 
     }
 
     async testTypeableNewGrammar(){
@@ -220,10 +260,36 @@ export class Test {
         //     }
         // `));
         this.assert(await Solver.isTypableAsOkC(`
-            const mul = x => y => {
+            const zeroer = x => y => {
                 return 0(x) <= 0 ? 0 : 0;
             }
+            zeroer(0)(0);
+        `)); //actually using the function that goes wrong causes OkC
+        this.assert(await Solver.isTypableAsOkC(`
+            const mul = 0(0);
         `));
+        this.assert(await Solver.isTypableAsOkC(`
+            const pair = m => n => p => p(m)(n);
+            const div = n => d => q => {
+                const r = n - d; 
+                return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
+            }
+            
+            const badResult = div(x => x)(10)(0);
+        `)); //if we dont use the function its fine!
+    }
+
+    async testProgramsRun(){
+        const goodDiv = () => {
+            const pair = m => n => p => p(m)(n);
+            const div = n => d => q => {
+                const r = n - d; 
+                return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
+            }
+            const goodResult = div(10)(2)(0);
+            // console.log(goodResult(x => y => x), goodResult(x => y => y));
+        }
+        this.assert(this.didntCrash(goodDiv));
     }
 }
 

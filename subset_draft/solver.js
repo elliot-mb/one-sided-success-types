@@ -63,20 +63,32 @@ export class Solver{
         const r = new Reconstructor();
         //const program = '0 <= 0 ? (x => x) : 0';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
         const dones = r.reconstruct(program);
-        console.log(dones);
+        const untypables = [];
+        for(let i = 0; i < dones.length; i++){
+            const done = dones[i];
+            const t = done.termType;
+            console.log(`${done.show()}`);
+            const topLvls = done.constrs.toConstraintSet();
+            const topAndConstrs = {'term_type': t, 'top_type': topLvls, 'constrs': done.constrs};
+            const result = await Solver.sendConstrsToObj(topAndConstrs);
+            //console.log(pretty(result));
+            untypables.push(result['term_type_assignments'].length === 0);
+        } 
         //console.log(JSON.stringify(done.constrs));
-        const untypable = (await Promise.all(dones.map(async done => {
-                const t = done.termType;
-                console.log(`${done.show()}`);
-                const topLvls = done.constrs.toConstraintSet();
-                const topAndConstrs = {'term_type': t, 'top_type': topLvls, 'constrs': done.constrs};
-                const result = await Solver.sendConstrsToObj(topAndConstrs);
-                //console.log(pretty(result));
-                return result['term_type_assignments'].length === 0;
-            }))).reduce((x, y) => x && y, true);
+        // const untypables = (await Promise.all(dones.map(async done => {
+        //         const t = done.termType;
+        //         console.log(`${done.show()}`);
+        //         const topLvls = done.constrs.toConstraintSet();
+        //         const topAndConstrs = {'term_type': t, 'top_type': topLvls, 'constrs': done.constrs};
+        //         const result = await Solver.sendConstrsToObj(topAndConstrs);
+        //         //console.log(pretty(result));
+        //         return result['term_type_assignments'].length === 0;
+        //     })));
+        const untypable = untypables.reduce((x, y) => x && y, true);
         console.log(`${program}:`);
-        if(untypable) console.log('\tUntypable');
-        else console.log('\t Comp(Ok)')
+        untypables.map(x => console.log(x ? '\tUntypable' : '\tComp(Ok)'));
+        if(untypable) console.log('\t\tUntypable');
+        else console.log('\t\tComp(Ok)')
         return !untypable;
     }
 }

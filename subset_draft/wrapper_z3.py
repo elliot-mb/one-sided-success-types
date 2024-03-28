@@ -210,7 +210,8 @@ def uniques_in_list(xs):
     return unique_list
 
 def main():
-    MAX_DEPTH = 10 # how many solutions can we find up to (square this number)
+    MAX_DEPTH = 1 # this can be one because if something is provably wrong the only kind of assignments it can find
+    # are ones where the conclusion type is okc
     recieved = None
     if(not args.constraint_file == None): 
         recieved_f = open(args.constraint_file, 'r')

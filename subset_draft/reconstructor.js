@@ -37,7 +37,7 @@ export class Reconstructor{
      * @returns {*} Judgement object 
      */
     typecheck(empty){
-        console.log(empty.show());
+        //console.log(empty.show());
         const maybeRule = Rule.appliesTo[empty.shape];
         if(maybeRule !== undefined){
             const full = maybeRule(this, empty);
@@ -79,6 +79,8 @@ export class Reconstructor{
         return topType;
     }
 
+
+
     reconstruct(program){
         this.rstFreshVar();
         // console.log(toASTTree(program));
@@ -103,20 +105,30 @@ export class Reconstructor{
         const fulls = [];
         for(let i = 0; i < exps.length; i++){
             const exp = exps[i];
-            const varType = new ArrowT(new GenT(this.getFreshVar('V')), new GenT(this.getFreshVar('V'))); //a type insterted into assums to reference the assignment 
-            // if(termShape(exp) === Rule.compo){
-            //     assAccumulator.add(idents[`${i}`], varType);
-            // }
-            const empty = new EmptyJudgement(exp, assAccumulator);
+
+            let isArr = termShape(exp) === Rule.compo && termShape(getSubterm(exp, 'M')) === Rule.abs;
+            const typeIfArr = new ArrowT(new GenT(this.getFreshVar('T')), new GenT(this.getFreshVar('T'))); //a type insterted into assums to reference the assignment 
+            if(isArr){
+                assAccumulator.add(idents[`${i}`], typeIfArr);
+            }
+
+            const thisTermsAssms = assAccumulator.deepCopy();
+            const empty = new EmptyJudgement(exp, thisTermsAssms);
             const full = this.typecheck(empty.asSubterm('M')); 
-            //full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, varType)))]);
-            full.conjoinOrer(constrAccumulator); //wrapped in a unit orer
-            console.log(full.show());
+            
+            if(isArr)
+                full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, typeIfArr)))]); //constrain the free arrow type to being equal to the conclusion
+            //type after the type reconstruction is done 
+
+            full.conjoinOrer(constrAccumulator); //wrapped in a unit orer, attach previous line's constraints 
+            constrAccumulator.push(full.constrs);
+            //console.log(full.show());
             fulls.push(full);
-            if(idents[`${i}`] !== undefined){
+            //add the conclusion type to the accumulator after if we didnt add it as an arrow before
+            //and dont reassign arrow 
+            if(!isArr && idents[`${i}`] !== undefined){
                 assAccumulator.add(idents[`${i}`], full.termType);
             }
-            constrAccumulator.push(full.constrs);
         }
         //transfer identifier : type 
         
