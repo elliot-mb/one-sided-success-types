@@ -133,11 +133,11 @@ export class Rule {
      * ________________________ (Compo3)
      * gam jud const f = M; E:A
      */
-    static addCompo3 = (X, T2, C2) => {
+    static addCompo3 = (X, T3, C3) => {
         return new Orer(
             new Ander(
-                new Constraint(X, T2),
-                C2
+                new Constraint(X, T3),
+                C3
             )
         );
     }
@@ -425,14 +425,25 @@ export class Rule {
         const body = empty.asSubterm('M');
         body.addAssm(boundVar, Y1);
         const next = empty.asSubterm('E');
+
+        let canCompo3 = true;
+        let premise3;
+        try{ 
+            premise3 = r.typecheck(next); //check without assm of current variable
+        }catch(err){
+            canCompo3 = false; //if there is a binding of the current comp in the following term we cant apply compo3
+        }
+
         next.addAssm(boundVar, Y2);
 
         const premise1 = r.typecheck(body);
         const premise2 = r.typecheck(next);
         const C1 = premise1.constrs;
         const C2 = premise2.constrs;
+        const C3 = canCompo3 ? premise3.constrs : null;
         const T1 = premise1.termType;
         const T2 = premise2.termType;
+        const T3 = canCompo3 ? premise3.termType : null;
 
         const conclusn = empty.constrain(X);
         conclusn.addToLast(C1);
@@ -448,8 +459,10 @@ export class Rule {
                 conclusn.addAnder();
                 conclusn.addToLast(OkC1Constrs);
             }
-            conclusn.addAnder();
-            conclusn.addToLast(Rule.addCompo3(X, T2, C2));
+            if(canCompo3){
+                conclusn.addAnder();
+                conclusn.addToLast(Rule.addCompo3(X, T3, C3));
+            }
             conclusn.addAnder();
             conclusn.addToLast(Rule.addCompo2(X, Y1, Y2, T1, T2, C1, C2, r));
         }

@@ -49,6 +49,12 @@ export class Test {
             const diverg = n => diverg(n);
             diverg(0);
         `));
+        !(await Solver.isTypableAsOkC(`
+            const mul = x => y => {
+                return x <= 0 ? y : y + mul(x - 1)(y);
+            }
+            const result = mul(2)(3);
+        `));
         await this.testProgramsRun();
         this.showFailures();
     }
@@ -234,12 +240,12 @@ export class Test {
             const mul = x => y => {
                 return x <= 0 ? y : y + mul(x - 1)(y);
             }
-        `))); //if we dont use the function its fine!
+        `)));
         this.assert(!(await Solver.isTypableAsOkC(`
             const mul = x => y => {
                 return x <= 0 ? y : y + mul(x - 1)(y);
             }
-            mul(2)(3);
+            const result = mul(2)(3);
         `))); //if we dont use the function its fine!
         this.assert(!(await Solver.isTypableAsOkC(`
             const pair = m => n => p => p(m)(n);
