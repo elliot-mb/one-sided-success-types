@@ -253,7 +253,7 @@ export class Rule {
     static cTAbsInf = (r, empty) => { //CTAbsInf 
         const boundVar = empty.asSubterm('x').getSubterm('x');
         //enforce x \not\in dom Gamma 
-        if(empty.getAssms().isIn(boundVar)) throw new Utils.makeErr(`cTAbsInf: bound to variable ${boundVar} which cannot occur in assumptions`);
+        if(empty.getAssms().isIn(boundVar)) throw Utils.makeErr(`cTAbsInf: bound to variable ${boundVar} which cannot occur in assumptions`);
         const OkC1Constrs = Rule.addOkC1(empty.getAssms());
         const X = new GenT(r.getFreshVar('X'));
         const Y = new GenT(r.getFreshVar('Y'));
@@ -416,7 +416,7 @@ export class Rule {
     static cTCompo = (r, empty) => {
         const boundVar = empty.asSubterm('x').getSubterm('x');
         //enforce x \not\in dom Gamma 
-        if(empty.getAssms().isIn(boundVar)) throw new Utils.makeErr(`cTCompo: assigned to variable ${boundVar} which cannot occur in assumptions`);
+        if(empty.getAssms().isIn(boundVar)) throw Utils.makeErr(`cTCompo: assigned to variable ${boundVar} which cannot occur in assumptions`);
         
         const OkC1Constrs = Rule.addOkC1(empty.getAssms());
         const X = new GenT(r.getFreshVar('X'));
@@ -455,7 +455,9 @@ export class Rule {
         const conclusn = empty.constrain(X);
         conclusn.addToLast(C1);
         conclusn.addToLast(C2);
-        conclusn.addToLast(new Constraint(YToY1, Y2));
+        if(isThisAbs) conclusn.addToLast(new Constraint(YToY1, Y2)); 
+        //it overconstrains it otherwise (this actually fixed one of the test cases! the one where i do zipSumPair)
+        
         conclusn.addToLast(new Constraint(T1, Y2));
         conclusn.addToLast(new Constraint(X, T2)); //pass the type back up from return
 

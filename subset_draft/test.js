@@ -281,6 +281,24 @@ export class Test {
             const boomPair = m => n => p => 1(x => x) - 1(0)(0)(m)(n);
             const listZeros = boomPair(0)(boomPair(0)(boomPair(0)(boomPair(0)(0))));
         `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const pfst = s => t => s;
+            const psnd = s => t => t;
+            const qfst = q => r => s => t => q;
+            const qsnd = q => r => s => t => r;
+            const qtrd = q => r => s => t => s;
+            const qfrt = q => r => s => t => t;
+            const quad = q => r => s => t => p => p(q)(r)(s)(t);
+            const pair = r => s => p => p(r)(s);
+            const toTwoPairs = inQuad => {
+                const p1 = pair(inQuad(qfst))(inQuad(qsnd));
+                const p2 = pair(inQuad(qtrd))(inQuad(qfrt));
+                return pair(p1)(p2);
+            }
+            const myQuad = quad(0)(1)(2)(3);
+            const firstPair = toTwoPairs(myQuad)(pfst);
+            const sndPair = toTwoPairs(myQuad)(psnd);
+        `)));
         //chu wei   poster 
         //pragye gurrung???? poster 
     }
@@ -319,6 +337,21 @@ export class Test {
             const snd = x => y => y;
             const pair = m => n => p => p(m)(n);
             const confusedList = pair(0)(0)(0);
+        `));
+        this.assert(await Solver.isTypableAsOkC(`
+            const fst = s => t => s;
+            const snd = s => t => t;
+            const pair = s => t => p => p(s)(t);
+            const p1 = pair(0)(1);
+            const p2 = pair(2)(3);
+            //incorrect zipPairs function that goes wrong when used
+            const zipSumPairs = pair1 => pair2 => {
+                const e1 = pair1(fst) + pair2(fst);
+                const e2 = pair1(snd) + snd(pair2); //mistakenly wrong way around
+                return pair(e1)(e2);
+            }
+            const sumPair = zipSumPairs(p1)(p2);
+            sumPair(snd);
         `));
     }
 
