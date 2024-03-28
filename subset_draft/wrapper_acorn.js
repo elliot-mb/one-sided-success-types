@@ -136,8 +136,8 @@ const checkRule = (rule, objOrValue, fieldname) => {
     const prop = 'P';
     const propAccessors = {
         'last': xs => {
-                if(xs.length === undefined) throw new Utils.makeErr('checkRule: requires the property is a list');
-                if(xs.length === 0) throw new Utils.makeErr('checkRule: the property is a list of length at least one');
+                if(xs.length === undefined) throw Utils.makeErr('checkRule: requires the property is a list');
+                if(xs.length === 0) throw Utils.makeErr('checkRule: the property is a list of length at least one');
                 return `${xs.length - 1}`;
             }
     }
@@ -176,8 +176,8 @@ const checkRule = (rule, objOrValue, fieldname) => {
         const newRule = propNameRule[propName]; //recurses inside the rule spec
         let newObjOrValue;
         if(propName[0] === special){
-            afterDeletes = deleteSpecials(propName, special);
-            newObjOrValue = objOrValue[propAccessors[afterDeletes]];
+            const afterDeletes = deleteSpecials(propName, special);
+            newObjOrValue = objOrValue[propAccessors[afterDeletes](objOrValue)];
         }else { newObjOrValue = objOrValue[propName]; } //fetches current obj context
         checkRule(newRule, newObjOrValue, propName);
         return;
@@ -227,11 +227,11 @@ export const checkTerm = term => {
     const checkFields = typeToProperties[term.type]; 
     if(checkFields === undefined) throw Utils.makeErr(`checkTerm: there is no term of type '${term.type}' in the grammar`);
     //remove the special characters from the field names 
-    const propsEnforced = Object.keys(checkFields)
-        .map(x => deleteSpecials(x, special));
+    const propsEnforced = Object.keys(checkFields);
 
     propsEnforced.map(field => { //field under this type of term in the AST
         const ruleset = checkFields[field];
+        field = deleteSpecials(field, special);//remove the special characters from the field names 
         const sat = ruleset[stfy];
         if(sat === undefined) throw Utils.makeErr(`checkTerm: ruleset is missing the 'satisfies' property`);
         const reducer = sRMap[sat];

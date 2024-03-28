@@ -37,21 +37,22 @@ export class Test {
         await this.testReconstrNewGrammarSucceeds();
         await this.testUntypableNewGrammar();
         await this.testTypeableNewGrammar();
-        (await Solver.isTypableAsOkC(`
-            const pair = m => n => p => p(m)(n);
-            const div = n => d => q => {
-                const r = n - d; 
-                return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
-            }
-            const goodResult = div(10)(2)(0);
-        `)); //OKC which is wrong
-        (await Solver.isTypableAsOkC(`
-            const pair = m => n => p => p(m)(n);
-            const div = n => d => q => {
-                return n - d + 1 <= 0 ? pair(q)(n) : div(n - d)(d)(q + 1);
-            }
-            const goodResult = div(10)(2)(0);
-        `)); //UNTYPABLE as expected 
+        await this.testASTRequire();
+        // (await Solver.isTypableAsOkC(`
+        //     const pair = m => n => p => p(m)(n);
+        //     const div = n => d => q => {
+        //         const r = n - d; 
+        //         return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
+        //     }
+        //     const goodResult = div(10)(2)(0);
+        // `)); //OKC which is wrong
+        // (await Solver.isTypableAsOkC(`
+        //     const pair = m => n => p => p(m)(n);
+        //     const div = n => d => q => {
+        //         return n - d + 1 <= 0 ? pair(q)(n) : div(n - d)(d)(q + 1);
+        //     }
+        //     const goodResult = div(10)(2)(0);
+        // `)); //UNTYPABLE as expected 
         // (await Solver.isTypableAsOkC(`
         //     const diverg = n => diverg(n);
         //     diverg(0);
@@ -253,7 +254,7 @@ export class Test {
                 return x <= 0 ? y : y + mul(x - 1)(y);
             }
             const result = mul(2)(3);
-        `))); //if we dont use the function its fine!
+        `)));
         this.assert(!(await Solver.isTypableAsOkC(`
             const pair = m => n => p => p(m)(n);
             const div = n => d => q => {
@@ -261,7 +262,12 @@ export class Test {
                 return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
             }
             const goodResult = div(10)(2)(0);
-        `))); //if we dont use the function its fine!
+        `))); 
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const pleaseDontRunMe = x => {
+                0;
+            }
+        `)));
         //chu wei   poster 
         //pragye gurrung???? poster 
     }
@@ -290,6 +296,15 @@ export class Test {
             
             const badResult = div(x => x)(10)(0);
         `)); //if we dont use the function its fine!
+    }
+
+    async testASTRequire(){
+        this.assert(!this.didntCrash(() => toASTTrees(`
+            const noReturn = x => {
+                0;
+                0;
+            }
+        `)));
     }
 
     async testProgramsRun(){

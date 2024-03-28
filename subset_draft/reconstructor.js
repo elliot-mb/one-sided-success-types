@@ -122,7 +122,7 @@ export class Reconstructor{
 
             full.conjoinOrer(constrAccumulator); //wrapped in a unit orer, attach previous line's constraints 
             constrAccumulator.push(full.constrs);
-            console.log('_____________________________');
+            //console.log('_____________________________');
             fulls.push(full);
             //add the conclusion type to the accumulator after if we didnt add it as an arrow before
             //and dont reassign arrow 
