@@ -351,7 +351,18 @@ export class Test {
                 return pair(e1)(e2);
             }
             const sumPair = zipSumPairs(p1)(p2);
-            sumPair(snd);
+        `));
+        this.assert(await Solver.isTypableAsOkC(`
+            const fst = s => t => s;
+            const snd = s => t => t;
+            const sndFst = snd(fst); //would reduce to t => t 
+            const idPlus1 = sndFst + 1;
+        `));
+        this.assert(await Solver.isTypableAsOkC(`
+            const boomRecursion = x => {
+                return x <= 0 ? 0(boomRecursion(x - 1)) : 0(x);
+            }
+            boomRecursion(10);
         `));
     }
 
