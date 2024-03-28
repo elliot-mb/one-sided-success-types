@@ -420,12 +420,19 @@ export class Rule {
         
         const OkC1Constrs = Rule.addOkC1(empty.getAssms());
         const X = new GenT(r.getFreshVar('X'));
-        const Y1 = new GenT(r.getFreshVar('Y'));
-        const Y2 = new GenT(r.getFreshVar('Y'));
-        const body = empty.asSubterm('M');
-        body.addAssm(boundVar, Y1);
-        const next = empty.asSubterm('E');
+        // const Y1 = new GenT(r.getFreshVar('Y'));
+        // const Y2 = new GenT(r.getFreshVar('Y'));
 
+        //make sure both Ys are arrow types by constraints 
+        const YToY1 = new ArrowT(new GenT(r.getFreshVar('Y')), new GenT(r.getFreshVar('Y')));
+        const YToY2 = new ArrowT(new GenT(r.getFreshVar('Y')), new GenT(r.getFreshVar('Y')));
+
+        const body = empty.asSubterm('M');
+        const isThisAbs = body.shape === Rule.abs;
+        if(isThisAbs)
+            body.addAssm(boundVar, YToY1); 
+
+        const next = empty.asSubterm('E');
         let canCompo3 = true;
         let premise3;
         try{ 
@@ -434,7 +441,7 @@ export class Rule {
             canCompo3 = false; //if there is a binding of the current comp in the following term we cant apply compo3
         }
 
-        next.addAssm(boundVar, Y2);
+        next.addAssm(boundVar, YToY2); //add this regardless because we dont know if it will appear
 
         const premise1 = r.typecheck(body);
         const premise2 = r.typecheck(next);
@@ -448,8 +455,8 @@ export class Rule {
         const conclusn = empty.constrain(X);
         conclusn.addToLast(C1);
         conclusn.addToLast(C2);
-        conclusn.addToLast(new Constraint(Y1, Y2));
-        conclusn.addToLast(new Constraint(T1, Y2));
+        conclusn.addToLast(new Constraint(YToY1, YToY2));
+        conclusn.addToLast(new Constraint(T1, YToY2));
         conclusn.addToLast(new Constraint(X, T2)); //pass the type back up from return
 
         if(Rule.disjunctiveRules){
@@ -464,7 +471,7 @@ export class Rule {
                 conclusn.addToLast(Rule.addCompo3(X, T3, C3));
             }
             conclusn.addAnder();
-            conclusn.addToLast(Rule.addCompo2(X, Y1, Y2, T1, T2, C1, C2, r));
+            conclusn.addToLast(Rule.addCompo2(X, YToY1, YToY2, T1, T2, C1, C2, r));
         }
 
         return conclusn;
