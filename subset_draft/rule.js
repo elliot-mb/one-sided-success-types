@@ -410,7 +410,7 @@ export class Rule {
     /**
      * gam, f:B jud M:B
      * gam, f:B jud E:A
-     * ________________________ (Compo1)
+     * ________________________ (Compo1) (we will separate this to M is a function and M is not a function)
      * gam jud const f = M; E:A
      */
     static cTCompo = (r, empty) => {
