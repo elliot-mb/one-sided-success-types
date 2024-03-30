@@ -424,13 +424,66 @@ export class Rule {
         // const Y2 = new GenT(r.getFreshVar('Y'));
 
         //make sure both Ys are arrow types by constraints 
-        const YToY1 = new ArrowT(new GenT(r.getFreshVar('Y')), new GenT(r.getFreshVar('Y')));
         const Y2 = new GenT(r.getFreshVar('Y'));
 
         const body = empty.asSubterm('M');
-        const isThisAbs = body.shape === Rule.abs;
-        if(isThisAbs)
-            body.addAssm(boundVar, YToY1); 
+        const next = empty.asSubterm('E');
+        let canCompo3 = true;
+        let premise3;
+        try{ 
+            premise3 = r.typecheck(next); //check without assm of current variable
+        }catch(err){
+            canCompo3 = false; //if there is a binding of the current comp in the following term we cant apply compo3
+        }
+        next.addAssm(boundVar, Y2); //add this regardless because we dont know if it will appear
+
+        const premise1 = r.typecheck(body);
+        const premise2 = r.typecheck(next);
+        const C1 = premise1.constrs;
+        const C2 = premise2.constrs;
+        const C3 = canCompo3 ? premise3.constrs : null;
+        const T1 = premise1.termType;
+        const T2 = premise2.termType;
+        const T3 = canCompo3 ? premise3.termType : null;
+
+        const conclusn = empty.constrain(X);
+        conclusn.addToLast(C1);
+        conclusn.addToLast(C2);
+        conclusn.addToLast(new Constraint(T1, Y2));
+        conclusn.addToLast(new Constraint(X, T2)); //pass the type back up from return
+
+        if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOk(X));
+            if(!OkC1Constrs.isEmpty()){
+                conclusn.addAnder();
+                conclusn.addToLast(OkC1Constrs);
+            }
+            if(canCompo3){
+                conclusn.addAnder();
+                conclusn.addToLast(Rule.addCompo3(X, T3, C3));
+            }
+        }
+
+        return conclusn;
+    }
+
+    static cTCompoAbs = (r, empty) => {
+        const boundVar = empty.asSubterm('f').getSubterm('f'); //function name 
+        //enforce x \not\in dom Gamma e
+        if(empty.getAssms().isIn(boundVar)) throw Utils.makeErr(`cTCompoAbs: assigned to variable ${boundVar} which cannot occur in assumptions`);
+        
+        const OkC1Constrs = Rule.addOkC1(empty.getAssms());
+        const X = new GenT(r.getFreshVar('X'));
+        // const Y1 = new GenT(r.getFreshVar('Y'));
+        // const Y2 = new GenT(r.getFreshVar('Y'));
+
+        //make sure both Ys are arrow types by constraints 
+        const YToY1 = new ArrowT(new GenT(r.getFreshVar('Y')), new GenT(r.getFreshVar('Y')));
+        const Y2 = new GenT(r.getFreshVar('Y'));
+
+        const body = empty.asSubterm('x => M'); //clearly this is a function
+        body.addAssm(boundVar, YToY1);          //so we type it as such
 
         const next = empty.asSubterm('E');
         let canCompo3 = true;
@@ -455,7 +508,7 @@ export class Rule {
         const conclusn = empty.constrain(X);
         conclusn.addToLast(C1);
         conclusn.addToLast(C2);
-        if(isThisAbs) conclusn.addToLast(new Constraint(YToY1, Y2)); 
+        conclusn.addToLast(new Constraint(YToY1, Y2)); 
         //it overconstrains it otherwise (this actually fixed one of the test cases! the one where i do zipSumPair)
         
         conclusn.addToLast(new Constraint(T1, Y2));
@@ -492,6 +545,7 @@ export class Rule {
     static block = '{E}';
     static ret = 'return M;';
     static compo = 'const x = M; E';
+    static compoAbs = 'const f = x => M; E';
 
     static appliesTo = (() => {
         const ruleFor = {};
@@ -505,6 +559,7 @@ export class Rule {
         ruleFor[Rule.block] = Rule.cTBlock;
         ruleFor[Rule.ret] = Rule.cTRet;
         ruleFor[Rule.compo] = Rule.cTCompo;
+        ruleFor[Rule.compoAbs] = Rule.cTCompoAbs;
         return ruleFor;
     })();
 }

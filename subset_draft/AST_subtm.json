@@ -1,43 +1,72 @@
 {
     "Literal": {
-        "n": ["value"]
+        "n": {
+            "n": ["value"]
+        }
     },
     "BinaryExpression": {
-        "M": ["left"],
-        "N": ["right"]
+        "M o N": {
+            "M": ["left"],
+            "N": ["right"]
+        }
     },
     "ArrayExpression": {
-        "M": ["elements", "0"],
-        "N": ["elements", "1"]
+        "[M, N]": {
+            "M": ["elements", "0"],
+            "N": ["elements", "1"]
+        }
     },
     "ArrowFunctionExpression": {
-        "x": ["params", "0"],
-        "M": ["body"]
+        "x => M": {
+            "x": ["params", "0"],
+            "M": ["body"]
+        }
     },
     "CallExpression": {
-        "M": ["callee"],
-        "N": ["arguments", "0"]
+        "M(N)": {
+            "M": ["callee"],
+            "N": ["arguments", "0"]
+        }
     },
     "ConditionalExpression": {
-        "M": ["test", "left"],
-        "N": ["consequent"],
-        "P": ["alternate"]
+        "M <= 0 ? N : P":{
+            "M": ["test", "left"],
+            "N": ["consequent"],
+            "P": ["alternate"]
+        }
     },
     "Identifier": {
-        "x": ["name"]
+        "x": {
+            "x": ["name"]
+        }
     },
     "VariableDeclaration":{
-        "x": ["declarations", "0", "id"],
-        "M": ["declarations", "0", "init"],
-        "E": ["next"]
+        "const x = M; E": {
+            "x": ["declarations", "0", "id"],
+            "M": ["declarations", "0", "init"],
+            "E": ["next"]
+        },
+        "const f = x => M; E": {
+            "f": ["declarations", "0", "id"],
+            "x => M": ["declarations", "0", "init"],
+            "x": ["declarations", "0", "init", "params", "0"],
+            "M": ["declarations", "0", "init", "body"],
+            "E": ["next"]
+        }
     },
     "BlockStatement": {
-        "E": ["body"]
+        "E":{
+            "E": ["body"]
+        }
     },
     "ReturnStatement": { 
-        "M": ["argument"]
+        "M": {
+            "M": ["argument"]
+        }
     },
     "ExpressionStatement": {
-        "M": ["expression"]
+        "M": {
+            "M": ["expression"]
+        }
     }
 }

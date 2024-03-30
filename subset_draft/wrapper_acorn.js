@@ -26,6 +26,7 @@ import { full } from 'acorn-walk';
 import { modRequire } from './module_require.js';
 import {writeFileSync} from 'fs';
 import {Utils} from './utils.js';
+import {Rule} from './rule.js';
 
 const parse = (prog) => Parser.parse(prog, {ecmaVersion: 2023});
 const PROGRAM_T = 'Program';
@@ -66,7 +67,7 @@ const typeToSubterms = modRequire('./AST_subtm.json');
 
 //a map from AST types to grammar shapes 
 /*
- * E, F ::= const x = M; E | return M;
+ * E, F ::= const f = x => M; E | const x = M; E | return M;
  * M, N ::= x | n | M o N | x => M | {E} | M(N) | M <= 0 ? N : P (| M but not explicitly included)
  * */
 export const typeToGrammar = modRequire('./AST_grmmr.json');
@@ -93,9 +94,22 @@ const typeToProperties = modRequire('./AST_require.json');
 //turns the root node of the term's type to the grammar shape
 // as a string
 export const termShape = (term) => {
+    const FST = 0;
+    const SND = 1;
+    let select = FST;
     if(term.type === undefined) throw Utils.makeErr(`termShape: term has no 'type' field`);
     
-    return typeToGrammar[term.type];
+    //we add an exception just for the AST which has two grammar shapes 
+    let shapesByAST = typeToGrammar[term.type];
+    if(shapesByAST[select] === Rule.compo){
+        const mShape = termShape(getSubterm(term, 'M')); //this will only recurse once at most
+        if(mShape === Rule.abs){
+            select = SND;
+        }
+    }
+
+    console.log(`SHAPE ${shapesByAST[select]}`);
+    return shapesByAST[select];
     
 }
 
@@ -104,13 +118,15 @@ export const termShape = (term) => {
 //this function should be used to traverse the tree in a way that corresponds
 //to the shapes of terms.
 export const getSubterm = (term, subtermName) => {
+    
     if(subtermName === undefined) throw Utils.makeErr(`getSubterm: subtermName was not given`);
     if(term.type === undefined) throw Utils.makeErr(`getSubterm: term has no 'type' field `);
-    
-    const nameToSubterm = typeToSubterms[term.type]; //shape to subterms
-    if(nameToSubterm === undefined) throw Utils.makeErr(`getSubterm: term of 'type' '${term.type}' does not ` + `exist in the grammar`);
+    const shape = termShape(term);
+    const nameToSubterm = typeToSubterms[term.type][shape]; //shape to subterms
+    console.log(nameToSubterm);
+    if(nameToSubterm === undefined) throw Utils.makeErr(`getSubterm: term of 'type' '${term.type}' does not exist in the grammar`);
 
-    if(nameToSubterm[subtermName] === undefined) throw Utils.makeErr(`getSubterm: term of shape '${typeToGrammar[term.type]}' ` + `has no subterm called '${subtermName}'`);
+    if(nameToSubterm[subtermName] === undefined) throw Utils.makeErr(`getSubterm: term of shape '${shape}' ` + `has no subterm called '${subtermName}'`);
 
     //we know the AST term to subterm map, we perform the access steps in the 
     //map in order to return the sub-AST-object/subterm object
@@ -119,7 +135,7 @@ export const getSubterm = (term, subtermName) => {
     steps.forEach((step) => tempField = tempField[step]); 
     
     if(tempField === undefined) throw Utils.makeErr(`getSubterm: steps [${steps}] on this term ` +
-    `of shape '${typeToGrammar[term.type]}' for '${subtermName}' did not succeed due to undefined field`);
+    `of shape '${shape}' for '${subtermName}' did not succeed due to undefined field`);
     return tempField;
 }
 
@@ -273,7 +289,8 @@ export const checkTerm = term => {
 
 //                           v allows us to specify what we do not want 
 const getSomeSubterms = (ast, except = []) => {
-    const subtermNames = Object.keys(typeToSubterms[ast.type]).filter(n => !Utils.any(except.map(x => x === n)));
+    const shape = termShape(ast);
+    const subtermNames = Object.keys(typeToSubterms[ast.type][shape]).filter(n => !Utils.any(except.map(x => x === n)));
     //console.log(subtermNames + 'without' + except);
     return subtermNames.map(subtermName => getSubterm(ast, subtermName));
 }
