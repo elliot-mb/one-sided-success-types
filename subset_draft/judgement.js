@@ -1,5 +1,5 @@
 import {Utils} from './utils.js';
-import {termShape, getSubterm} from './wrapper_acorn.js';
+import {termShape, getSubterm, typeToGrammar} from './wrapper_acorn.js';
 import {ConstraintSet} from './constraint_set.js';
 import {Constraint} from './constraint.js';
 import {Orer} from './orer.js';
@@ -37,6 +37,7 @@ export class EmptyJudgement{
 
     //tries to return the subterm as an empty judgement but may fail if e.g. we are getting a var name 
     asSubterm(shape){
+        
         //                                                  vv this must be copied! 
         return new EmptyJudgement(this.getSubterm(shape), this.assms.deepCopy());
     }

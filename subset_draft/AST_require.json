@@ -75,12 +75,6 @@
             "rules": [
                 {"P": {"length": {"F": {"equals": 0}}}}
             ]
-        },
-        "body%": {
-            "satisfies": "ALL",
-            "rules": [
-                {"P": {"%last": {"P": {"type": {"F": {"equals": "ReturnStatement"}}}}}}
-            ]
         }
     },
     "ReturnStatement":{
