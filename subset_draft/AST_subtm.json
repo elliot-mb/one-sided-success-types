@@ -49,8 +49,6 @@
         "const f = x => M; E": {
             "f": ["declarations", "0", "id"],
             "x => M": ["declarations", "0", "init"],
-            "x": ["declarations", "0", "init", "params", "0"],
-            "M": ["declarations", "0", "init", "body"],
             "E": ["next"]
         }
     },
