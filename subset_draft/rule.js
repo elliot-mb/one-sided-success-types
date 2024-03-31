@@ -469,7 +469,7 @@ export class Rule {
     }
 
     static cTCompoAbs = (r, empty) => {
-        const boundVar = empty.asSubterm('f').getSubterm('f'); //function name 
+        const boundVar = empty.asSubterm('f').getSubterm('x'); //function name 
         //enforce x \not\in dom Gamma e
         if(empty.getAssms().isIn(boundVar)) throw Utils.makeErr(`cTCompoAbs: assigned to variable ${boundVar} which cannot occur in assumptions`);
         

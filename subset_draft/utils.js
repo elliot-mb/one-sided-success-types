@@ -79,7 +79,7 @@ export class Utils{
         if(A.type !== GenT.type) throw Utils.makeErr('typeVarOrCrash: A must be a \'typevar\'');
     }
     static termOrCrash = (M) => {
-        if(M.type === undefined) throw Utils.makeErr('termOrCrash: M does not have a type property and so does not represent an AST node');
+        if(M.type === undefined) throw Utils.makeErr(`termOrCrash: M ${JSON.stringify(M)} does not have a type property and so does not represent an AST node`);
         //const isValidNodeType = Object.keys(typeToGrammar).map(nodeT => M.type === nodeT).reduce((acc, b) => acc || b, false);
         if(typeToGrammar[M.type] === undefined) throw Utils.Utils.makeErr('termOrCrash: M does not have a type property which belongs to the grammar');
     }

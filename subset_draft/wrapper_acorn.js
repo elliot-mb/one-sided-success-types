@@ -91,6 +91,12 @@ export const M = [
 //in the 'satisfies' field of the object that holds the restriction list 
 const typeToProperties = modRequire('./AST_require.json');
 
+const accessSubterm = (steps, startTerm) => {
+    let tempField = startTerm; // reassigned
+    steps.forEach((step) => tempField = tempField[step]); 
+    return tempField
+}
+
 //turns the root node of the term's type to the grammar shape
 // as a string
 export const termShape = (term) => {
@@ -102,13 +108,13 @@ export const termShape = (term) => {
     //we add an exception just for the AST which has two grammar shapes 
     let shapesByAST = typeToGrammar[term.type];
     if(shapesByAST[select] === Rule.compo){
-        const mShape = termShape(getSubterm(term, 'M')); //this will only recurse once at most
+        const mShape = termShape(accessSubterm(typeToSubterms[term.type][Rule.compo]['M'], term)); //this will only recurse once at most
         if(mShape === Rule.abs){
             select = SND;
         }
     }
 
-    console.log(`SHAPE ${shapesByAST[select]}`);
+    //console.log(`SHAPE ${shapesByAST[select]}`);
     return shapesByAST[select];
     
 }
@@ -123,19 +129,18 @@ export const getSubterm = (term, subtermName) => {
     if(term.type === undefined) throw Utils.makeErr(`getSubterm: term has no 'type' field `);
     const shape = termShape(term);
     const nameToSubterm = typeToSubterms[term.type][shape]; //shape to subterms
-    console.log(nameToSubterm);
+    //console.log(nameToSubterm);
     if(nameToSubterm === undefined) throw Utils.makeErr(`getSubterm: term of 'type' '${term.type}' does not exist in the grammar`);
 
-    if(nameToSubterm[subtermName] === undefined) throw Utils.makeErr(`getSubterm: term of shape '${shape}' ` + `has no subterm called '${subtermName}'`);
+    if(nameToSubterm[subtermName] === undefined) throw Utils.makeErr(`getSubterm: term ${JSON.stringify(term)} of shape '${shape}' ` + `has no subterm called '${subtermName}'`);
 
     //we know the AST term to subterm map, we perform the access steps in the 
     //map in order to return the sub-AST-object/subterm object
     const steps = nameToSubterm[subtermName];
-    let tempField = term; // reassigned
-    steps.forEach((step) => tempField = tempField[step]); 
+    let tempField = accessSubterm(steps, term);
     
-    if(tempField === undefined) throw Utils.makeErr(`getSubterm: steps [${steps}] on this term ` +
-    `of shape '${shape}' for '${subtermName}' did not succeed due to undefined field`);
+    if(tempField === undefined) throw Utils.makeErr(`getSubterm: steps [${steps}] gives ${JSON.stringify(tempField)} on this term` +
+    `of shape '${shape}' (${JSON.stringify(term)} ) for '${subtermName}' did not succeed due to undefined field`);
     return tempField;
 }
 
@@ -288,7 +293,7 @@ export const checkTerm = term => {
 }
 
 //                           v allows us to specify what we do not want 
-const getSomeSubterms = (ast, except = []) => {
+const getAllSubterms = (ast, except = []) => {
     const shape = termShape(ast);
     const subtermNames = Object.keys(typeToSubterms[ast.type][shape]).filter(n => !Utils.any(except.map(x => x === n)));
     //console.log(subtermNames + 'without' + except);
@@ -307,7 +312,7 @@ export const checkGrammar = (term, initialDeclr = false) => {
     let subterms;
     try{
         checkTerm(term);  
-        subterms = getSomeSubterms(term, initialDeclr ? ['E'] : []);
+        subterms = getAllSubterms(term, initialDeclr ? ['E'] : []);
         if(termShape(term) === 'const x = M; E'){
             initialDeclr = false;
         }
@@ -341,15 +346,20 @@ const recurseAST = (ast) => {
     if(astType === undefined) return;
     if(termShape(ast) === '{E}'){
         const xs = getSubterm(ast, 'E'); //each term in the body
-        const fst = xs[0];
+        //console.log(xs);
         for(let i = 0; i < xs.length - 1; i++){
             recurseAST(xs[i]);
             xs[i]['next'] = xs[i + 1];
         }
-        ast[typeToSubterms[astType]['E']] = fst;
+        //console.log(`set by ${JSON.stringify(typeToSubterms[astType]['{E}']['E'][0])}`)
+        ast['body'] = xs[0];
         return;
     }
-    const subterms = getSomeSubterms(ast, ['E']);
+    const dontRecurse = ['E'];
+    if(termShape(ast) === Rule.compo) dontRecurse.push('x => M');
+    // except E (Es can only be accessed like this after recurseAST has run)
+    // except x => M just when we're on a variable declaration
+    const subterms = getAllSubterms(ast, dontRecurse); 
     subterms.map(x => recurseAST(x));
 }
 

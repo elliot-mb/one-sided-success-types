@@ -37,7 +37,7 @@ export class EmptyJudgement{
 
     //tries to return the subterm as an empty judgement but may fail if e.g. we are getting a var name 
     asSubterm(shape){
-        
+        console.log(`GET SHAPE GET SHAPE GET SHAPE ${shape}`);
         //                                                  vv this must be copied! 
         return new EmptyJudgement(this.getSubterm(shape), this.assms.deepCopy());
     }

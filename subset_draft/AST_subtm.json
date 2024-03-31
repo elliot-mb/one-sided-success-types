@@ -55,12 +55,12 @@
         }
     },
     "BlockStatement": {
-        "E":{
+        "{E}":{
             "E": ["body"]
         }
     },
     "ReturnStatement": { 
-        "M": {
+        "return M;": {
             "M": ["argument"]
         }
     },
