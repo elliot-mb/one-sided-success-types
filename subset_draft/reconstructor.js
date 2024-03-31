@@ -37,7 +37,7 @@ export class Reconstructor{
      * @returns {*} Judgement object 
      */
     typecheck(empty){
-        console.log(empty.show());
+         
         const maybeRule = Rule.appliesTo[empty.shape];
         if(maybeRule !== undefined){
             const full = maybeRule(this, empty);
@@ -50,22 +50,22 @@ export class Reconstructor{
     unify(topType, cSet){
         while(!cSet.isEmpty()){
             const c = cSet.pop();
-            ////console.log(`constraints ${cSet.show()}`)
-            ////console.log(`this constraint ${c.show()}`);
-            ////console.log(`replace in ${topType.show()}`);
+            // 
+            // 
+            // 
             if(c.isLhsEqRhs()){}
             else if(c.isLhsNotInFreeRhs()){
-                ////console.log(`1replace ${c.lhs().show()} with ${c.rhs().show()}`);
+                // 
                 topType = topType.swapWith(c.lhs(), c.rhs());
                 cSet.swapWithAll(c.lhs(), c.rhs());
             }
             else if(c.isRhsNotInFreeLhs()){
-                ////console.log(`2replace ${c.rhs().show()} with ${c.lhs().show()}`)
+                // 
                 topType = topType.swapWith(c.rhs(), c.lhs());
                 cSet.swapWithAll(c.rhs(), c.lhs());
             }
             else if(c.areRhsLhsArrows()){
-                ////console.log(`3corrolate ${c.rhs().show()} and ${c.lhs().show()}`);
+                // 
                 cSet.add(new Constraint(c.rhs().getA(), c.lhs().getA()));
                 cSet.add(new Constraint(c.rhs().getB(), c.lhs().getB()));
             }else{
@@ -125,7 +125,7 @@ export class Reconstructor{
 
             full.conjoinOrer(constrAccumulator); //wrapped in a unit orer, attach previous line's constraints 
             constrAccumulator.push(full.constrs);
-            //console.log('_____________________________');
+             
             fulls.push(full);
             //add the conclusion type to the accumulator after if we didnt add it as an arrow before
             //and dont reassign arrow 
@@ -135,9 +135,9 @@ export class Reconstructor{
         }
         //transfer identifier : type 
         
-        //console.log(empty.show());
+         
        
-        //console.log(full.show());
+         
         //const F = new GenT(this.getFreshVar('F'));
         //full.addToLast(new Constraint(full.termType, F));
         return fulls;
@@ -145,7 +145,7 @@ export class Reconstructor{
         const roughType = full.termType;
         const constrs = full.constrs;
         const unifiedTypes = constrs.toConstraintSets().map(cs => this.unify(roughType, cs));
-        //console.log(unifiedTypes);
+         
         unifiedTypes.map(t => Utils.downgradeTypes(t));
         return unifiedTypes;
     }

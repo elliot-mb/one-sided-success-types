@@ -52,7 +52,7 @@ const pret = (json, whitespace = '') => {  // gives an array of lines to the tre
                 ? [`${whitespace}${toKey(i)}{\r\n`] + pret(value, whitespace + `  `) + [`\r\n${whitespace}},`]
                 : `${whitespace}${toKey(i)}${JSON.stringify(value)},`); //stringify handles whether we need quotes
             // : typeof(value) === 'array' 
-            //     ? console.log('array')
+            //     ?  
             
     const blockString = lines.reduce((acc, x) => `${acc}\r\n${x}`).slice(0, -1); //in a block of terms there is a single comma on the end, remove this 
 
@@ -114,7 +114,7 @@ export const termShape = (term) => {
         }
     }
 
-    //console.log(`SHAPE ${shapesByAST[select]}`);
+    // 
     return shapesByAST[select];
     
 }
@@ -129,7 +129,7 @@ export const getSubterm = (term, subtermName) => {
     if(term.type === undefined) throw Utils.makeErr(`getSubterm: term has no 'type' field `);
     const shape = termShape(term);
     const nameToSubterm = typeToSubterms[term.type][shape]; //shape to subterms
-    //console.log(nameToSubterm);
+    // 
     if(nameToSubterm === undefined) throw Utils.makeErr(`getSubterm: term of 'type' '${term.type}' does not exist in the grammar`);
 
     if(nameToSubterm[subtermName] === undefined) throw Utils.makeErr(`getSubterm: term ${JSON.stringify(term)} of shape '${shape}' ` + `has no subterm called '${subtermName}'`);
@@ -201,7 +201,7 @@ const checkRule = (rule, objOrValue, fieldname) => {
         const funcName = funcNames[0];
         const useFunc = funcs[funcName]; //function to use the value and arg with
         const funcArg = funcNameArg[funcName]; //gets the function argument from the pair
-        //console.log(funcArg, objOrValue);
+        // 
         const isOk = useFunc(objOrValue)(funcArg);
         if(!isOk) throw Utils.makeErr(`checkRule: property violates '${funcName}' check on '${objOrValue}' and '${funcArg}', for '${fieldname}'`);
         return;
@@ -273,7 +273,7 @@ export const checkTerm = term => {
         const sat = ruleset[stfy];
         if(sat === undefined) throw Utils.makeErr(`checkTerm: ruleset is missing the 'satisfies' property`);
         const reducer = sRMap[sat];
-        //console.log(reducer, ruleset[stfy])   ;
+        // 
         if(ruleset[ruls].length === 0) throw Utils.makeErr(`checkTerm: rulesets must have at least one rule`);
         const fails = [];
         const isOk = ruleset[ruls]
@@ -296,7 +296,7 @@ export const checkTerm = term => {
 const getAllSubterms = (ast, except = []) => {
     const shape = termShape(ast);
     const subtermNames = Object.keys(typeToSubterms[ast.type][shape]).filter(n => !Utils.any(except.map(x => x === n)));
-    //console.log(subtermNames + 'without' + except);
+    // 
     return subtermNames.map(subtermName => getSubterm(ast, subtermName));
 }
 
@@ -305,7 +305,7 @@ export const checkGrammar = (term, initialDeclr = false) => {
     if(term === undefined) throw Utils.makeErr(`checkGrammar: term is not defined`);
     //base case where the term evalutes to raw strings or numbers
     if(typeof(term) !== 'object') return;
-    //console.log(term);
+    // 
     if(term.type === undefined) throw Utils.makeErr(`checkGrammar: term has no 'type' field`);
     if(typeToSubterms[term.type] === undefined) throw Utils.makeErr(`checkGrammar: there is no term of type '${term.type}' in the grammar`);
     //gets set false as soon as we pass the first (toplevel) const
@@ -347,12 +347,12 @@ const recurseAST = (ast) => {
     if(termShape(ast) === '{E}'){
         const xs = getSubterm(ast, 'E'); //each term in the body
         if(xs.length === undefined) return; //we have already handled this term! it does not have a list body
-        //console.log(xs);
+        // 
         for(let i = 0; i < xs.length - 1; i++){
             recurseAST(xs[i]);
             xs[i]['next'] = xs[i + 1];
         }
-        //console.log(`set by ${JSON.stringify(typeToSubterms[astType]['{E}']['E'][0])}`)
+        // 
         ast['body'] = xs[0];
         return;
     }
@@ -364,7 +364,7 @@ const recurseAST = (ast) => {
 
 //just first expression argument is there while we only have single expressions
 export const toASTTrees = (program, justFirstExpression = false, enforceGrammar = true) => {
-    //console.log(`${program} to AST Tree`);
+    // 
     let tree = {};
     let ret = {};
     full(parse(program), (node) => {
@@ -374,7 +374,7 @@ export const toASTTrees = (program, justFirstExpression = false, enforceGrammar 
     });
     ret = tree['body'];
     ret.map(x => recurseAST(x));
-    //console.log(pretty(tree['body']));
+    // 
     if(enforceGrammar) ret.map(x => checkGrammar(x, true));
     if(justFirstExpression) ret = ret[0]['expression'];
     

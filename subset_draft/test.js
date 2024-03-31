@@ -310,6 +310,11 @@ export class Test {
         //     }
         // `));
         this.assert(await Solver.isTypableAsOkC(`
+            const earlyFail = (x => 0)(0)(0);
+            const two = 1 + 1; //there are no constraints that can solve those above so all following are affected
+            two + 1;
+        `))
+        this.assert(await Solver.isTypableAsOkC(`
             const zeroer = x => y => {
                 return 0(x) <= 0 ? 0 : 0;
             }
@@ -364,6 +369,9 @@ export class Test {
             }
             boomRecursion(10);
         `));
+        this.assert(await Solver.isTypableAsOkC(`
+            const x = (0) + (0) + (0)(0);
+        `))
     }
 
     async testASTRequire(){
