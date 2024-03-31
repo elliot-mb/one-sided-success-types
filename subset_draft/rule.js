@@ -153,7 +153,7 @@ export class Rule {
             new Ander(
                 new Constraint(Y2, new CompT(Y1)),
                 new Constraint(Y2, T1),
-                Rule.addDisj(T2, Y1, r),
+                Rule.addDisj(T1, Y1, r),
                 new Constraint(T2, X),
                 C1,
                 C2

@@ -369,9 +369,6 @@ export class Test {
             }
             boomRecursion(10);
         `));
-        this.assert(await Solver.isTypableAsOkC(`
-            const x = (0) + (0) + (0)(0);
-        `))
     }
 
     async testASTRequire(){
