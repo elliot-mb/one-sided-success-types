@@ -346,6 +346,7 @@ const recurseAST = (ast) => {
     if(astType === undefined) return;
     if(termShape(ast) === '{E}'){
         const xs = getSubterm(ast, 'E'); //each term in the body
+        if(xs.length === undefined) return; //we have already handled this term! it does not have a list body
         //console.log(xs);
         for(let i = 0; i < xs.length - 1; i++){
             recurseAST(xs[i]);
@@ -356,9 +357,7 @@ const recurseAST = (ast) => {
         return;
     }
     const dontRecurse = ['E'];
-    if(termShape(ast) === Rule.compo) dontRecurse.push('x => M');
     // except E (Es can only be accessed like this after recurseAST has run)
-    // except x => M just when we're on a variable declaration
     const subterms = getAllSubterms(ast, dontRecurse); 
     subterms.map(x => recurseAST(x));
 }

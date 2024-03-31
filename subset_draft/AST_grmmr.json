@@ -6,7 +6,7 @@
     "CallExpression": ["M(N)"],
     "ConditionalExpression": ["M <= 0 ? N : P"],
     "Identifier": ["x"],
-    "VariableDeclaration": ["const x = M; E", "const f = x => M; E"],
+    "VariableDeclaration": ["const x = M; E", "const f = x => N; E"],
     "BlockStatement": ["{E}"],
     "ReturnStatement": ["return M;"],
     "ExpressionStatement": ["M"]

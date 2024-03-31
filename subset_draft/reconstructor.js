@@ -83,17 +83,19 @@ export class Reconstructor{
 
     reconstruct(program){
         this.rstFreshVar();
-        // console.log(toASTTree(program));
         const exps = toASTTrees(program, false, true);
         let idents = {}; 
         for(let i = 0; i < exps.length; i++){
             const exp = exps[i];
-            if(termShape(exp) === 'const x = M; E'){
-                idents[`${i}`] = (getSubterm(getSubterm(exp, 'x'), 'x')); //take out the identifier and then its name
+            const shape = termShape(exp);
+            if(shape === Rule.compoAbs){ // just compoAbs needs access to its variable name in the defn
+                idents[`${i}`] = (getSubterm(getSubterm(exp, 'f'), 'x')); //take out the identifier and then its name
+            }
+            if(shape === Rule.compo){ //compo needs its definition type added after typing, though 
+                idents[`${i}`] = (getSubterm(getSubterm(exp, 'x'), 'x'));
             }
         }
-        //console.log(exps); // <<
-        // all expressions in here are toplevel declrs, shape "const x = M;" (NB there is no E)
+        // all expressions in here are toplevel declrs, shape "const x = M;" where M can be x => N or otherwise (NB there is no E)
         // or they are ExperssionStatements of shape "M".
         // 
         // this means means the type is solely dictated by M in both cases,
@@ -106,17 +108,18 @@ export class Reconstructor{
         for(let i = 0; i < exps.length; i++){
             const exp = exps[i];
 
-            let isArr = termShape(exp) === Rule.compo && termShape(getSubterm(exp, 'M')) === Rule.abs;
+            let isAbsDefn = termShape(exp) === Rule.compoAbs; //add a type for recursion when we confirm its an arrow function defn
             const typeIfArr = new ArrowT(new GenT(this.getFreshVar('T')), new GenT(this.getFreshVar('T'))); //a type insterted into assums to reference the assignment 
-            if(isArr){
+            if(isAbsDefn){
                 assAccumulator.add(idents[`${i}`], typeIfArr);
             }
 
             const thisTermsAssms = assAccumulator.deepCopy();
             const empty = new EmptyJudgement(exp, thisTermsAssms);
+                
             const full = this.typecheck(empty.asSubterm('M')); 
             
-            if(isArr)
+            if(isAbsDefn)
                 full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, typeIfArr)))]); //constrain the free arrow type to being equal to the conclusion
             //type after the type reconstruction is done 
 
@@ -126,7 +129,7 @@ export class Reconstructor{
             fulls.push(full);
             //add the conclusion type to the accumulator after if we didnt add it as an arrow before
             //and dont reassign arrow 
-            if(!isArr && idents[`${i}`] !== undefined){
+            if(!isAbsDefn && idents[`${i}`] !== undefined){
                 assAccumulator.add(idents[`${i}`], full.termType);
             }
         }

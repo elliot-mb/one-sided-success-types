@@ -482,7 +482,7 @@ export class Rule {
         const YToY1 = new ArrowT(new GenT(r.getFreshVar('Y')), new GenT(r.getFreshVar('Y')));
         const Y2 = new GenT(r.getFreshVar('Y'));
 
-        const body = empty.asSubterm('x => M'); //clearly this is a function
+        const body = empty.asSubterm('x => N'); //clearly this is a function
         body.addAssm(boundVar, YToY1);          //so we type it as such
 
         const next = empty.asSubterm('E');
@@ -545,7 +545,7 @@ export class Rule {
     static block = '{E}';
     static ret = 'return M;';
     static compo = 'const x = M; E';
-    static compoAbs = 'const f = x => M; E';
+    static compoAbs = 'const f = x => N; E';
 
     static appliesTo = (() => {
         const ruleFor = {};
