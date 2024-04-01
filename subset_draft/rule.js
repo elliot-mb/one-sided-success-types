@@ -240,8 +240,8 @@ export class Rule {
                 conclusn.addAnder();
                 conclusn.addToLast(OkC1Constrs);
             }
-            conclusn.addAnder();
-            conclusn.addToLast(Rule.addNumOp2(T1, T2, C1, C2));
+            //conclusn.addAnder();
+            //conclusn.addToLast(Rule.addNumOp2(T1, T2, C1, C2));
             conclusn.addAnder();
             conclusn.addToLast(Rule.addNumOp3(T1, T2, C1, C2, r));
         }
