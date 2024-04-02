@@ -334,7 +334,7 @@ export class Test {
         `)); //if we dont use the function its fine!
         this.assert(await Solver.isTypableAsOkC(`
             const fst = x => y => x;
-            const evilPair = m => n => p => 10(m)(n); //number is not a function
+            const pair = m => n => p => 10(m)(n); //number is not a function
             const listZeros = pair(0)(pair(0)(pair(0)(pair(0)(0))));
             listZeros(fst);
         `));
