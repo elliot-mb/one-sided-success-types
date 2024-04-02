@@ -299,6 +299,11 @@ export class Test {
             const firstPair = toTwoPairs(myQuad)(pfst);
             const sndPair = toTwoPairs(myQuad)(psnd);
         `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const id = x => x;
+            const explode = x => id - 1;
+            const zero = id(0);
+        `)))
         //chu wei   poster 
         //pragye gurrung???? poster 
     }
