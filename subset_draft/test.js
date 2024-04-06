@@ -418,8 +418,9 @@ export class Test {
             const ifZ2 = 0 <= 0 ? (x => x + 1)(x => x + 1) : (x => x + 1)(x => x + 1); 
         `));
         this.assert(await Solver.isTypableAsOkC(`
-            0(0);
+            const okC1 = (x => x)(0(0)); //variable x goes wrong (Y1 = Comp(Ok))
         `));
+
     }
 
     async testASTRequire(){
