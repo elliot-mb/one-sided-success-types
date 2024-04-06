@@ -26,7 +26,7 @@ export class Test {
         })
 
          */
-
+        await this.testTypabilityByRule();
         await this.testTypeEquality();
         await this.testUntypability();
         await this.testTypability();
@@ -373,6 +373,35 @@ export class Test {
                 return x <= 0 ? 0(boomRecursion(x - 1)) : 0(x);
             }
             boomRecursion(10);
+        `));
+    }
+
+    async testTypabilityByRule(){
+        this.assert(await Solver.isTypableAsOkC(`
+            const app2 = 0(0); //Disj(T1, Comp(Ok) -> A);
+        `));
+        this.assert(await Solver.isTypableAsOkC(`
+            const id = x => x;
+            const app3 = (id)(id + id); //T2 = Comp(Ok);
+        `));
+        this.assert(await Solver.isTypableAsOkC(`
+            const pred = x => x - 1;
+            const ifZ1 = pred <= 0 ? 1 : 2; //Disj(T1, Num)
+        `));
+        this.assert(await Solver.isTypableAsOkC(`
+            (x => x + 1)(x => x + 1); //NumOp2
+        `));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const succ = x => x + 1;
+            succ(succ); //note this is untypable!
+            //the body has been abstracted to a type so the derivation cannot
+            //break succ down into a NumOp, meaning it will deliver a recursive
+            //type instead of being able to show its Comp(Ok)
+            //This is fine because we arent allowed terms in the assumptions,
+            //so with the one sided system this is the best we can do.
+        `)));
+        this.assert(await Solver.isTypableAsOkC(`
+            const ifZ2 = 0 <= 0 ? (x => x + 1)(x => x + 1) : (x => x + 1)(x => x + 1); //T2 = T3 & T2 = X (& T3 = X)
         `));
     }
 

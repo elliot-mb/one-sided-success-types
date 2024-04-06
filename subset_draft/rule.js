@@ -358,7 +358,7 @@ export class Rule {
 
     //when a statement evaulates pointlessly like "0;" without assignment 
     static cTExpSmt = (r, empty) => {
-        return r.typecheck(empty.asSubterm(Rule.expSmt));
+        return r.typecheck(empty.asSubterm('M'));
     }
 
     // just unpacks blocks like to show {E} : A show E : A
@@ -535,7 +535,7 @@ export class Rule {
     // //a rule to handle the case where 
     // static cTCompoTop 
 
-    static expSmt = 'M';
+    static expSmt = 'M;';
     static var = 'x';
     static num = 'n';
     static op = 'M o N';
@@ -554,7 +554,7 @@ export class Rule {
         ruleFor[Rule.op]  = Rule.cTNumOp;
         ruleFor[Rule.abs] = Rule.cTAbsInf;
         ruleFor[Rule.app] = Rule.cTApp;
-        ruleFor[Rule.iflz]= Rule.cTIfZ;
+        ruleFor[Rule.iflz] = Rule.cTIfZ;
         ruleFor[Rule.expSmt] = Rule.cTExpSmt;
         ruleFor[Rule.block] = Rule.cTBlock;
         ruleFor[Rule.ret] = Rule.cTRet;
