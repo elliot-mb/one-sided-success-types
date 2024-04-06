@@ -145,7 +145,7 @@ export class Rule {
     /**
      * gam, f:B jud M:!B
      * gam, f:!B jud E:A
-     * ________________________ (Compo3)
+     * ________________________ (Compo2)
      * gam jud const f = M; E:A
      */
     static addCompo2 = (X, Y1, Y2, T1, T2, C1, C2, r) => {
@@ -525,8 +525,8 @@ export class Rule {
                 conclusn.addAnder();
                 conclusn.addToLast(Rule.addCompo3(X, T3, C3));
             }
-            conclusn.addAnder();
-            conclusn.addToLast(Rule.addCompo2(X, YToY1, Y2, T1, T2, C1, C2, r));
+            //conclusn.addAnder();
+            //conclusn.addToLast(Rule.addCompo2(X, YToY1, Y2, T1, T2, C1, C2, r));
         }
 
         return conclusn;

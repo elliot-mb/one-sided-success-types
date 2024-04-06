@@ -276,8 +276,8 @@ export class Test {
             const head = fst;
             listZeros(head);
         `)));
+        //this example is interesting because it shows that partially applied functions dont go wrong
         this.assert(!(await Solver.isTypableAsOkC(`
-            //this example is interesting because it shows that partially applied functions dont go wrong
             const boomPair = m => n => p => 1(x => x) - 1(0)(0)(m)(n);
             const listZeros = boomPair(0)(boomPair(0)(boomPair(0)(boomPair(0)(0))));
         `)));
@@ -314,20 +314,24 @@ export class Test {
         //         return 0(x) <= 0 ? y : y + mul(x - 1)(y);
         //     }
         // `));
+
+        //there are no constraints that can solve those above so all following are affected
         this.assert(await Solver.isTypableAsOkC(`
             const earlyFail = (x => 0)(0)(0);
-            const two = 1 + 1; //there are no constraints that can solve those above so all following are affected
+            const two = 1 + 1;
             two + 1;
         `))
+        //actually using the function that goes wrong causes OkC
         this.assert(await Solver.isTypableAsOkC(`
             const zeroer = x => y => {
                 return 0(x) <= 0 ? 0 : 0;
             }
             zeroer(0)(0);
-        `)); //actually using the function that goes wrong causes OkC
+        `)); 
         this.assert(await Solver.isTypableAsOkC(`
             const mul = 0(0);
         `));
+        //if we dont use the function its fine!
         this.assert(await Solver.isTypableAsOkC(`
             const pair = m => n => p => p(m)(n);
             const div = n => d => q => {
@@ -336,10 +340,11 @@ export class Test {
             }
             
             const badResult = div(x => x)(10)(0);
-        `)); //if we dont use the function its fine!
+        `)); 
+        //number is not a function
         this.assert(await Solver.isTypableAsOkC(`
             const fst = x => y => x;
-            const pair = m => n => p => 10(m)(n); //number is not a function
+            const pair = m => n => p => 10(m)(n); 
             const listZeros = pair(0)(pair(0)(pair(0)(pair(0)(0))));
             listZeros(fst);
         `));
@@ -348,24 +353,26 @@ export class Test {
             const pair = m => n => p => p(m)(n);
             const confusedList = pair(0)(0)(0);
         `));
+        //incorrect zipPairs function that goes wrong when used
+        //mistake in snd and pair2 application order
         this.assert(await Solver.isTypableAsOkC(`
             const fst = s => t => s;
             const snd = s => t => t;
             const pair = s => t => p => p(s)(t);
             const p1 = pair(0)(1);
             const p2 = pair(2)(3);
-            //incorrect zipPairs function that goes wrong when used
             const zipSumPairs = pair1 => pair2 => {
                 const e1 = pair1(fst) + pair2(fst);
-                const e2 = pair1(snd) + snd(pair2); //mistakenly wrong way around
+                const e2 = pair1(snd) + snd(pair2); 
                 return pair(e1)(e2);
             }
             const sumPair = zipSumPairs(p1)(p2);
         `));
+         //snd(fst) would reduce to t => t 
         this.assert(await Solver.isTypableAsOkC(`
             const fst = s => t => s;
             const snd = s => t => t;
-            const sndFst = snd(fst); //would reduce to t => t 
+            const sndFst = snd(fst);
             const idPlus1 = sndFst + 1;
         `));
         this.assert(await Solver.isTypableAsOkC(`
@@ -388,20 +395,30 @@ export class Test {
             const pred = x => x - 1;
             const ifZ1 = pred <= 0 ? 1 : 2; //Disj(T1, Num)
         `));
-        this.assert(await Solver.isTypableAsOkC(`
-            (x => x + 1)(x => x + 1); //NumOp2
-        `));
+        //note the below test is untypable!
+        //the body has been abstracted to a type so the derivation cannot
+        //break succ down into a NumOp, meaning it will deliver a recursive
+        //type instead of being able to show its Comp(Ok)
+        //This is fine because we arent allowed terms in the assumptions,
+        //so with the one sided system this is the best we can do.
         this.assert(!(await Solver.isTypableAsOkC(`
             const succ = x => x + 1;
-            succ(succ); //note this is untypable!
-            //the body has been abstracted to a type so the derivation cannot
-            //break succ down into a NumOp, meaning it will deliver a recursive
-            //type instead of being able to show its Comp(Ok)
-            //This is fine because we arent allowed terms in the assumptions,
-            //so with the one sided system this is the best we can do.
+            succ(succ); //A = A -> B (untypable)
         `)));
+        // the below test is Comp(Ok)! its possible that
+        //with terms in the assumptions we would end up with the above test
+        //being Comp(Ok) too. this test shows that having access to the 
+        //underlying term allows the rule system to be more expressive in
+        //finding a way to prove it wrong.
         this.assert(await Solver.isTypableAsOkC(`
-            const ifZ2 = 0 <= 0 ? (x => x + 1)(x => x + 1) : (x => x + 1)(x => x + 1); //T2 = T3 & T2 = X (& T3 = X)
+            (x => x + 1)(x => x + 1); // free conclusion type from NumOp2
+        `));
+        //T2 = T3 & T2 = X (& T3 = X)
+        this.assert(await Solver.isTypableAsOkC(`
+            const ifZ2 = 0 <= 0 ? (x => x + 1)(x => x + 1) : (x => x + 1)(x => x + 1); 
+        `));
+        this.assert(await Solver.isTypableAsOkC(`
+            0(0);
         `));
     }
 
