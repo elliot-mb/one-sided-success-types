@@ -29,16 +29,33 @@ args = parser.parse_args()
 def type_name(var):
     return var['id']
 
+# string of type 
+# def to_type_str(nested):
+#     if(not args.shape_field in nested):
+#          raise Exception( 'to_type: supposed type \'nested\' has no shapeV field')
+#     shape = nested[args.shape_field]
+#     if(shape == args.arrow_shape):
+#         return '(' + to_type_str(nested['A']) + ') -> ' + to_type_str(nested['B'])
+#     if(shape == args.comp_shape):
+#         return 'Comp()' + (to_type_str(nested['A'])) + ')'
+#     if(shape == args.ok_shape):
+#         return 'Ok'
+#     if(shape == args.num_shape):
+#         return 'Num'
+#     else: # no other types are nested so we are done 
+#         return nested['id']
+
+
 # z3_vars is the map of vars
-def to_type(nested, const_lookup, JSTy):
+def to_jsty_type(nested, const_lookup, JSTy):
     if(not args.shape_field in nested):
          raise Exception( 'to_type: supposed type \'nested\' has no shapeV field')
     shape = nested[args.shape_field]
     if(shape == args.arrow_shape):
-        return JSTy.To(to_type(nested['A'], const_lookup, JSTy), 
-                       to_type(nested['B'], const_lookup, JSTy))
+        return JSTy.To(to_jsty_type(nested['A'], const_lookup, JSTy), 
+                       to_jsty_type(nested['B'], const_lookup, JSTy))
     if(shape == args.comp_shape):
-        return JSTy.Comp(to_type(nested['A'], const_lookup, JSTy))
+        return JSTy.Comp(to_jsty_type(nested['A'], const_lookup, JSTy))
     if(shape == args.ok_shape):
         return JSTy.Ok
     if(shape == args.num_shape):
@@ -64,7 +81,7 @@ def unpack(joiner, const_lookup, JSTy):
             return unpack(xs[0], const_lookup, JSTy)
         return Or(list(map(lambda x: unpack(x, const_lookup, JSTy), xs))) 
     if(join_t == args.constraint_type):
-        return to_type(joiner['A'], const_lookup, JSTy) == to_type(joiner['B'], const_lookup, JSTy)
+        return to_jsty_type(joiner['A'], const_lookup, JSTy) == to_jsty_type(joiner['B'], const_lookup, JSTy)
     else:
          raise Exception( 'unpack(): unrecognised type \'' + join_t + '\'')
 
@@ -147,27 +164,43 @@ def make_solns(const_lookup, constrs, count, we_care_names, JSTy):
     solve_count = 0
 
     we_care_typestr = list(map(lambda type: str(type), we_care_names))
-    
+    print(we_care_typestr)
+
     while(solver.check() == sat and not illegal_assign and (max_solves > solve_count)):
         mod = solver.model()
         mod_can_neg = []
         sol = {} #new dict 
+        uncared_for_typestrs = list(map(lambda type: str(type), we_care_names))
         for ass in mod:
             assStr = str(ass)
             #print(assStr)
+            neg = const_lookup[assStr] == JSTy.Comp(JSTy.Ok) #!= mod[ass]
+            # if(not assStr in we_care_typestr):
+            #     mod_can_neg.append(neg)
+
             if(ass.arity() == 0 ): #save solution and reassign constants
                 #print(assStr)
                 sol[assStr] = mod[ass]
-                neg = const_lookup[assStr] == JSTy.Comp(JSTy.Ok) #!= mod[ass]
-                if(str(mod[ass]) != str(JSTy.Comp(JSTy.Ok)) and assStr in we_care_typestr):
-                    mod_can_neg.append(neg)
+                if((str(mod[ass]) != str(JSTy.Comp(JSTy.Ok))) and assStr in we_care_typestr):
+                    mod_can_neg.append(neg) 
                 if(str(mod[ass]) == str(JSTy.Comp(JSTy.Ok)) and assStr in we_care_typestr):
-                    solver.add(neg) # this is anded 
+                    solver.add(neg) # this is anded, fix those compers 
+                if(assStr in we_care_typestr):
+                    uncared_for_typestrs.remove(assStr)
             else:                     #print('reassign ' + assStr)
                 illegal_assign = True
         
+        for s in uncared_for_typestrs:
+            mod_can_neg.append(const_lookup[s] == JSTy.Comp(JSTy.Ok))
+
+        # for ty in we_care_names:
+        #     assStr = str(ty)
+        #     neg = const_lookup[assStr] == JSTy.Comp(JSTy.Ok) #!= mod[ass]
+        #     if(not ty in mod):
+        #         mod_can_neg.append(neg)
+        
         mod_negation = Or(mod_can_neg)
-        #print(mod_negation)
+        print(mod_negation)
         solns.append(sol) 
         # if(len(mod_must_neg) > 0):
         #     solver.add(And(mod_negation))
@@ -254,6 +287,8 @@ def main():
         shape = var_type[args.shape_field]
         if(shape == args.general_shape):
             tld_general_type_vars.append(var_name)
+        if(shape == args.arrow_shape):
+            tld_general_type_vars.append(var_name)
     MAX_SOLNS = len(tld_general_type_vars) 
     # the rationale behind this is that if every statement goes wrong, then
     # there will be n iterations one for each statement that fixes it as wrong and
@@ -284,8 +319,10 @@ def main():
     for var_name in tld_general_type_vars:
         var_type = env[var_name]
         #print(var_type)
-        wrong_all_var_typings.append(type_lookup[env[var_name]['id']] == JSTy.Comp(JSTy.Ok))
-        wrong_all_var_types.append(type_lookup[env[var_name]['id']])
+        shape = var_type[args.shape_field]
+        type_z3 = to_jsty_type(var_type, type_lookup, JSTy)
+        wrong_all_var_typings.append(type_z3 == JSTy.Comp(JSTy.Ok))
+        wrong_all_var_types.append(type_z3)
 
 
     at_least_one_false_assm = And(all_constrs, Or(wrong_all_var_typings))
@@ -297,28 +334,44 @@ def main():
 
     def term_ass(xs): 
         result = {}
-        any_fails = False
+        any_fails = []
         for var_name in tld_general_type_vars:
             result[var_name] = []
             #print(var_name)
-            var_type = env[var_name]['id']
+            ty = env[var_name]
+            var_shape = ty[args.shape_field]
+            var_type = str(to_jsty_type(ty, type_lookup, JSTy))
+            i = 0
             for x in xs:
-                if str(var_type) in x:
+                if var_shape == args.arrow_shape: # non-recursive because theyre only singly nested by the rule 
+                    a_ty = str(to_jsty_type(ty['A'], type_lookup, JSTy))
+                    b_ty = str(to_jsty_type(ty['B'], type_lookup, JSTy))
+                    a_ass_str = None
+                    b_ass_str = None
+                    if a_ty in x:
+                        a_ass_str = str(x[a_ty])
+                    if b_ty in x:
+                        b_ass_str = str(x[b_ty])
+                    result[var_name].append('To('+a_ass_str+', '+b_ass_str+')')
+                elif str(var_type) in x:
                     string_of_type_ass = str(x[str(var_type)])
                     result[var_name].append(string_of_type_ass)
                     if string_of_type_ass == str(JSTy.Comp(JSTy.Ok)):
-                        any_fails = True
+                        any_fails.append(i)
+                i += 1
+
         for top in result:
-            result[top] = uniques_in_list(remove_ok_strs(result[top], JSTy))
+            result[top] = uniques_in_list(result[top])
         return {
             'ass' : result,
-            'fails': any_fails
+            'fails_at': any_fails
         }
         #list(map(lambda x: if str(term_type) in x: str(x[str(term_type)]), xs))
     
+    #print(env)
     assigns_and_fails = term_ass(solns)
     term_type_assignments = assigns_and_fails['ass']
-    any_fails = assigns_and_fails['fails']
+    fails_at = assigns_and_fails['fails_at']
 
     #all_term_type_assignments = term_ass(all_solns)
     #just take the uniques 
@@ -333,7 +386,7 @@ def main():
         #'sol_conj': show_constrs(list(map(lambda x: soln_to_constrs(x, type_lookup), solns))),
         #'type_vars': type_list,
         'term_type_assignments': term_type_assignments,
-        'any_fails': any_fails
+        'fails_at': fails_at
         #'top_term_assignments': unique_top_type_ass,
         #'term_type_assignments_all': unique_all_term_type_ass,
         #'bound_in_top': bound_in_top

@@ -26,6 +26,7 @@ export class Test {
         })
 
          */
+        await this.testEarliestFails();
         await this.testTypabilityByRule();
         await this.testTypeEquality();
         await this.testUntypability();
@@ -105,6 +106,20 @@ export class Test {
             console.log(`${name}: line ${line} used didCrash: '${err}'`);
             return false;
         }
+    }
+
+    /**
+     * tests
+     */
+
+    async testEarliestFails(){
+        this.assert(Utils.head(await Solver.whereTypableAsOkC(`
+            const right1 = 0;
+            const right2 = 0;
+            const wrong1 = (x => x) - (x => x);
+            const wrong2 = (x => x) - (x => x);
+        `)) === 2);
+        0(0);
     }
 
     testTypeEquality(){
@@ -263,11 +278,6 @@ export class Test {
             }
             const goodResult = div(10)(2)(0);
         `))); 
-        this.assert(!(await Solver.isTypableAsOkC(`
-            const pleaseDontRunMe = x => {
-                0;
-            }
-        `)));
         this.assert(!(await Solver.isTypableAsOkC(`
             const fst = x => y => x;
             const snd = x => y => y;

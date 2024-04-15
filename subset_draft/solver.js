@@ -78,16 +78,45 @@ export class Solver{
         //console.log(envAndConstrs);
         const result = await Solver.sendConstrsToObj(envAndConstrs);
         const varAssignments = result['term_type_assignments'];
-        const anyFails = result['any_fails'];
+        const anyFails = result['fails_at'];
 
         console.log(`${program}`);
         Object.keys(varAssignments)
-            .map(k => {
-                console.log(`\t${k} : ${varAssignments[k]}`);
+            .map((k, i) => {
+                console.log(`\t${i}| ${k.match('eval') !== null ? '' : k} : ${varAssignments[k].length === 0 ? 'Untypable' : varAssignments[k]}`);
             });
         
-        if(anyFails) console.log(`\t\tIll-typed`);
+        if(anyFails.length !== 0) console.log(`\t\tIll-typed`);
         else console.log(`\t\tInconclusive`); //we dont handle the case where individual terms evalute without assignment
+        console.log(`________________________`);
+        return anyFails.length !== 0;
+    }
+
+    static whereTypableAsOkC = async (program) => {
+        const r = new Reconstructor();
+        //const program = '0 <= 0 ? (x => x) : 0';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
+        const judgementAndEnv = r.reconstruct(program);
+        const judgement = judgementAndEnv['judgement'];
+        //const ignoredJudgements = judgementAndEnv['ignored']; 
+        const env = judgementAndEnv['delta_assms'];
+
+        const t = judgement.termType;
+        console.log(`${judgement.show()}`);
+        const envAndConstrs = {'env': env, 'term_type': t, 'constrs': judgement.constrs};
+        //console.log(envAndConstrs);
+        const result = await Solver.sendConstrsToObj(envAndConstrs);
+        const varAssignments = result['term_type_assignments'];
+        const anyFails = result['fails_at'];
+
+        console.log(`${program}`);
+        Object.keys(varAssignments)
+            .map((k, i) => {
+                console.log(`\t${i}| ${k.match('eval') !== null ? '' : k} : ${varAssignments[k].length === 0 ? 'Untypable' : varAssignments[k]}`);
+            });
+        
+        if(anyFails.length !== 0) console.log(`\t\tIll-typed`);
+        else console.log(`\t\tInconclusive`); //we dont handle the case where individual terms evalute without assignment
+        console.log(`________________________`);
         return anyFails;
     }
 }
