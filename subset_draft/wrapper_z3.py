@@ -255,7 +255,7 @@ def main():
     for name in type_list:
         type_lookup[name] = Const(name, JSTy) # ComplTy can be put inside comps
 
-    term_type = type_lookup[str(type_name(recieved['term_type']))] #get it out of type_lookup
+    term_types = type_lookup[str(type_name(recieved['term_types']))] #get it out of type_lookup
     all_constrs = unpack(constrs, type_lookup, JSTy)
 
     wrong_all_var_typings = []
@@ -273,17 +273,27 @@ def main():
 
     def term_ass(xs): 
         result = {}
+        any_fails = False
         for var_name in tld_general_type_vars:
             result[var_name] = []
             #print(var_name)
             var_type = env[var_name]['id']
             for x in xs:
                 if str(var_type) in x:
-                    result[var_name].append(str(x[str(var_type)]))
-        return result
+                    string_of_type_ass = str(x[str(var_type)])
+                    result[var_name].append(string_of_type_ass)
+                    if string_of_type_ass == str(JSTy.Comp(JSTy.Ok)):
+                        any_fails = True
+        return {
+            'ass' : result,
+            'fails': any_fails
+        }
         #list(map(lambda x: if str(term_type) in x: str(x[str(term_type)]), xs))
     
-    term_type_assignments = term_ass(solns)
+    assigns_and_fails = term_ass(solns)
+    term_type_assignments = assigns_and_fails['ass']
+    any_fails = assigns_and_fails['fails']
+
     #all_term_type_assignments = term_ass(all_solns)
     #just take the uniques 
     #unique_all_term_type_ass = uniques_in_list(all_term_type_assignments)
@@ -297,6 +307,7 @@ def main():
         #'sol_conj': show_constrs(list(map(lambda x: soln_to_constrs(x, type_lookup), solns))),
         #'type_vars': type_list,
         'term_type_assignments': term_type_assignments,
+        'any_fails': any_fails
         #'top_term_assignments': unique_top_type_ass,
         #'term_type_assignments_all': unique_all_term_type_ass,
         #'bound_in_top': bound_in_top
