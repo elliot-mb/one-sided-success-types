@@ -217,6 +217,7 @@ def uniques_in_list(xs):
         unique_list.append(type_str_none[0])
     return unique_list
 
+# this is for usability we remove the ok typings 
 def remove_ok_strs(xs, JSTy):
     no_ok = []
     for x in xs:
