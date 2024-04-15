@@ -133,14 +133,15 @@ export class Reconstructor{
                 assAccumulator.add(idents[`${i}`], full.termType); //full.termType is mentioned in the constraints & assumptions, so we can use this in solving them! 
             }
         }
-        //transfer identifier : type 
-        
-         
-       
+
+    
          
         //const F = new GenT(this.getFreshVar('F'));
         //full.addToLast(new Constraint(full.termType, F));
-        return fulls;
+        return {
+            'judgement': Utils.last(fulls),
+            'delta_assms': assAccumulator //represents how we type programs as type environments 
+        };
 
         const roughType = full.termType;
         const constrs = full.constrs;

@@ -261,7 +261,7 @@ def main():
     wrong_all_var_typings = []
     for var_name in tld_general_type_vars:
         var_type = env[var_name]
-        print(var_type)
+        #print(var_type)
         wrong_all_var_typings.append(type_lookup[env[var_name]['id']] == JSTy.Comp(JSTy.Ok))
 
     at_least_one_false_assm = And(all_constrs, Or(wrong_all_var_typings))
@@ -272,14 +272,14 @@ def main():
     #all_solns = make_solns(type_lookup, all_constrs, MAX_DEPTH)
 
     def term_ass(xs): 
-        result = []
+        result = {}
         for var_name in tld_general_type_vars:
-            var_type = env[var_name]
+            result[var_name] = []
+            #print(var_name)
+            var_type = env[var_name]['id']
             for x in xs:
-                xb = 'None'
                 if str(var_type) in x:
-                    xb = str(x[str(term_type)])
-                result.append(xb)
+                    result[var_name].append(str(x[str(var_type)]))
         return result
         #list(map(lambda x: if str(term_type) in x: str(x[str(term_type)]), xs))
     
@@ -287,7 +287,7 @@ def main():
     #all_term_type_assignments = term_ass(all_solns)
     #just take the uniques 
     #unique_all_term_type_ass = uniques_in_list(all_term_type_assignments)
-    unique_term_type_ass = uniques_in_list(term_type_assignments)
+    #unique_term_type_ass = uniques_in_list(term_type_assignments)
     #unique_top_type_ass = uniques_in_list(top_type_assignments)
     
     reply = {
@@ -296,7 +296,7 @@ def main():
         'sol': solns_to_strs(solns),
         #'sol_conj': show_constrs(list(map(lambda x: soln_to_constrs(x, type_lookup), solns))),
         #'type_vars': type_list,
-        'term_type_assignments': unique_term_type_ass,
+        'term_type_assignments': term_type_assignments,
         #'top_term_assignments': unique_top_type_ass,
         #'term_type_assignments_all': unique_all_term_type_ass,
         #'bound_in_top': bound_in_top

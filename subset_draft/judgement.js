@@ -25,6 +25,11 @@ export class EmptyJudgement{
         return this.assms;
     }
 
+    setAssms(assms){
+        Utils.typeIsOrCrash(assms, Assms.type);
+        this.assms = assms;
+    }
+
     variableType(name){
         if(!this.assms.isIn(name)) throw Utils.makeErr(`typecheck: term variable '${name}' is free; unbound in function`);
         return this.assms.get(name);

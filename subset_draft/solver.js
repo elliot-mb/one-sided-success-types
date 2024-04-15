@@ -62,16 +62,18 @@ export class Solver{
     static isTypableAsOkC = async (program) => {
         const r = new Reconstructor();
         //const program = '0 <= 0 ? (x => x) : 0';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
-        const last = Utils.last(r.reconstruct(program));
+        const judgementAndEnv = r.reconstruct(program);
+        const judgement = judgementAndEnv['judgement'];
+        const env = judgementAndEnv['delta_assms'];
         const untypables = [];
 
-        const t = last.termType;
+        const t = judgement.termType;
         //console.log(`${done.show()}`);
-        const envAndConstrs = {'env': last.getAssms(), 'term_type': t, 'constrs': last.constrs};
+        const envAndConstrs = {'env': env, 'term_type': t, 'constrs': judgement.constrs};
         console.log(envAndConstrs);
         const result = await Solver.sendConstrsToObj(envAndConstrs);
-        //console.log(pretty(result));
-        untypables.push(result['term_type_assignments'].length === 0);
+        console.log(result);
+        //untypables.push(result['term_type_assignments'].length === 0);
 
         //console.log(JSON.stringify(done.constrs));
         // const untypables = (await Promise.all(dones.map(async done => {
