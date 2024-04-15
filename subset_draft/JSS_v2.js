@@ -286,7 +286,7 @@ const testInspection = async () => {
 
 const prog = 'const x = 3; (0-0)(0); 0(0); 0(0);'
 //console.log((new Reconstructor()).reconstruct(prog)); 
-Solver.isTypableAsOkC(prog);
+Solver.whereTypableAsOkC(prog);
 
 
 

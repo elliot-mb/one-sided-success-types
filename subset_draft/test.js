@@ -119,7 +119,7 @@ export class Test {
             const wrong1 = (x => x) - (x => x);
             const wrong2 = (x => x) - (x => x);
         `)) === 2);
-        0(0);
+        //0(0);
     }
 
     testTypeEquality(){

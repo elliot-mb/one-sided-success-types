@@ -116,7 +116,7 @@ export class Solver{
         
         if(anyFails.length !== 0) console.log(`\t\tIll-typed`);
         else console.log(`\t\tInconclusive`); //we dont handle the case where individual terms evalute without assignment
-        console.log(`________________________`);
+        console.log(`____________${anyFails}____________`);
         return anyFails;
     }
 }
