@@ -62,18 +62,17 @@ export class Solver{
     static isTypableAsOkC = async (program) => {
         const r = new Reconstructor();
         //const program = '0 <= 0 ? (x => x) : 0';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
-        const dones = [Utils.last(r.reconstruct(program))];
+        const last = Utils.last(r.reconstruct(program));
         const untypables = [];
-        for(let i = 0; i < dones.length; i++){
-            const done = dones[i];
-            const t = done.termType;
-            //console.log(`${done.show()}`);
-            const topAndConstrs = {'term_type': t, 'constrs': done.constrs};
-            console.log(topAndConstrs);
-            const result = await Solver.sendConstrsToObj(topAndConstrs);
-            //console.log(pretty(result));
-            untypables.push(result['term_type_assignments'].length === 0);
-        } 
+
+        const t = last.termType;
+        //console.log(`${done.show()}`);
+        const envAndConstrs = {'env': last.getAssms(), 'term_type': t, 'constrs': last.constrs};
+        console.log(envAndConstrs);
+        const result = await Solver.sendConstrsToObj(envAndConstrs);
+        //console.log(pretty(result));
+        untypables.push(result['term_type_assignments'].length === 0);
+
         //console.log(JSON.stringify(done.constrs));
         // const untypables = (await Promise.all(dones.map(async done => {
         //         const t = done.termType;

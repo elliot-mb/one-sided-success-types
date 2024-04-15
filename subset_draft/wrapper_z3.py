@@ -223,10 +223,22 @@ def main():
         recieved = json.loads(args.constraints)
     if(recieved == None):
         raise Exception('main: no file or json specified or provided')
+    
+    env = recieved['env']['typings']
     constrs = recieved['constrs']
     
+
     type_lookup = type_vars(constrs)
     type_list = list(type_lookup.keys())
+
+    tld_var_list = list(env.keys())
+    tld_general_type_vars = []
+    for var_name in tld_var_list:
+        var_type = env[var_name]
+        shape = var_type[args.shape_field]
+        if(shape == args.general_shape):
+            tld_general_type_vars.append(var_name)
+
     solns = []
 
     solver = Solver()
@@ -246,21 +258,28 @@ def main():
     term_type = type_lookup[str(type_name(recieved['term_type']))] #get it out of type_lookup
     all_constrs = unpack(constrs, type_lookup, JSTy)
 
-    all_and_show_me_false = And(all_constrs, term_type == JSTy.Comp(JSTy.Ok))
-    #bound_in_top = bound_in_constr_set(top_type)
-    
-    solver.add(all_constrs)
+    wrong_all_var_typings = []
+    for var_name in tld_general_type_vars:
+        var_type = env[var_name]
+        print(var_type)
+        wrong_all_var_typings.append(type_lookup[env[var_name]['id']] == JSTy.Comp(JSTy.Ok))
 
-    solns = make_solns(type_lookup, all_and_show_me_false, MAX_DEPTH)
+    at_least_one_false_assm = And(all_constrs, Or(wrong_all_var_typings))
+    #all_and_show_me_false = And(all_constrs, term_type == JSTy.Comp(JSTy.Ok))
+    #bound_in_top = bound_in_constr_set(top_type)
+
+    solns = make_solns(type_lookup, at_least_one_false_assm, MAX_DEPTH)
     #all_solns = make_solns(type_lookup, all_constrs, MAX_DEPTH)
 
     def term_ass(xs): 
         result = []
-        for x in xs:
-            xb = 'None'
-            if str(term_type) in x:
-                xb = str(x[str(term_type)])
-            result.append(xb)
+        for var_name in tld_general_type_vars:
+            var_type = env[var_name]
+            for x in xs:
+                xb = 'None'
+                if str(var_type) in x:
+                    xb = str(x[str(term_type)])
+                result.append(xb)
         return result
         #list(map(lambda x: if str(term_type) in x: str(x[str(term_type)]), xs))
     
