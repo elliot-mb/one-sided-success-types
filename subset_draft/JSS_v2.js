@@ -284,8 +284,8 @@ const testInspection = async () => {
 // showsTree('composCurryTree', 'const c = x => y => 0;');
 // showsTree('composE_WrongTree', 'const f = x => {const a = 1; const b = 2; const c = 3; return c;}')
 
-const prog = 'const x = 3; const y = (0-0)(0);'
-console.log((new Reconstructor()).reconstruct(prog)); 
+const prog = 'const x = 3; (0-0)(0); 0(0); 0(0);'
+//console.log((new Reconstructor()).reconstruct(prog)); 
 Solver.isTypableAsOkC(prog);
 
 

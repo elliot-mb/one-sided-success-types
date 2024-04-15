@@ -75,17 +75,17 @@ export class Solver{
         const t = judgement.termType;
         //console.log(`${done.show()}`);
         const envAndConstrs = {'env': env, 'term_type': t, 'constrs': judgement.constrs};
-        console.log(envAndConstrs);
+        //console.log(envAndConstrs);
         const result = await Solver.sendConstrsToObj(envAndConstrs);
         const varAssignments = result['term_type_assignments'];
         const anyFails = result['any_fails'];
 
-        console.log(`${program}:`);
+        console.log(`${program}`);
         Object.keys(varAssignments)
             .map(k => {
                 console.log(`\t${k} : ${varAssignments[k]}`);
             });
-
+        
         if(anyFails) console.log(`\t\tIll-typed`);
         else console.log(`\t\tInconclusive`); //we dont handle the case where individual terms evalute without assignment
         return anyFails;

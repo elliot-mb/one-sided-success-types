@@ -136,7 +136,7 @@ def show_constrs(constrs):
 
 # iteratively acquires more solutions by constraining assignments against what they come up as 
 # whitelist tells us which assignments to not try and negate (a list of variable names)
-def make_solns(const_lookup, constrs, count):
+def make_solns(const_lookup, constrs, count, we_care_names, JSTy):
     solns = [] # can be added to a dict, array of dicts  
     solver = Solver()
     solver.set(relevancy=2)
@@ -145,24 +145,32 @@ def make_solns(const_lookup, constrs, count):
     illegal_assign = False
     max_solves = count
     solve_count = 0
+
+    we_care_typestr = list(map(lambda type: str(type), we_care_names))
+    
     while(solver.check() == sat and not illegal_assign and (max_solves > solve_count)):
         mod = solver.model()
         mod_can_neg = []
-        mod_must_neg = []
         sol = {} #new dict 
         for ass in mod:
             assStr = str(ass)
-            if(ass.arity() == 0): #reassign constants
+            #print(assStr)
+            if(ass.arity() == 0 ): #save solution and reassign constants
+                #print(assStr)
                 sol[assStr] = mod[ass]
-                neg = const_lookup[assStr] != mod[ass]
-                mod_can_neg.append(neg)
+                neg = const_lookup[assStr] == JSTy.Comp(JSTy.Ok) #!= mod[ass]
+                if(str(mod[ass]) != str(JSTy.Comp(JSTy.Ok)) and assStr in we_care_typestr):
+                    mod_can_neg.append(neg)
+                if(str(mod[ass]) == str(JSTy.Comp(JSTy.Ok)) and assStr in we_care_typestr):
+                    solver.add(neg) # this is anded 
             else:                     #print('reassign ' + assStr)
                 illegal_assign = True
-         
+        
         mod_negation = Or(mod_can_neg)
+        #print(mod_negation)
         solns.append(sol) 
-        if(len(mod_must_neg) > 0):
-            solver.add(And(mod_must_neg))
+        # if(len(mod_must_neg) > 0):
+        #     solver.add(And(mod_negation))
         solver.add(mod_negation)
         solve_count += 1
 
@@ -209,9 +217,16 @@ def uniques_in_list(xs):
         unique_list.append(type_str_none[0])
     return unique_list
 
+def remove_ok_strs(xs, JSTy):
+    no_ok = []
+    for x in xs:
+        if not x == str(JSTy.Ok):
+            no_ok.append(x)
+
+    return no_ok
+
 def main():
-    MAX_DEPTH = 1 # this can be one because if something is provably wrong the only kind of assignments it can find
-    # are ones where the conclusion type is okc
+    
     recieved = None
     if(not args.constraint_file == None): 
         recieved_f = open(args.constraint_file, 'r')
@@ -238,6 +253,10 @@ def main():
         shape = var_type[args.shape_field]
         if(shape == args.general_shape):
             tld_general_type_vars.append(var_name)
+    MAX_SOLNS = len(tld_general_type_vars) 
+    # the rationale behind this is that if every statement goes wrong, then
+    # there will be n iterations one for each statement that fixes it as wrong and
+    # tries to type another as wrong until its done
 
     solns = []
 
@@ -255,20 +274,24 @@ def main():
     for name in type_list:
         type_lookup[name] = Const(name, JSTy) # ComplTy can be put inside comps
 
-    term_types = type_lookup[str(type_name(recieved['term_types']))] #get it out of type_lookup
+    term_type = type_lookup[str(type_name(recieved['term_type']))] #get it out of type_lookup
     all_constrs = unpack(constrs, type_lookup, JSTy)
 
     wrong_all_var_typings = []
+    wrong_all_var_types = []
+
     for var_name in tld_general_type_vars:
         var_type = env[var_name]
         #print(var_type)
         wrong_all_var_typings.append(type_lookup[env[var_name]['id']] == JSTy.Comp(JSTy.Ok))
+        wrong_all_var_types.append(type_lookup[env[var_name]['id']])
+
 
     at_least_one_false_assm = And(all_constrs, Or(wrong_all_var_typings))
     #all_and_show_me_false = And(all_constrs, term_type == JSTy.Comp(JSTy.Ok))
     #bound_in_top = bound_in_constr_set(top_type)
 
-    solns = make_solns(type_lookup, at_least_one_false_assm, MAX_DEPTH)
+    solns = make_solns(type_lookup, at_least_one_false_assm, MAX_SOLNS, wrong_all_var_types, JSTy)
     #all_solns = make_solns(type_lookup, all_constrs, MAX_DEPTH)
 
     def term_ass(xs): 
@@ -284,6 +307,8 @@ def main():
                     result[var_name].append(string_of_type_ass)
                     if string_of_type_ass == str(JSTy.Comp(JSTy.Ok)):
                         any_fails = True
+        for top in result:
+            result[top] = uniques_in_list(remove_ok_strs(result[top], JSTy))
         return {
             'ass' : result,
             'fails': any_fails

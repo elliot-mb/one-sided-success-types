@@ -85,15 +85,20 @@ export class Reconstructor{
         this.rstFreshVar();
         const exps = toASTTrees(program, false, true);
         let idents = {}; 
+        let evalTally = 0;
+        let evalIdents = {};
         for(let i = 0; i < exps.length; i++){
             const exp = exps[i];
             const shape = termShape(exp);
             if(shape === Rule.compoAbs){ // just compoAbs needs access to its variable name in the defn
                 idents[`${i}`] = (getSubterm(getSubterm(exp, 'f'), 'x')); //take out the identifier and then its name
-            }
-            if(shape === Rule.compo){ //compo needs its definition type added after typing, though 
+            }else if(shape === Rule.compo){ //compo needs its definition type added after typing, though 
                 idents[`${i}`] = (getSubterm(getSubterm(exp, 'x'), 'x'));
+            }else{ //ignored evaluations 
+                evalIdents[`${i}`] = `eval#${evalTally}`; //fake unique identifier in place of the actual term
+                evalTally++;
             }
+        
         }
         // all expressions in here are toplevel declrs, shape "const x = M;" where M can be x => N or otherwise (NB there is no E)
         // or they are ExperssionStatements of shape "M".
@@ -103,6 +108,7 @@ export class Reconstructor{
 
         //what we build up as we process each line
         const assAccumulator = new Assms();
+        const assEvalAccumulator = new Assms();
         const constrAccumulator = []; //array of orers for term con
         const fulls = [];
         for(let i = 0; i < exps.length; i++){
@@ -132,9 +138,12 @@ export class Reconstructor{
             if(!isAbsDefn && idents[`${i}`] !== undefined){
                 assAccumulator.add(idents[`${i}`], full.termType); //full.termType is mentioned in the constraints & assumptions, so we can use this in solving them! 
             }
+            if(evalIdents[`${i}`] !== undefined){
+                assEvalAccumulator.add(evalIdents[`${i}`], full.termType); //combine these at the end to scrutinise all the types in the program
+            }
         }
-
-    
+        //console.log(assEvalAccumulator.show());
+        assAccumulator.addAll(assEvalAccumulator);
          
         //const F = new GenT(this.getFreshVar('F'));
         //full.addToLast(new Constraint(full.termType, F));
