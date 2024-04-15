@@ -225,7 +225,6 @@ def main():
         raise Exception('main: no file or json specified or provided')
     constrs = recieved['constrs']
     
-    top_type = recieved['top_type']
     type_lookup = type_vars(constrs)
     type_list = list(type_lookup.keys())
     solns = []

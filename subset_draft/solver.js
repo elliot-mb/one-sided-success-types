@@ -62,14 +62,14 @@ export class Solver{
     static isTypableAsOkC = async (program) => {
         const r = new Reconstructor();
         //const program = '0 <= 0 ? (x => x) : 0';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
-        const dones = r.reconstruct(program);
+        const dones = [Utils.last(r.reconstruct(program))];
         const untypables = [];
         for(let i = 0; i < dones.length; i++){
             const done = dones[i];
             const t = done.termType;
             //console.log(`${done.show()}`);
-            const topLvls = done.constrs.toConstraintSet();
-            const topAndConstrs = {'term_type': t, 'top_type': topLvls, 'constrs': done.constrs};
+            const topAndConstrs = {'term_type': t, 'constrs': done.constrs};
+            console.log(topAndConstrs);
             const result = await Solver.sendConstrsToObj(topAndConstrs);
             //console.log(pretty(result));
             untypables.push(result['term_type_assignments'].length === 0);

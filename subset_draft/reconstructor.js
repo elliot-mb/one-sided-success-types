@@ -130,7 +130,7 @@ export class Reconstructor{
             //add the conclusion type to the accumulator after if we didnt add it as an arrow before
             //and dont reassign arrow 
             if(!isAbsDefn && idents[`${i}`] !== undefined){
-                assAccumulator.add(idents[`${i}`], full.termType);
+                assAccumulator.add(idents[`${i}`], full.termType); //full.termType is mentioned in the constraints & assumptions, so we can use this in solving them! 
             }
         }
         //transfer identifier : type 
