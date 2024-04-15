@@ -44,6 +44,6 @@ const showThing = x => {
     console.log(`"${JSON.stringify({"asRaw": x})}"`);
 }
 
-showThing((x => x) + (x => x));
-showThing(0 + (x => x));
+showThing((x => x) - (x => x));
+showThing(0 - (x => x));
 showThing((x => x));
