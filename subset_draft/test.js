@@ -26,6 +26,7 @@ export class Test {
         })
 
          */
+        await this.testBlockIgnoresStillIllTyped();
         await this.testEarliestFails();
         await this.testTypabilityByRule();
         await this.testTypeEquality();
@@ -462,6 +463,17 @@ export class Test {
             head(listZeros);
         }
         this.assert(this.didntCrash(header));
+    }
+
+    async testBlockIgnoresStillIllTyped(){
+
+        this.assert(await Solver.isTypableAsOkC(`
+            const fn = x => {
+                0(0);
+                return 0;
+            }
+        `));
+
     }
 }
 
