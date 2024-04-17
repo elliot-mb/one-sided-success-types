@@ -84,6 +84,9 @@ export class Reconstructor{
     reconstruct(program){
         this.rstFreshVar();
         const exps = toASTTrees(program, false, true);
+        if(exps.length === 0) { 
+            return null;
+        }
         let idents = {}; 
         let evalTally = 0;
         let evalIdents = {};

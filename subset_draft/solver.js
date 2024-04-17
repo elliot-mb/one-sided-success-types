@@ -40,7 +40,7 @@ export class Solver{
     static sendConstraints = async (constraints) => {
         if(typeof(constraints) !== 'string') throw Utils.makeErr('sendConstraints: must be a string');
         writeFileSync(Solver.transferFile, constraints);
-        return Solver.spawnGetString('python3', ['./wrapper_z3.py', '-cf', Solver.transferFile]);
+        return Solver.spawnGetString('python3', ['/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/wrapper_z3.py', '-cf', Solver.transferFile]);
     }
 
     static sendConstrsToObj = async (constraints) => {
@@ -68,6 +68,10 @@ export class Solver{
         const r = new Reconstructor();
         //const program = '0 <= 0 ? (x => x) : 0';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
         const judgementAndEnv = r.reconstruct(program);
+        if(judgementAndEnv === null){
+            console.log('empty program');
+            return false;
+        }
         const judgement = judgementAndEnv['judgement'];
         //const ignoredJudgements = judgementAndEnv['ignored']; 
         const env = judgementAndEnv['delta_assms'];
@@ -93,15 +97,20 @@ export class Solver{
     }
 
     static whereTypableAsOkC = async (program) => {
+        const NO_LINES = -1;
         const r = new Reconstructor();
         //const program = '0 <= 0 ? (x => x) : 0';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
         const judgementAndEnv = r.reconstruct(program);
+        if(judgementAndEnv === null){
+            console.log('empty program');
+            return NO_LINES;
+        }
         const judgement = judgementAndEnv['judgement'];
         //const ignoredJudgements = judgementAndEnv['ignored']; 
         const env = judgementAndEnv['delta_assms'];
 
         const t = judgement.termType;
-        console.log(`${judgement.show()}`);
+        //console.log(`${judgement.show()}`);
         const envAndConstrs = {'env': env, 'term_type': t, 'constrs': judgement.constrs};
         //console.log(envAndConstrs);
         const result = await Solver.sendConstrsToObj(envAndConstrs);
@@ -109,14 +118,16 @@ export class Solver{
         const anyFails = result['fails_at'];
 
         console.log(`${program}`);
+        console.log(`\t____typing____\n`);
         Object.keys(varAssignments)
             .map((k, i) => {
-                console.log(`\t${i}| ${k.match('eval') !== null ? '' : k} : ${varAssignments[k].length === 0 ? 'Untypable' : varAssignments[k]}`);
+                console.log(`\t\t${k.match('eval') !== null ? '' : k} : ${varAssignments[k].length === 0 ? 'Untypable' : varAssignments[k]}`);
             });
-        
+        console.log('');
+        console.log(`\t____deemed____\n`);
         if(anyFails.length !== 0) console.log(`\t\tIll-typed`);
         else console.log(`\t\tInconclusive`); //we dont handle the case where individual terms evalute without assignment
-        console.log(`____________${anyFails}____________`);
+        //if(anyFails.length !== 0) console.log(`First fails on line ${anyFails[0]}`);
         return anyFails;
     }
 }

@@ -356,9 +356,28 @@ export class Rule {
         return conclusn;
     }
 
-    //when a statement evaulates pointlessly like "0;" without assignment 
+    // M; get subterm M
     static cTExpSmt = (r, empty) => {
-        return r.typecheck(empty.asSubterm('M'));
+        const OkC1Constrs = Rule.addOkC1(empty.getAssms());
+        const X = new GenT(r.getFreshVar('X'));
+        const premise1 = r.typecheck(empty.asSubterm('M'));
+        const C1 = premise1.constrs;
+        const conclusn = empty.constrain(X);
+
+        conclusn.addToLast(C1);
+        conclusn.addToLast(new Constraint(premise1.termType, X));
+
+        if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOk(X));
+            if(!OkC1Constrs.isEmpty()){
+                conclusn.addAnder();
+                conclusn.addToLast(OkC1Constrs);
+            }
+        }
+
+        return conclusn;
+        // return r.typecheck(empty.asSubterm('M'));
     }
 
     // just unpacks blocks like to show {E} : A show E : A
