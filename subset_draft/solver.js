@@ -121,7 +121,7 @@ export class Solver{
         console.log(`\t____typing____\n`);
         Object.keys(varAssignments)
             .map((k, i) => {
-                console.log(`\t\t${k.match('eval') !== null ? '' : k} : ${varAssignments[k].length === 0 ? 'Untypable' : varAssignments[k]}`);
+                console.log(`\t\t${k} : ${varAssignments[k].length === 0 ? 'Untypable' : varAssignments[k]}`);
             });
         console.log('');
         console.log(`\t____deemed____\n`);

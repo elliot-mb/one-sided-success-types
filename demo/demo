@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+node demo.js > "out.txt"
