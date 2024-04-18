@@ -26,8 +26,8 @@ export class Test {
         })
 
          */
+        await this.testEarlyFailAt();
         await this.testBlockIgnoresStillIllTyped();
-        await this.testEarliestFails();
         await this.testTypabilityByRule();
         await this.testTypeEquality();
         await this.testUntypability();
@@ -40,6 +40,8 @@ export class Test {
         await this.testUntypableNewGrammar();
         await this.testTypeableNewGrammar();
         await this.testASTRequire();
+        await this.falsePositivesWeCantShowWrong();
+        await this.showSimpleRights();
         // (await Solver.isTypableAsOkC(`
         //     const pair = m => n => p => p(m)(n);
         //     const div = n => d => q => {
@@ -112,16 +114,6 @@ export class Test {
     /**
      * tests
      */
-
-    async testEarliestFails(){
-        this.assert(Utils.head(await Solver.whereTypableAsOkC(`
-            const right1 = 0;
-            const right2 = 0;
-            const wrong1 = (x => x) - (x => x);
-            const wrong2 = (x => x) - (x => x);
-        `)) === 2);
-        //0(0);
-    }
 
     testTypeEquality(){
         this.assert(new GenT('A').equals(new GenT('A')));
@@ -472,8 +464,74 @@ export class Test {
                 0(0);
                 return 0;
             }
+            fn(0);
         `));
 
+    }
+
+    async testEarlyFailAt(){
+        this.assert((await Solver.whereTypableAsOkC(`
+            const pair = s => t => p => p(s)(t);
+            const fst = s => t => s;
+            const snd = s => t => t;
+            const divInner = n => d => q => { 
+                const lastQ = q - 1;
+                const nextQ = q + 1;
+                const lastR = n + d;
+                const nextR = n - d;
+                return n + 1 <= 0 ? pair(lastQ)(lastR) : divInner(nextR)(d)(nextQ);
+            }
+            const div = n => d => divInner(n)(d)(0);
+            const result = div(x => x)(12);
+        `))[0] == 5);
+        this.assert((await Solver.whereTypableAsOkC(`
+            const k = 0;
+            const y = (x => x)((y => y) + (z => z));
+            const z = 0(0);
+        `))[0] == 1);
+        this.assert((await Solver.whereTypableAsOkC(`
+            0;
+            0(0);
+            0;
+            0(0);
+        `))[0] == 1);
+        this.assert((await Solver.whereTypableAsOkC(`
+            const middleFail = x => {
+                const x2 = x + x;
+                ((num => num <= 0 ? z => z : y => y)(0)) + 0;
+                return 6;
+            }
+            middleFail(0);
+        `))[0] == 1);
+
+        this.assert(Utils.head(await Solver.whereTypableAsOkC(`
+            const right1 = 0;
+            const right2 = 0;
+            const wrong1 = (x => x) - (x => x);
+            const wrong2 = (x => x) - (x => x);
+        `)) === 2);
+    }
+
+    async falsePositivesWeCantShowWrong(){
+
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const id = x => x;
+            const funcGoesWrongWhenRun = y => id + id;
+            const three = 2 + 1;
+        `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const tenOrId = lTOrGTZ => {
+                return lTOrGTZ <= 0 ? x => x : 10;
+            }
+            const eleven = tenOrId(1) + 1;
+        `)));
+
+    }
+
+    async showSimpleRights(){
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const id = x => x;
+        `)));
     }
 }
 
