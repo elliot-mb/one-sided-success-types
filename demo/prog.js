@@ -1,11 +1,16 @@
-// example program
-// const mul = n => m => {
-//     return m <= 0 ? n : n + mul(n, m - 1);
-// }
-// const twoTimesThree = mul(2)(3);
-
-const fact = n => {
-    return n <= 0 ? 1 : fact(n-1);
+const block1 = a => {
+    const block2 = x => {
+        const block3 = y => {
+            return x(y);
+        }
+        return block3(a);
+    };
+    return block2(a);
 }
-
-fact(0-2);
+const twice = f => f(f);
+const succ = x => x + 1;
+const succ2 = block1(succ);
+const succSucc = twice(succ);
+// succ(0)(0); yet we can prove this is wrong
+succ(succ); //an interesting thing to not be able to prove! 
+succ(succ)(0)(0)(0); //an interesting thing to not be able to prove! 
