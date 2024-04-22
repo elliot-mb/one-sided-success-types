@@ -52,6 +52,21 @@ export class Assms{
         return newAssms;
     }
 
+    /**
+     * we mutate these assumptions by removing those which do not appear in 
+     * otherDom.
+     * @param {*} otherDom string[] the domain which will be intersected with this one
+     */
+    intersectionDom(otherDom){
+        const newTypings = {}; //will be set to this typings
+        otherDom.map(othDmKey => {
+            if(this.isIn(othDmKey)){ //just keep the common ones (do not add any)
+                newTypings[othDmKey] = this.get(othDmKey);
+            }
+        });
+        this.typings = newTypings;
+    }
+
 }
 
 

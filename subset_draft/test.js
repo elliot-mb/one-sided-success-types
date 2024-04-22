@@ -2,7 +2,7 @@ import {Utils} from './utils.js';
 import { GenT, NumT, ArrowT, OkT, CompT } from './typevar.js';
 import {Solver} from './solver.js';
 import {Reconstructor} from './reconstructor.js';
-import {toASTTrees} from './wrapper_acorn.js'
+import {toASTTrees, getAllVariablesInDefn} from './wrapper_acorn.js'
 
 export class Test {
 
@@ -26,6 +26,8 @@ export class Test {
         })
 
          */
+        await this.testVariables();
+
         await this.testEarlyFailAt();
         await this.testBlockIgnoresStillIllTyped();
         await this.testTypabilityByRule();
@@ -42,32 +44,9 @@ export class Test {
         await this.testASTRequire();
         await this.falsePositivesWeCantShowWrong();
         await this.showSimpleRights();
-        // (await Solver.isTypableAsOkC(`
-        //     const pair = m => n => p => p(m)(n);
-        //     const div = n => d => q => {
-        //         const r = n - d; 
-        //         return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
-        //     }
-        //     const goodResult = div(10)(2)(0);
-        // `)); //OKC which is wrong
-        // (await Solver.isTypableAsOkC(`
-        //     const pair = m => n => p => p(m)(n);
-        //     const div = n => d => q => {
-        //         return n - d + 1 <= 0 ? pair(q)(n) : div(n - d)(d)(q + 1);
-        //     }
-        //     const goodResult = div(10)(2)(0);
-        // `)); //UNTYPABLE as expected 
-        // (await Solver.isTypableAsOkC(`
-        //     const diverg = n => diverg(n);
-        //     diverg(0);
-        // `));
-        // !(await Solver.isTypableAsOkC(`
-        //     const mul = x => y => {
-        //         return x <= 0 ? y : y + mul(x - 1)(y);
-        //     }
-        //     const result = mul(2)(3);
-        // `));
         await this.testProgramsRun();
+
+
         this.showFailures();
     }
 
@@ -114,6 +93,33 @@ export class Test {
     /**
      * tests
      */
+
+    testVariables(){
+        const allEqual = (arr1, arr2) => arr1.length == arr2.length && Utils.all(arr1.map((x, i) => x === arr2[i]));
+        this.assert(allEqual(getAllVariablesInDefn(toASTTrees('const x = 0;', false, true)[0]), ['x']));
+        this.assert(allEqual(getAllVariablesInDefn(toASTTrees('const xyz = x => y => z => 0;', false, true)[0]), ['xyz','x', 'y', 'z']));
+        this.assert(allEqual(getAllVariablesInDefn(toASTTrees('x => y => y + x + 3;', false, true)[0]), ['x', 'y']));
+        this.assert(allEqual(getAllVariablesInDefn(toASTTrees('x - 1;', false, true)[0]), ['x']));
+        this.assert(allEqual(getAllVariablesInDefn(toASTTrees('const doesntNeedAny = 0;', false, true)[0]), ['doesntNeedAny']));
+        this.assert(allEqual(getAllVariablesInDefn(toASTTrees(
+            `const fn = x => {
+                const z = f - y;
+                return 6;
+            };`
+        , false, true)[0]), ['fn', 'x', 'z', 'f', 'y']));
+        this.assert(allEqual(getAllVariablesInDefn(toASTTrees(
+            `
+            const quotInner = n => d => q => { 
+                const lastQ = q - 1;
+                const nextQ = q + 1;
+                const lastR = n + d;
+                const nextR = n - d;
+                return n + 1 <= 0 ? pair(lastQ)(lastR) : quotInner(nextR)(d)(nextQ);
+            }
+            `
+        , false, true)[0]), ['quotInner', 'n', 'd', 'q', 'lastQ', 'nextQ', 'lastR', 'nextR', 'pair']))
+    }
+
 
     testTypeEquality(){
         this.assert(new GenT('A').equals(new GenT('A')));

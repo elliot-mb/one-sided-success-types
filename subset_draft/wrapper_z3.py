@@ -361,6 +361,8 @@ def main():
             ty = env[var_name]
             var_shape = ty[args.shape_field]
             var_type = str(to_jsty_type(ty, type_lookup, JSTy))
+            j = 0
+            assigned = {}
             for x in xs:
                 if var_shape == args.arrow_shape: # non-recursive because theyre only singly nested by the rule 
                     a_ty = str(to_jsty_type(ty['A'], type_lookup, JSTy))
@@ -376,11 +378,14 @@ def main():
                     string_of_type_ass = str(x[str(var_type)])
                     result[var_name].append(string_of_type_ass)
                     if string_of_type_ass == str(JSTy.Comp(JSTy.Ok)):
-                        any_fails.append(i)
+                        any_fails.append(i)   
+                else:
+                    result[var_name].append('Unknown')
+                j += 1
             i += 1
 
-        for top in result:
-            result[top] = uniques_in_list(result[top])
+        #for top in result:
+        #    result[top] = uniques_in_list(result[top])
         return {
             'ass' : result,
             'fails_at': any_fails

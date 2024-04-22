@@ -1,5 +1,5 @@
 import {Utils} from './utils.js';
-import {toASTTrees, getSubterm, termShape} from './wrapper_acorn.js';
+import {toASTTrees, getSubterm, termShape, getAllVariablesInDefn} from './wrapper_acorn.js';
 import {Constraint} from './constraint.js';
 import {ConstraintSet} from './constraint_set.js';
 import {EmptyJudgement, Judgement} from './judgement.js';
@@ -79,8 +79,6 @@ export class Reconstructor{
         return topType;
     }
 
-
-
     reconstruct(program){
         this.rstFreshVar();
         const exps = toASTTrees(program, false, true);
@@ -113,7 +111,7 @@ export class Reconstructor{
         const assAccumulator = new Assms();
         const assEvalAccumulator = new Assms();
         const constrAccumulator = []; //array of orers for term con
-        const fulls = [];
+        let finalFull = null;
         for(let i = 0; i < exps.length; i++){
             const exp = exps[i];
 
@@ -124,18 +122,21 @@ export class Reconstructor{
             }
 
             const thisTermsAssms = assAccumulator.deepCopy();
+            thisTermsAssms.intersectionDom(getAllVariablesInDefn(exp));
             const empty = new EmptyJudgement(exp, thisTermsAssms);
-                
+            
             const full = this.typecheck(empty.asSubterm('M')); 
             
             if(isAbsDefn)
                 full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, typeIfArr)))]); //constrain the free arrow type to being equal to the conclusion
             //type after the type reconstruction is done 
 
+            const justThisFullConstrCopy = new Orer(); 
+            full.constrs.xs.map(ander => justThisFullConstrCopy.add(ander));
             full.conjoinOrer(constrAccumulator); //wrapped in a unit orer, attach previous line's constraints 
-            constrAccumulator.push(full.constrs);
+            constrAccumulator.push(justThisFullConstrCopy); //put all the constraints from this full judgement into the accumualtor
              
-            fulls.push(full);
+            finalFull = full;
             //add the conclusion type to the accumulator after if we didnt add it as an arrow before
             //and dont reassign arrow 
             if(!isAbsDefn && idents[`${i}`] !== undefined){
@@ -145,13 +146,15 @@ export class Reconstructor{
                 assEvalAccumulator.add(evalIdents[`${i}`], full.termType); //combine these at the end to scrutinise all the types in the program
             }
         }
-        //console.log(assEvalAccumulator.show());
+        //////console.log(assEvalAccumulator.show());
         assAccumulator.addAll(assEvalAccumulator);
+        //////console.log(constrAccumulator.map(x => `@@${x.show()}`));
+        ////console.log(finalFull.constrs.show());
          
         //const F = new GenT(this.getFreshVar('F'));
         //full.addToLast(new Constraint(full.termType, F));
         return {
-            'judgement': Utils.last(fulls),
+            'judgement': finalFull,
             'delta_assms': assAccumulator //represents how we type programs as type environments 
         };
 

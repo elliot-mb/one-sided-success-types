@@ -1,0 +1,722 @@
+
+            const pair = s => t => p => p(s)(t);
+            const fst = s => t => s;
+            const snd = s => t => t;
+            const quotInner = n => d => q => { 
+                const lastQ = q - 1;
+                const nextQ = q + 1;
+                const lastR = n + d;
+                const nextR = n - d;
+                return n + 1 <= 0 ? pair(lastQ)(lastR) : quotInner(nextR)(d)(nextQ);
+            }
+            const quot = n => d => quotInner(n)(d)(0);
+            const result = quot(x => x)(12);
+        
+		pair :
+ 			0#(Num -> Ok)
+
+		fst :
+ 			0#(Num -> (Num -> Ok))
+
+		snd :
+ 			0#(Comp(Ok) -> Num)
+
+		quotInner :
+ 			0#((Comp(Ok) -> Num) -> (Ok -> (Num -> Comp(Ok))))
+
+		quot :
+ 			0#((Comp(Ok) -> Num) -> (Ok -> Comp(Ok)))
+
+		result :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 5
+
+            const k = 0;
+            const y = (x => x)((y => y) + (z => z));
+            const z = 0(0);
+        
+		k :
+ 			0#Num
+,			1#Ok
+
+		y :
+ 			0#Num
+,			1#Comp(Ok)
+
+		z :
+ 			0#Comp(Ok)
+,			1#Num
+
+		Ill-typed and fails at 1,2
+
+            0;
+            0(0);
+            0;
+            0(0);
+        
+		eval#0 :
+ 			0#Num
+,			1#Num
+
+		eval#1 :
+ 			0#Comp(Ok)
+,			1#Num
+
+		eval#2 :
+ 			0#Num
+,			1#Num
+
+		eval#3 :
+ 			0#Ok
+,			1#Comp(Ok)
+
+		Ill-typed and fails at 1,3
+
+            const middleFail = x => {
+                const x2 = x + x;
+                ((num => num <= 0 ? z => z : y => y)(0)) + 0;
+                return 6;
+            }
+            middleFail(0);
+        
+		middleFail :
+ 			0#(Num -> Comp(Ok))
+
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 1
+
+            const right1 = 0;
+            const right2 = 0;
+            const wrong1 = (x => x) - (x => x);
+            const wrong2 = (x => x) - (x => x);
+        
+		right1 :
+ 			0#Ok
+,			1#Ok
+
+		right2 :
+ 			0#Num
+,			1#Ok
+
+		wrong1 :
+ 			0#Unknown
+,			1#Comp(Ok)
+
+		wrong2 :
+ 			0#Comp(Ok)
+,			1#(Comp(Num) -> Comp(Num))
+
+		Ill-typed and fails at 2,3
+
+            const fn = x => {
+                0(0);
+                return 0;
+            }
+            fn(0);
+        
+		fn :
+ 			0#(Ok -> Comp(Ok))
+
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 1
+
+            const app2 = 0(0); //Disj(T1, Comp(Ok) -> A);
+        
+		app2 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+
+            const id = x => x;
+            const app3 = (id)(id + id); //T2 = Comp(Ok);
+        
+		id :
+ 			0#(Num -> Num)
+
+		app3 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 1
+
+            const pred = x => x - 1;
+            const ifZ1 = pred <= 0 ? 1 : 2; //Disj(T1, Num)
+        
+		pred :
+ 			0#((Num -> Num) -> (Num -> Num))
+
+		ifZ1 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 1
+
+            const succ = x => x + 1;
+            succ(succ); //A = A -> B (untypable)
+        
+		succ :
+ Untypable
+		eval#0 :
+ Untypable
+		Inconclusive
+
+            (x => x + 1)(x => x + 1); // free conclusion type from NumOp2
+        
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+
+            const ifZ2 = 0 <= 0 ? (x => x + 1)(x => x + 1) : (x => x + 1)(x => x + 1); 
+        
+		ifZ2 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+
+            const okC1 = (x => x)(0(0)); //variable x goes wrong (Y1 = Comp(Ok))
+        
+		okC1 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+f => x => f(f(x));
+		eval#0 :
+ Untypable
+		Inconclusive
+(f => g => f + g);
+		eval#0 :
+ Untypable
+		Inconclusive
+(f => g => f + g)(0);
+		eval#0 :
+ Untypable
+		Inconclusive
+(f => g => f + g)(0)(0);
+		eval#0 :
+ Untypable
+		Inconclusive
+(f => g => f + g(0))(0)(x => x);
+		eval#0 :
+ Untypable
+		Inconclusive
+(x => x)(0) + 0;
+		eval#0 :
+ Untypable
+		Inconclusive
+(x => x);
+		eval#0 :
+ Untypable
+		Inconclusive
+(x => x)(0);
+		eval#0 :
+ Untypable
+		Inconclusive
+(x => x)(x => x);
+		eval#0 :
+ Untypable
+		Inconclusive
+0 + 0;
+		eval#0 :
+ Untypable
+		Inconclusive
+1 <= 0 ? 0(0) : 0;
+		eval#0 :
+ Untypable
+		Inconclusive
+(f => x => f(f(x)))(y => y + 1)((x => 0)(1));
+		eval#0 :
+ Untypable
+		Inconclusive
+(f => x => f(f(x)))(y => x => y)(0);
+		eval#0 :
+ Untypable
+		Inconclusive
+x => 0(x);
+		eval#0 :
+ Untypable
+		Inconclusive
+0(0);
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+(x => x) + 0;
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+(x => x <= 0 ? 0 : 0)(y => y);
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+(f => g => f + g)(0)(x => x);
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+0 - (x => x <= 0 ? 1 : 0);
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+(x => x) - (y => y);
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+(f => x => 0 - f(x)(0)) <= 0 ? 0 : 0;
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+(y => x => y(1) + y(x))(x => x + 1)((z => z <= 0 ? (x => x) : (y => y))(0));
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+(x => x(0))(0);
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+thing => thing
+		eval#0 :
+ Untypable
+		Inconclusive
+(cannotBeNum => cannotBeNum(0))(0)
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+
+            const x = 0;
+        
+		x :
+ Untypable
+		Inconclusive
+
+            const x = y => y;
+            const z = w => {
+                return x(w);
+            }
+        
+		x :
+ Untypable
+		z :
+ Untypable
+		Inconclusive
+
+            const x = 0;
+        
+		x :
+ Untypable
+		Inconclusive
+
+            x => x
+        
+		eval#0 :
+ Untypable
+		Inconclusive
+
+            const x = y => y;
+        
+		x :
+ Untypable
+		Inconclusive
+
+            const mul = x => y => {
+                return x <= 0 ? y : y + mul(x - 1)(y);
+            }
+        
+		mul :
+ Untypable
+		Inconclusive
+
+            const mul = x => y => {
+                return x <= 0 ? y : y + mul(x - 1)(y);
+            }
+            const result = mul(2)(3);
+        
+		mul :
+ Untypable
+		result :
+ Untypable
+		Inconclusive
+
+            const pair = m => n => p => p(m)(n);
+            const div = n => d => q => {
+                const r = n - d; 
+                return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
+            }
+            const goodResult = div(10)(2)(0);
+        
+		pair :
+ Untypable
+		div :
+ Untypable
+		goodResult :
+ Untypable
+		Inconclusive
+
+            const fst = x => y => x;
+            const snd = x => y => y;
+            const pair = m => n => p => p(m)(n);
+            const listZeros = pair(0)(pair(0)(pair(0)(pair(0)(0))));
+            const head = fst;
+            listZeros(head);
+        
+		fst :
+ Untypable
+		snd :
+ Untypable
+		pair :
+ Untypable
+		listZeros :
+ Untypable
+		head :
+ Untypable
+		eval#0 :
+ Untypable
+		Inconclusive
+
+            const boomPair = m => n => p => 1(x => x) - 1(0)(0)(m)(n);
+            const listZeros = boomPair(0)(boomPair(0)(boomPair(0)(boomPair(0)(0))));
+        
+		boomPair :
+ Untypable
+		listZeros :
+ Untypable
+		Inconclusive
+
+            const pfst = s => t => s;
+            const psnd = s => t => t;
+            const qfst = q => r => s => t => q;
+            const qsnd = q => r => s => t => r;
+            const qtrd = q => r => s => t => s;
+            const qfrt = q => r => s => t => t;
+            const quad = q => r => s => t => p => p(q)(r)(s)(t);
+            const pair = r => s => p => p(r)(s);
+            const toTwoPairs = inQuad => {
+                const p1 = pair(inQuad(qfst))(inQuad(qsnd));
+                const p2 = pair(inQuad(qtrd))(inQuad(qfrt));
+                return pair(p1)(p2);
+            }
+            const myQuad = quad(0)(1)(2)(3);
+            const firstPair = toTwoPairs(myQuad)(pfst);
+            const sndPair = toTwoPairs(myQuad)(psnd);
+        
+		pfst :
+ Untypable
+		psnd :
+ Untypable
+		qfst :
+ Untypable
+		qsnd :
+ Untypable
+		qtrd :
+ Untypable
+		qfrt :
+ Untypable
+		quad :
+ Untypable
+		pair :
+ Untypable
+		toTwoPairs :
+ Untypable
+		myQuad :
+ Untypable
+		firstPair :
+ Untypable
+		sndPair :
+ Untypable
+		Inconclusive
+
+            const id = x => x;
+            const explode = x => id - 1;
+            const zero = id(0);
+        
+		id :
+ Untypable
+		explode :
+ Untypable
+		zero :
+ Untypable
+		Inconclusive
+
+            const earlyFail = (x => 0)(0)(0);
+            const two = 1 + 1;
+            two + 1;
+        
+		earlyFail :
+ 			0#Comp(Ok)
+
+		two :
+ 			0#Unknown
+
+		eval#0 :
+ 			0#Unknown
+
+		Ill-typed and fails at 0
+
+            const zeroer = x => y => {
+                return 0(x) <= 0 ? 0 : 0;
+            }
+            zeroer(0)(0);
+        
+		zeroer :
+ 			0#(Num -> (Ok -> Comp(Ok)))
+
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 1
+
+            const mul = 0(0);
+        
+		mul :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 0
+
+            const pair = m => n => p => p(m)(n);
+            const div = n => d => q => {
+                const r = n - d; 
+                return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
+            }
+            
+            const badResult = div(x => x)(10)(0);
+        
+		pair :
+ 			0#(Comp(Ok) -> (Num -> Num))
+
+		div :
+ 			0#(((Num -> Num) -> Ok) -> (Num -> (Num -> Comp(Ok))))
+
+		badResult :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 2
+
+            const fst = x => y => x;
+            const pair = m => n => p => 10(m)(n); 
+            const listZeros = pair(0)(pair(0)(pair(0)(pair(0)(0))));
+            listZeros(fst);
+        
+		fst :
+ 			0#(Num -> (Ok -> Ok))
+
+		pair :
+ 			0#(Ok -> (Ok -> ((Num -> (Ok -> Ok)) -> Comp(Ok))))
+
+		listZeros :
+ 			0#((Num -> (Ok -> Ok)) -> Comp(Ok))
+
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 3
+
+            const snd = x => y => y;
+            const pair = m => n => p => p(m)(n);
+            const confusedList = pair(0)(0)(0);
+        
+		snd :
+ 			0#(Comp(Ok) -> Num)
+
+		pair :
+ 			0#(Ok -> (Ok -> (Num -> Comp(Ok))))
+
+		confusedList :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 2
+
+            const fst = s => t => s;
+            const snd = s => t => t;
+            const pair = s => t => p => p(s)(t);
+            const p1 = pair(0)(1);
+            const p2 = pair(2)(3);
+            const zipSumPairs = pair1 => pair2 => {
+                const e1 = pair1(fst) + pair2(fst);
+                const e2 = pair1(snd) + snd(pair2); 
+                return pair(e1)(e2);
+            }
+            const sumPair = zipSumPairs(p1)(p2);
+        
+		fst :
+ 			0#(Ok -> Ok)
+
+		snd :
+ 			0#(Ok -> (Comp((Num -> (Num -> Num))) -> Ok))
+
+		pair :
+ 			0#(((Num -> Num) -> (Num -> Num)) -> Ok)
+
+		p1 :
+ 			0#Ok
+
+		p2 :
+ 			0#Ok
+
+		zipSumPairs :
+ 			0#(Ok -> (Ok -> Comp(Ok)))
+
+		sumPair :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 6
+
+            const fst = s => t => s;
+            const snd = s => t => t;
+            const sndFst = snd(fst);
+            const idPlus1 = sndFst + 1;
+        
+		fst :
+ 			0#(Num -> (Num -> Num))
+
+		snd :
+ 			0#((Num -> (Num -> Num)) -> (Num -> Num))
+
+		sndFst :
+ 			0#(Num -> Num)
+
+		idPlus1 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 3
+
+            const boomRecursion = x => {
+                return x <= 0 ? 0(boomRecursion(x - 1)) : 0(x);
+            }
+            boomRecursion(10);
+        
+		boomRecursion :
+ 			0#(Ok -> Comp(Ok))
+
+		eval#0 :
+ 			0#Comp(Ok)
+
+		Ill-typed and fails at 1
+
+            const id = x => x;
+            const funcGoesWrongWhenRun = y => id + id;
+            const three = 2 + 1;
+        
+		id :
+ Untypable
+		funcGoesWrongWhenRun :
+ Untypable
+		three :
+ Untypable
+		Inconclusive
+
+            const tenOrId = lTOrGTZ => {
+                return lTOrGTZ <= 0 ? x => x : 10;
+            }
+            const eleven = tenOrId(1) + 1;
+        
+		tenOrId :
+ Untypable
+		eleven :
+ Untypable
+		Inconclusive
+
+            const id = x => x;
+        
+		id :
+ Untypable
+		Inconclusive
+[32m successes (86/86):
+ 	testEarlyFailAt: line 473
+	testEarlyFailAt: line 487
+	testEarlyFailAt: line 492
+	testEarlyFailAt: line 498
+	testEarlyFailAt: line 507
+	testBlockIgnoresStillIllTyped: line 462
+	testTypabilityByRule: line 390
+	testTypabilityByRule: line 393
+	testTypabilityByRule: line 397
+	testTypabilityByRule: line 407
+	testTypabilityByRule: line 416
+	testTypabilityByRule: line 420
+	testTypabilityByRule: line 423
+	testTypeEquality: line 119
+	testTypeEquality: line 120
+	testTypeEquality: line 121
+	testTypeEquality: line 122
+	testTypeEquality: line 123
+	testTypeEquality: line 125
+	testTypeEquality: line 128
+	testTypeEquality: line 129
+	testTypeEquality: line 130
+	testTypeEquality: line 131
+	testUntypability: line 135
+	testUntypability: line 136
+	testUntypability: line 137
+	testUntypability: line 138
+	testUntypability: line 139
+	testUntypability: line 140
+	testUntypability: line 141
+	testUntypability: line 142
+	testUntypability: line 143
+	testUntypability: line 144
+	testUntypability: line 145
+	testUntypability: line 146
+	testUntypability: line 147
+	testUntypability: line 148
+	testTypability: line 152
+	testTypability: line 153
+	testTypability: line 154
+	testTypability: line 155
+	testTypability: line 156
+	testTypability: line 157
+	testTypability: line 158
+	testTypability: line 159
+	testTypability: line 161
+	testFreshTypes: line 173
+	testCheckTypeShape: line 177
+	testCheckTypeShape: line 178
+	testLongIdentifiers: line 182
+	testLongIdentifiers: line 183
+	testValidityOfNewGrammar: line 187
+	testValidityOfNewGrammar: line 188
+	testValidityOfNewGrammar: line 192
+	testValidityOfNewGrammar: line 197
+	testValidityOfNewGrammar: line 203
+	testReconstrNewGrammarSucceeds: line 212
+	testReconstrNewGrammarSucceeds: line 213
+	testReconstrNewGrammarSucceeds: line 217
+	testReconstrNewGrammarSucceeds: line 228
+	testUntypableNewGrammar: line 237
+	testUntypableNewGrammar: line 240
+	testUntypableNewGrammar: line 246
+	testUntypableNewGrammar: line 249
+	testUntypableNewGrammar: line 252
+	testUntypableNewGrammar: line 255
+	testUntypableNewGrammar: line 260
+	testUntypableNewGrammar: line 266
+	testUntypableNewGrammar: line 274
+	testUntypableNewGrammar: line 283
+	testUntypableNewGrammar: line 287
+	testUntypableNewGrammar: line 305
+	testTypeableNewGrammar: line 322
+	testTypeableNewGrammar: line 328
+	testTypeableNewGrammar: line 334
+	testTypeableNewGrammar: line 338
+	testTypeableNewGrammar: line 348
+	testTypeableNewGrammar: line 354
+	testTypeableNewGrammar: line 361
+	testTypeableNewGrammar: line 375
+	testTypeableNewGrammar: line 381
+	falsePositivesWeCantShowWrong: line 517
+	falsePositivesWeCantShowWrong: line 522
+	showSimpleRights: line 532
+	testProgramsRun: line 448
+	testProgramsRun: line 457 [0m
+[31m failures (0/86):
+ 	 [0m
