@@ -29,18 +29,23 @@
 // const useZero = 0 + multitool(toolZero);
 // const useTwice = (multitool(toolTwice)(x => x - 1))(2);
 
-const pair = s => t => p => p(s)(t);
-const fst = s => t => s;
-const snd = s => t => t;
-const quotInner = n => d => q => { 
-    return n + 1 <= 0 
-        ? pair(q - 1)(n + d) 
-        : quotInner(n - d)(d)(q + 1);
-}
-const quot = n => d => quotInner(n)(d)(0);
-const result = quot(x => x)(12);
-const quotient = quot(quot);//result(fst);
-const r = x => x;
-const remainder = 3;//result(snd);
+// const pair = s => t => p => p(s)(t);
+// const fst = s => t => s;
+// const snd = s => t => t;
+// const quotInner = n => d => q => { 
+//     return n + 1 <= 0 
+//         ? pair(q - 1)(n + d) 
+//         : quotInner(n - d)(d)(q + 1);
+// }
+// const quot = n => d => quotInner(n)(d)(0);
+// const result = quot(x => x)(12);
+// const quotient = quot(quot);//result(fst);
+// const r = x => x;
+// const remainder = 3;//result(snd);
 
+const failed = (x => x) + (x => x);
+0;
+0(0);
+0;
+0(0);
 
