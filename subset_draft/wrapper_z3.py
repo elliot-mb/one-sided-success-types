@@ -189,6 +189,8 @@ def make_solns(const_lookup, constrs, count, we_care_names, JSTy):
                 if(assStr in we_care_typestr):
                     uncared_for_typestrs.remove(assStr)
             else:                     #print('reassign ' + assStr)
+                #print('ILLEGAL ASSIGN to ' + assStr)
+                #sol[assStr] = mod[ass]
                 illegal_assign = True
         
         for s in uncared_for_typestrs:
@@ -298,23 +300,36 @@ def main():
 
     solns = []
 
-    solver = Solver()
-    solver.set(relevancy=2)
     # the grammar for types 
     JSTy = Datatype('JSTy')
 
     JSTy.declare('Num')
     JSTy.declare('Ok')
     JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
+    # lft and rgt are always total
     JSTy.declare('Comp', ('comp', JSTy))#C))
 
     JSTy = JSTy.create()
+
+    # try to stop it assigning to lft and right?
+    l = FreshConst(JSTy)
+    r = FreshConst(JSTy)
+    RecAddDefinition(JSTy.lft, l, l)
+    RecAddDefinition(JSTy.rgt, r, r)
+
+    #testing printing
+    # myTypeVar = Const('myvar', JSTy)
+    # myArrow = JSTy.To(myTypeVar, myTypeVar)
+    # myArrowConst = Const('myArrow', JSTy)
+    # print(myTypeVar.decl())
+    # print(myArrowConst.decl())
+
     for name in type_list:
         type_lookup[name] = Const(name, JSTy) # ComplTy can be put inside comps
 
     term_type = type_lookup[str(type_name(recieved['term_type']))] #get it out of type_lookup
     all_constrs = unpack(constrs, type_lookup, JSTy)
-
+    #print(all_constrs)
     wrong_all_var_typings = []
     wrong_all_var_types = []
 

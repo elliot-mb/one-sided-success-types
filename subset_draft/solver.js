@@ -91,9 +91,13 @@ export class Solver{
         console.log(`${program}`);
         Object.keys(varAssignments)
             .map((k, i) => {
-                console.log(`\t\t${k} : ${varAssignments[k].length === 0 ? 'Untypable' : varAssignments[k]}`);
+                console.log(`\t\t${k} : ${ anyFails.length > 0 && i > anyFails[0] 
+                ? 'Unknown'
+                : varAssignments[k].length === 0 
+                        ? 'Untypable' 
+                        : varAssignments[k]}`);
             });
-        if(anyFails.length !== 0) console.log(`\t\tIll-typed`);
+        if(anyFails.length !== 0) console.log(`\t\tIll-typed and fails at ${anyFails}`);
         else console.log(`\t\tInconclusive`); //we dont handle the case where individual terms evalute without assignment
         //if(anyFails.length !== 0) console.log(`First fails on line ${anyFails[0]}`);
         return anyFails;
