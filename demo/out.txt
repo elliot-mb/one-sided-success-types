@@ -29,43 +29,45 @@
 // const useZero = 0 + multitool(toolZero);
 // const useTwice = (multitool(toolTwice)(x => x - 1))(2);
 
-// const pair = s => t => p => p(s)(t);
-// const fst = s => t => s;
-// const snd = s => t => t;
-// const quotInner = n => d => q => { 
-//     return n + 1 <= 0 
-//         ? pair(q - 1)(n + d) 
-//         : quotInner(n - d)(d)(q + 1);
-// }
-// const quot = n => d => quotInner(n)(d)(0);
-// const result = quot(x => x)(12);
-// const quotient = quot(quot);//result(fst);
-// const r = x => x;
-// const remainder = 3;//result(snd);
+const pair = s => t => p => p(s)(t);
+const fst = s => t => s;
+const snd = s => t => t;
+const quotInner = n => d => q => { 
+    return n + 1 <= 0 
+        ? pair(q - 1)(n + d) 
+        : quotInner(n - d)(d)(q + 1);
+}
+const quot = n => d => quotInner(n)(d)(0);
+const result = quot(x => x)(12);
+const quotient = quot(quot);//result(fst);
+const remainder = 3;//result(snd);
+const threeOnThree = 3(3);
 
-const failed = (x => x) + (x => x);
-0;
-0(0);
-0;
-0(0);
+// const failed = (x => x) + (x => x);
+// 0;
+// 0(0);
+// 0;
+// 0(0);
 
 
 Solution
-	failed : Comp(Ok)
-	eval#0 : Num
-	eval#1 : Num
-	eval#2 : Num
-	eval#3 : Num
+	pair : (Num -> (Ok -> Ok))
+	fst : (Num -> (Comp(Ok) -> Num))
+	snd : (Comp(Ok) -> Num)
+	quotInner : ((Comp(Ok) -> Num) -> (Num -> (Num -> Comp(Ok))))
+	quot : ((Comp(Ok) -> Num) -> (Num -> Comp(Ok)))
+	result : Comp(Ok)
+	quotient : Ok
+	remainder : Num
+	threeOnThree : Num
 Solution
-	failed : Comp(Ok)
-	eval#0 : Num
-	eval#1 : Comp(Ok)
-	eval#2 : Num
-	eval#3 : Num
-Solution
-	failed : Comp(Ok)
-	eval#0 : Num
-	eval#1 : Comp(Ok)
-	eval#2 : Ok
-	eval#3 : Comp(Ok)
-Ill-typed and fails at: failed,eval#1,eval#3
+	pair : (Ok -> (Ok -> Ok))
+	fst : (Ok -> Ok)
+	snd : (Comp(Ok) -> (Ok -> (Num -> Num)))
+	quotInner : ((Comp(Ok) -> Num) -> (Num -> (Num -> Comp(Ok))))
+	quot : ((Comp(Ok) -> Num) -> (Num -> Comp(Ok)))
+	result : Comp(Ok)
+	quotient : Ok
+	remainder : Num
+	threeOnThree : Comp(Ok)
+Ill-typed and fails at: result,threeOnThree
