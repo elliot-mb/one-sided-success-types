@@ -132,8 +132,10 @@ export class Reconstructor{
                 full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, typeIfArr)))]); //constrain the free arrow type to being equal to the conclusion
             //type after the type reconstruction is done 
 
+            const justThisFullConstrCopy = new Orer(); 
+            full.constrs.xs.map(ander => justThisFullConstrCopy.add(ander));
             full.conjoinOrer(constrAccumulator); //wrapped in a unit orer, attach previous line's constraints 
-            constrAccumulator.push(full.constrs);
+            constrAccumulator.push(justThisFullConstrCopy); //put all the constraints from this full judgement into the accumualtor
              
             fulls.push(full);
             //add the conclusion type to the accumulator after if we didnt add it as an arrow before

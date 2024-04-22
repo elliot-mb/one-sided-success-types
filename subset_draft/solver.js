@@ -63,10 +63,10 @@ export class Solver{
     static toArrowJSTy = jsty => {
         if(typeof(jsty) !== typeof('string')) throw Utils.makeErr('toArrowJSTy: jsty must be a string');
         let noTo = jsty.replace(/To/g, '');
-        if(noTo[0] === '(' && noTo[noTo.length - 1] === ')'){
-            noTo = noTo.substring(1);
-            noTo = noTo.substring(0, noTo.length - 1);
-        }
+        // if(noTo[0] === '(' && noTo[noTo.length - 1] === ')'){
+        //     noTo = noTo.substring(1);
+        //     noTo = noTo.substring(0, noTo.length - 1);
+        // }
         return noTo.replace(/,/g, ' ->'); //add a space prior
     }
 

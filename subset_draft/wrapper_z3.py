@@ -185,7 +185,7 @@ def make_solns(const_lookup, constrs, count, we_care_names, JSTy):
                 if((str(mod[ass]) != str(JSTy.Comp(JSTy.Ok))) and assStr in we_care_typestr):
                     mod_can_neg.append(neg) 
                 if(str(mod[ass]) == str(JSTy.Comp(JSTy.Ok)) and assStr in we_care_typestr):
-                    solver.add(neg) # this is anded, fix those compers 
+                    solver.add(Not(neg)) # this is anded, fix those compers 
                 if(assStr in we_care_typestr):
                     uncared_for_typestrs.remove(assStr)
             else:                     #print('reassign ' + assStr)
@@ -361,6 +361,8 @@ def main():
             ty = env[var_name]
             var_shape = ty[args.shape_field]
             var_type = str(to_jsty_type(ty, type_lookup, JSTy))
+            j = 0
+            assigned = {}
             for x in xs:
                 if var_shape == args.arrow_shape: # non-recursive because theyre only singly nested by the rule 
                     a_ty = str(to_jsty_type(ty['A'], type_lookup, JSTy))
@@ -371,16 +373,19 @@ def main():
                         a_ass_str = str(x[a_ty])
                     if b_ty in x:
                         b_ass_str = str(x[b_ty])
-                    result[var_name].append('To('+a_ass_str+', '+b_ass_str+')')
+                    result[var_name].append(str(j) + '#To('+a_ass_str+', '+b_ass_str+')')
                 elif str(var_type) in x:
                     string_of_type_ass = str(x[str(var_type)])
-                    result[var_name].append(string_of_type_ass)
+                    result[var_name].append(str(j) + '#' + string_of_type_ass)
                     if string_of_type_ass == str(JSTy.Comp(JSTy.Ok)):
-                        any_fails.append(i)
+                        any_fails.append(i)   
+                else:
+                    result[var_name].append(str(j) + '#Unknown')
+                j += 1
             i += 1
 
-        for top in result:
-            result[top] = uniques_in_list(result[top])
+        #for top in result:
+        #    result[top] = uniques_in_list(result[top])
         return {
             'ass' : result,
             'fails_at': any_fails
