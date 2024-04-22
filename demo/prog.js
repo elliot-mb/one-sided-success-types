@@ -39,9 +39,10 @@ const quotInner = n => d => q => {
 }
 const quot = n => d => quotInner(n)(d)(0);
 const result = quot(x => x)(12);
-const quotient = result(fst);
-const remainder = result(snd);
+const quotient = quot(quot);//result(fst);
+const r = x => x;
+const remainder = 3;//result(snd);
 
 
-console.log(quotient);
-console.log(remainder);
+// console.log(quotient);
+// console.log(remainder);

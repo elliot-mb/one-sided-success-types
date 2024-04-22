@@ -60,6 +60,15 @@ export class Solver{
         return builder;
     }
     
+    static toArrowJSTy = jsty => {
+        if(typeof(jsty) !== typeof('string')) throw Utils.makeErr('toArrowJSTy: jsty must be a string');
+        let noTo = jsty.replace(/To/g, '');
+        if(noTo[0] === '(' && noTo[noTo.length - 1] === ')'){
+            noTo = noTo.substring(1);
+            noTo = noTo.substring(0, noTo.length - 1);
+        }
+        return noTo.replace(/,/g, ' ->'); //add a space prior
+    }
 
     static okC = 'Comp(Ok)';
 
@@ -91,11 +100,11 @@ export class Solver{
         console.log(`${program}`);
         Object.keys(varAssignments)
             .map((k, i) => {
-                console.log(`\t\t${k} : ${ anyFails.length > 0 && i > anyFails[0] 
+                console.log(`\t\t${k} :\n ${ false && anyFails.length > 0 && i > anyFails[0] 
                 ? 'Unknown'
                 : varAssignments[k].length === 0 
                         ? 'Untypable' 
-                        : varAssignments[k]}`);
+                        : varAssignments[k].map(jsty => `\t\t\t${Solver.toArrowJSTy(jsty)}\n`)}`);
             });
         if(anyFails.length !== 0) console.log(`\t\tIll-typed and fails at ${anyFails}`);
         else console.log(`\t\tInconclusive`); //we dont handle the case where individual terms evalute without assignment

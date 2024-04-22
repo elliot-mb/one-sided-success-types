@@ -39,20 +39,48 @@ const quotInner = n => d => q => {
 }
 const quot = n => d => quotInner(n)(d)(0);
 const result = quot(x => x)(12);
-const quotient = result(fst);
-const remainder = result(snd);
+const quotient = quot(quot);//result(fst);
+const r = x => x;
+const remainder = 3;//result(snd);
 
 
-// console.log(quotient, remainder);
-		pair : To(Comp(Ok), Num)
-		fst : To(Num, To(Num, Num)),To(To(Num, Num), Ok)
-		snd : To(Num, To(To(Num, Num), To(Num, Num))),To(Ok, Ok)
-		quotInner : To(To(To(Num, Num), To(Num, Num)), To(Ok,
-   To(Num,
-      To(To(Num, To(To(Num, Num), To(Num, Num))), Comp(Ok))))),To(To(Comp(Ok), Num), To(Ok, To(Ok, Comp(Ok))))
-		quot : To(To(To(Num, Num), To(Num, Num)), To(Ok,
-   To(To(Num, To(To(Num, Num), To(Num, Num))), Comp(Ok)))),To(To(Comp(Ok), Num), To(Ok, Comp(Ok)))
-		result : To(To(Num, To(To(Num, Num), To(Num, Num))), Comp(Ok)),Comp(Ok)
-		quotient : Ok,To(Num, Num)
-		remainder : Comp(Ok)
-		Ill-typed
+// console.log(quotient);
+// console.log(remainder);
+		pair :
+ 			Num -> (Comp(Ok) -> Num)
+,			Ok -> (Ok -> (Num -> Ok))
+,			Ok -> (Ok -> (Ok -> Ok))
+
+		fst :
+ 			Num -> (Comp(Ok) -> Num)
+,			Ok -> Ok
+,			(Num -> Num) -> Ok
+
+		snd :
+ 			Comp(Ok) -> Num
+,			Num -> Ok
+
+		quotInner :
+ 			((Num -> Num) -> (Num -> Num)) -> (Num -> (Num -> Comp(Ok)))
+,			((Num -> Ok) -> (Num -> Ok)) -> (Ok -> (Ok -> Comp(Ok)))
+,			(Comp((Num -> (Num -> Num))) -> Comp((Num -> (Num -> Num)))) -> (Ok -> (Ok -> Comp(Ok)))
+
+		quot :
+ 			((Num -> Num) -> (Num -> Num)) -> (Num -> Comp(Ok))
+,			((Num -> Ok) -> (Num -> Ok)) -> (Ok -> Comp(Ok))
+,			(Comp((Num -> (Num -> Num))) -> Comp((Num -> (Num -> Num)))) -> (Ok -> Comp(Ok))
+
+		result :
+ 			Comp(Ok)
+
+		quotient :
+ 			Num
+,			Comp(Ok)
+
+		r :
+ 			Num -> Num
+
+		remainder :
+ 			Comp(Ok)
+
+		Ill-typed and fails at 5,6,8

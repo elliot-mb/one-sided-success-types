@@ -5,4 +5,6 @@ import {Solver} from '../../ast/subset_draft/solver.js';
 
 const prog = readFileSync('./prog.js').toString();
 
-await Solver.whereTypableAsOkC(prog);
+const fails = await Solver.whereTypableAsOkC(prog);
+
+//console.log(`fails at ${fails.reduce((acc, x) => `${acc},${x}`)}`);
