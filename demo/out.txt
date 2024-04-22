@@ -1,24 +1,58 @@
-const block1 = a => {
-    const block2 = x => {
-        const block3 = y => {
-            return x(y);
-        }
-        return block3(a);
-    };
-    return block2(a);
+// const block1 = a => {
+//     const block2 = x => {
+//         const block3 = y => {
+//             return x(y);
+//         }
+//         return block3(a);
+//     };
+//     return block2(a);
+// }
+// const twice = f => f(f);
+// const succ = x => x + 1;
+// const succ2 = block1(succ);
+// const succSucc = twice(succ);
+// // succ(0)(0); yet we can prove this is wrong
+// succ(succ); //an interesting thing to not be able to prove! 
+// succ(succ)(0)(0)(0); //an interesting thing to not be able to prove! 
+
+
+// const toolId = 0;
+// const toolZero = 1;
+// const toolTwice = 2;
+// const multitool = which => {
+//     const id = x => x;
+//     const zero = 0;
+//     const twice = f => x => f(f(x));
+//     return which <= 0 ? id : which - 1 <= 0 ? zero : twice; 
+// }
+// const useId = multitool(toolId)(0);
+// const useZero = 0 + multitool(toolZero);
+// const useTwice = (multitool(toolTwice)(x => x - 1))(2);
+
+const pair = s => t => p => p(s)(t);
+const fst = s => t => s;
+const snd = s => t => t;
+const quotInner = n => d => q => { 
+    return n + 1 <= 0 
+        ? pair(q - 1)(n + d) 
+        : quotInner(n - d)(d)(q + 1);
 }
-const twice = f => f(f);
-const succ = x => x + 1;
-const succ2 = block1(succ);
-const succSucc = twice(succ);
-// succ(0)(0); yet we can prove this is wrong
-succ(succ); //an interesting thing to not be able to prove! 
-succ(succ)(0)(0)(0); //an interesting thing to not be able to prove! 
-		block1 : Untypable
-		twice : Untypable
-		succ : Untypable
-		succ2 : Untypable
-		succSucc : Untypable
-		eval#0 : Untypable
-		eval#1 : Untypable
-		Inconclusive
+const quot = n => d => quotInner(n)(d)(0);
+const result = quot(x => x)(12);
+const quotient = result(fst);
+const remainder = result(snd);
+
+
+// console.log(quotient, remainder);
+		pair : To(Comp(Ok), Num)
+		fst : To(Num, To(Num, Num)),To(To(Num, Num), Ok)
+		snd : To(Num, To(To(Num, Num), To(Num, Num))),To(Ok, Ok)
+		quotInner : To(To(To(Num, Num), To(Num, Num)), To(Ok,
+   To(Num,
+      To(To(Num, To(To(Num, Num), To(Num, Num))), Comp(Ok))))),To(To(Comp(Ok), Num), To(Ok, To(Ok, Comp(Ok))))
+		quot : To(To(To(Num, Num), To(Num, Num)), To(Ok,
+   To(To(Num, To(To(Num, Num), To(Num, Num))), Comp(Ok)))),To(To(Comp(Ok), Num), To(Ok, Comp(Ok)))
+		result : To(To(Num, To(To(Num, Num), To(Num, Num))), Comp(Ok)),Comp(Ok)
+		quotient : Ok,To(Num, Num)
+		remainder : Comp(Ok)
+		Ill-typed

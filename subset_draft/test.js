@@ -474,15 +474,15 @@ export class Test {
             const pair = s => t => p => p(s)(t);
             const fst = s => t => s;
             const snd = s => t => t;
-            const divInner = n => d => q => { 
+            const quotInner = n => d => q => { 
                 const lastQ = q - 1;
                 const nextQ = q + 1;
                 const lastR = n + d;
                 const nextR = n - d;
-                return n + 1 <= 0 ? pair(lastQ)(lastR) : divInner(nextR)(d)(nextQ);
+                return n + 1 <= 0 ? pair(lastQ)(lastR) : quotInner(nextR)(d)(nextQ);
             }
-            const div = n => d => divInner(n)(d)(0);
-            const result = div(x => x)(12);
+            const quot = n => d => quotInner(n)(d)(0);
+            const result = quot(x => x)(12);
         `))[0] == 5);
         this.assert((await Solver.whereTypableAsOkC(`
             const k = 0;

@@ -40,10 +40,13 @@ const zero = id(0);
 // const crashme = (x => x)(0)(0);
 
 const showThing = x => {
-    console.log(`"${JSON.stringify({"asStr": `${x}`})}"`);
-    console.log(`"${JSON.stringify({"asRaw": x})}"`);
+    console.log({"asStr": `${x}`});
+    console.log({"asRaw": x});
+    console.log(JSON.stringify({"asLiteral": x}));
 }
 
 showThing((x => x) - (x => x));
 showThing(0 - (x => x));
 showThing((x => x));
+showThing((x => x) + (y => y));
+showThing(new Promise(x => x).then(r => 0));
