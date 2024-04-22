@@ -300,6 +300,39 @@ const getAllSubterms = (ast, except = []) => {
     return subtermNames.map(subtermName => getSubterm(ast, subtermName));
 }
 
+const getAsManySubtermsAsPossible = (ast, except = []) => {
+    const shape = termShape(ast);
+    const subtermNames = Object.keys(typeToSubterms[ast.type][shape]).filter(n => !Utils.any(except.map(x => x === n)));
+    // 
+    const subterms = [];
+    for(let i = 0; i < subtermNames.length; i++){
+        const subtermName = subtermNames[i];
+        try{
+            const subterm = getSubterm(ast, subtermName);
+            subterms.push(subterm);
+        }catch(err){
+            //ignore and then we just dont get the subterm
+        }
+    }
+    return subterms;
+}
+
+export const getAllVariablesInDefn = ast => {
+    const allVars = {};
+    if(ast.type === undefined) throw Utils.makeErr('getAllVariables: requires an AST with type field initialised');
+    const getAllVarsInner = ast => {
+        if(ast.type === undefined) return;
+        const shape = termShape(ast);
+        if(shape === 'x') { 
+            allVars[getSubterm(ast, 'x')] = null;
+            return;
+        }
+        getAsManySubtermsAsPossible(ast).map(subtm => getAllVarsInner(subtm));
+    }
+    getAllVarsInner(ast);
+    return Object.keys(allVars);
+}
+
 //verifies that the term uses just the expected shapes of subterms all the way down
 export const checkGrammar = (term, initialDeclr = false) => {
     if(term === undefined) throw Utils.makeErr(`checkGrammar: term is not defined`);

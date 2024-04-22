@@ -1,5 +1,5 @@
 import {Utils} from './utils.js';
-import {toASTTrees, getSubterm, termShape} from './wrapper_acorn.js';
+import {toASTTrees, getSubterm, termShape, getAllVariablesInDefn} from './wrapper_acorn.js';
 import {Constraint} from './constraint.js';
 import {ConstraintSet} from './constraint_set.js';
 import {EmptyJudgement, Judgement} from './judgement.js';
@@ -79,8 +79,6 @@ export class Reconstructor{
         return topType;
     }
 
-
-
     reconstruct(program){
         this.rstFreshVar();
         const exps = toASTTrees(program, false, true);
@@ -124,6 +122,7 @@ export class Reconstructor{
             }
 
             const thisTermsAssms = assAccumulator.deepCopy();
+            thisTermsAssms.intersectionDom(getAllVariablesInDefn(exp));
             const empty = new EmptyJudgement(exp, thisTermsAssms);
             
             const full = this.typecheck(empty.asSubterm('M')); 
