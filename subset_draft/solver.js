@@ -60,7 +60,7 @@ export class Solver{
         return builder;
     }
     
-    static toArrowJSTy = jsty => {
+    static makeArrows = jsty => {
         if(typeof(jsty) !== typeof('string')) throw Utils.makeErr('toArrowJSTy: jsty must be a string');
         let noTo = jsty.replace(/To/g, '');
         // if(noTo[0] === '(' && noTo[noTo.length - 1] === ')'){
@@ -88,7 +88,7 @@ export class Solver{
         const judgement = judgementAndEnv['judgement'];
         //const ignoredJudgements = judgementAndEnv['ignored']; 
         const env = judgementAndEnv['delta_assms'];
-
+        //console.log(env);
         const t = judgement.termType;
         //console.log(`${judgement.show()}`);
         const envAndConstrs = {'env': env, 'term_type': t, 'constrs': judgement.constrs};
@@ -96,18 +96,35 @@ export class Solver{
         const result = await Solver.sendConstrsToObj(envAndConstrs);
         const varAssignments = result['term_type_assignments'];
         const anyFails = result['fails_at'];
-
         console.log(`${program}`);
-        Object.keys(varAssignments)
-            .map((k, i) => {
-                console.log(`\t\t${k} :\n ${ false && anyFails.length > 0 && i > anyFails[0] 
-                ? 'Unknown'
-                : varAssignments[k].length === 0 
-                        ? 'Untypable' 
-                        : varAssignments[k].map(jsty => `\t\t\t${Solver.toArrowJSTy(jsty)}`).reduce((acc, x) => `${acc}\n${x}`)}`);
-            });
-        if(anyFails.length !== 0) console.log(`\t\tIll-typed and fails at ${anyFails}`);
-        else console.log(`\t\tInconclusive`); //we dont handle the case where individual terms evalute without assignment
+        for(let i = 0; i < anyFails.length; i++){
+            console.log(`Solution`)
+            Object.keys(varAssignments)
+            .map((k) => {
+                console.log(`\t${k} : ${ varAssignments[k].length === 0 
+                    ? `${'Untypable'}`
+                    : `${Solver.makeArrows(varAssignments[k][i])}`}`)
+                });
+        }
+        if(anyFails.length === 0){
+            Object.keys(varAssignments)
+            .map((k) => {
+                console.log(`\t${k} : ${ varAssignments[k].length === 0 
+                    ? `${'Untypable'}`
+                    : `${Solver.makeArrows(varAssignments[k][i])}`}`)
+                });
+        }
+
+        
+        // Object.keys(varAssignments)
+        //     .map((k, i) => {
+        //         console.log(`\t\t${k} :\n ${ varAssignments[k].length === 0 
+        //             ? `\t\t\t${'Untypable'}`
+        //             : varAssignments[k].map(jsty => `\t\t\t${Solver.toArrowJSTy(jsty)}`).reduce((acc, x) => `${acc}\n${x}`)}`);
+        //     });
+        const lineNames = Object.keys(env.getTypings());
+        if(anyFails.length !== 0) console.log(`Ill-typed and fails at: ${anyFails.map(n => lineNames[n])}`);
+        else console.log(`Inconclusive`); //we dont handle the case where individual terms evalute without assignment
         //if(anyFails.length !== 0) console.log(`First fails on line ${anyFails[0]}`);
         return anyFails;
     }

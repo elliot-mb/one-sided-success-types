@@ -373,14 +373,14 @@ def main():
                         a_ass_str = str(x[a_ty])
                     if b_ty in x:
                         b_ass_str = str(x[b_ty])
-                    result[var_name].append(str(j) + '# To('+a_ass_str+', '+b_ass_str+')')
+                    result[var_name].append('To('+a_ass_str+', '+b_ass_str+')')
                 elif str(var_type) in x:
                     string_of_type_ass = str(x[str(var_type)])
-                    result[var_name].append(str(j) + '# ' + string_of_type_ass)
+                    result[var_name].append(string_of_type_ass)
                     if string_of_type_ass == str(JSTy.Comp(JSTy.Ok)):
                         any_fails.append(i)   
                 else:
-                    result[var_name].append(str(j) + '# Unknown')
+                    result[var_name].append('Unknown')
                 j += 1
             i += 1
 

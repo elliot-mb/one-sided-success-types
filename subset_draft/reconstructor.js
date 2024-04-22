@@ -147,10 +147,10 @@ export class Reconstructor{
                 assEvalAccumulator.add(evalIdents[`${i}`], full.termType); //combine these at the end to scrutinise all the types in the program
             }
         }
-        //console.log(assEvalAccumulator.show());
+        //////console.log(assEvalAccumulator.show());
         assAccumulator.addAll(assEvalAccumulator);
-        console.log(constrAccumulator.map(x => `@@${x.show()}`));
-        console.log(finalFull.constrs.show());
+        //////console.log(constrAccumulator.map(x => `@@${x.show()}`));
+        ////console.log(finalFull.constrs.show());
          
         //const F = new GenT(this.getFreshVar('F'));
         //full.addToLast(new Constraint(full.termType, F));
