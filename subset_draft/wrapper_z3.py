@@ -29,16 +29,33 @@ args = parser.parse_args()
 def type_name(var):
     return var['id']
 
+# string of type 
+# def to_type_str(nested):
+#     if(not args.shape_field in nested):
+#          raise Exception( 'to_type: supposed type \'nested\' has no shapeV field')
+#     shape = nested[args.shape_field]
+#     if(shape == args.arrow_shape):
+#         return '(' + to_type_str(nested['A']) + ') -> ' + to_type_str(nested['B'])
+#     if(shape == args.comp_shape):
+#         return 'Comp()' + (to_type_str(nested['A'])) + ')'
+#     if(shape == args.ok_shape):
+#         return 'Ok'
+#     if(shape == args.num_shape):
+#         return 'Num'
+#     else: # no other types are nested so we are done 
+#         return nested['id']
+
+
 # z3_vars is the map of vars
-def to_type(nested, const_lookup, JSTy):
+def to_jsty_type(nested, const_lookup, JSTy):
     if(not args.shape_field in nested):
          raise Exception( 'to_type: supposed type \'nested\' has no shapeV field')
     shape = nested[args.shape_field]
     if(shape == args.arrow_shape):
-        return JSTy.To(to_type(nested['A'], const_lookup, JSTy), 
-                       to_type(nested['B'], const_lookup, JSTy))
+        return JSTy.To(to_jsty_type(nested['A'], const_lookup, JSTy), 
+                       to_jsty_type(nested['B'], const_lookup, JSTy))
     if(shape == args.comp_shape):
-        return JSTy.Comp(to_type(nested['A'], const_lookup, JSTy))
+        return JSTy.Comp(to_jsty_type(nested['A'], const_lookup, JSTy))
     if(shape == args.ok_shape):
         return JSTy.Ok
     if(shape == args.num_shape):
@@ -64,7 +81,7 @@ def unpack(joiner, const_lookup, JSTy):
             return unpack(xs[0], const_lookup, JSTy)
         return Or(list(map(lambda x: unpack(x, const_lookup, JSTy), xs))) 
     if(join_t == args.constraint_type):
-        return to_type(joiner['A'], const_lookup, JSTy) == to_type(joiner['B'], const_lookup, JSTy)
+        return to_jsty_type(joiner['A'], const_lookup, JSTy) == to_jsty_type(joiner['B'], const_lookup, JSTy)
     else:
          raise Exception( 'unpack(): unrecognised type \'' + join_t + '\'')
 
@@ -136,7 +153,7 @@ def show_constrs(constrs):
 
 # iteratively acquires more solutions by constraining assignments against what they come up as 
 # whitelist tells us which assignments to not try and negate (a list of variable names)
-def make_solns(const_lookup, constrs, count):
+def make_solns(const_lookup, constrs, count, we_care_names, JSTy):
     solns = [] # can be added to a dict, array of dicts  
     solver = Solver()
     solver.set(relevancy=2)
@@ -145,24 +162,52 @@ def make_solns(const_lookup, constrs, count):
     illegal_assign = False
     max_solves = count
     solve_count = 0
+
+    we_care_typestr = list(map(lambda type: str(type), we_care_names))
+    #print(we_care_names)
+
     while(solver.check() == sat and not illegal_assign and (max_solves > solve_count)):
         mod = solver.model()
         mod_can_neg = []
-        mod_must_neg = []
         sol = {} #new dict 
+        uncared_for_typestrs = list(map(lambda type: str(type), we_care_names))
         for ass in mod:
             assStr = str(ass)
-            if(ass.arity() == 0): #reassign constants
+            #print(assStr)
+            # if(not assStr in we_care_typestr):
+            #     mod_can_neg.append(neg)
+
+            if(ass.arity() == 0 ): #save solution and reassign constants
+                #print(assStr)
+                #must happen inside the arity check
+                neg = const_lookup[assStr] == JSTy.Comp(JSTy.Ok) #!= mod[ass]
                 sol[assStr] = mod[ass]
-                neg = const_lookup[assStr] != mod[ass]
-                mod_can_neg.append(neg)
+                if((str(mod[ass]) != str(JSTy.Comp(JSTy.Ok))) and assStr in we_care_typestr):
+                    mod_can_neg.append(neg) 
+                if(str(mod[ass]) == str(JSTy.Comp(JSTy.Ok)) and assStr in we_care_typestr):
+                    solver.add(neg) # this is anded, fix those compers 
+                if(assStr in we_care_typestr):
+                    uncared_for_typestrs.remove(assStr)
             else:                     #print('reassign ' + assStr)
+                #print('ILLEGAL ASSIGN to ' + assStr)
+                #sol[assStr] = mod[ass]
                 illegal_assign = True
-         
+        
+        for s in uncared_for_typestrs:
+            if(s.find('To(') == -1): #we shall not negate functions 
+                mod_can_neg.append(const_lookup[s] == JSTy.Comp(JSTy.Ok))
+
+        # for ty in we_care_names:
+        #     assStr = str(ty)
+        #     neg = const_lookup[assStr] == JSTy.Comp(JSTy.Ok) #!= mod[ass]
+        #     if(not ty in mod):
+        #         mod_can_neg.append(neg)
+        
         mod_negation = Or(mod_can_neg)
+        #print(mod_negation)
         solns.append(sol) 
-        if(len(mod_must_neg) > 0):
-            solver.add(And(mod_must_neg))
+        # if(len(mod_must_neg) > 0):
+        #     solver.add(And(mod_negation))
         solver.add(mod_negation)
         solve_count += 1
 
@@ -209,9 +254,17 @@ def uniques_in_list(xs):
         unique_list.append(type_str_none[0])
     return unique_list
 
+# this is for usability we remove the ok typings 
+def remove_ok_strs(xs, JSTy):
+    no_ok = []
+    for x in xs:
+        if not x == str(JSTy.Ok):
+            no_ok.append(x)
+
+    return no_ok
+
 def main():
-    MAX_DEPTH = 1 # this can be one because if something is provably wrong the only kind of assignments it can find
-    # are ones where the conclusion type is okc
+    
     recieved = None
     if(not args.constraint_file == None): 
         recieved_f = open(args.constraint_file, 'r')
@@ -223,53 +276,126 @@ def main():
         recieved = json.loads(args.constraints)
     if(recieved == None):
         raise Exception('main: no file or json specified or provided')
-    constrs = recieved['constrs']
     
-    top_type = recieved['top_type']
+    env = recieved['env']['typings']
+    constrs = recieved['constrs']
+    #print(env)
+
     type_lookup = type_vars(constrs)
     type_list = list(type_lookup.keys())
+
+    tld_var_list = list(env.keys())
+    tld_general_type_vars = []
+    for var_name in tld_var_list:
+        var_type = env[var_name]
+        shape = var_type[args.shape_field]
+        if(shape == args.general_shape):
+            tld_general_type_vars.append(var_name)
+        if(shape == args.arrow_shape):
+            tld_general_type_vars.append(var_name)
+    MAX_SOLNS = len(tld_general_type_vars) 
+    # the rationale behind this is that if every statement goes wrong, then
+    # there will be n iterations one for each statement that fixes it as wrong and
+    # tries to type another as wrong until its done
+
     solns = []
 
-    solver = Solver()
-    solver.set(relevancy=2)
     # the grammar for types 
     JSTy = Datatype('JSTy')
 
     JSTy.declare('Num')
     JSTy.declare('Ok')
     JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
+    # lft and rgt are always total
     JSTy.declare('Comp', ('comp', JSTy))#C))
 
     JSTy = JSTy.create()
+
+    # try to stop it assigning to lft and right?
+    # l = FreshConst(JSTy)
+    # r = FreshConst(JSTy)
+    # RecAddDefinition(JSTy.lft, l, l)
+    # RecAddDefinition(JSTy.rgt, r, r)
+
+    #testing printing
+    # myTypeVar = JSTy.Ok
+    # myArrow = JSTy.To(myTypeVar, myTypeVar)
+    # #('cool_it_bro', JSTy).arg(0)
+    # Function('namer', JSTy, JSTy).params()
+    # print(myTypeVar)
+    # print(str(myArrow.params().pop()))
+
     for name in type_list:
         type_lookup[name] = Const(name, JSTy) # ComplTy can be put inside comps
 
     term_type = type_lookup[str(type_name(recieved['term_type']))] #get it out of type_lookup
     all_constrs = unpack(constrs, type_lookup, JSTy)
+    #print(all_constrs)
+    wrong_all_var_typings = []
+    wrong_all_var_types = []
 
-    all_and_show_me_false = And(all_constrs, term_type == JSTy.Comp(JSTy.Ok))
+    for var_name in tld_general_type_vars:
+        var_type = env[var_name]
+        #print(var_type)
+        shape = var_type[args.shape_field]
+        type_z3 = to_jsty_type(var_type, type_lookup, JSTy)
+        wrong_all_var_typings.append(type_z3 == JSTy.Comp(JSTy.Ok))
+        wrong_all_var_types.append(type_z3)
+        #print('WRONG TYPING' + str(type_z3))
+
+
+    at_least_one_false_assm = And(all_constrs, Or(wrong_all_var_typings))
+    #all_and_show_me_false = And(all_constrs, term_type == JSTy.Comp(JSTy.Ok))
     #bound_in_top = bound_in_constr_set(top_type)
-    
-    solver.add(all_constrs)
 
-    solns = make_solns(type_lookup, all_and_show_me_false, MAX_DEPTH)
+    solns = make_solns(type_lookup, at_least_one_false_assm, MAX_SOLNS, wrong_all_var_types, JSTy)
     #all_solns = make_solns(type_lookup, all_constrs, MAX_DEPTH)
 
     def term_ass(xs): 
-        result = []
-        for x in xs:
-            xb = 'None'
-            if str(term_type) in x:
-                xb = str(x[str(term_type)])
-            result.append(xb)
-        return result
+        result = {}
+        any_fails = []
+        i = 0
+        for var_name in tld_general_type_vars:
+            result[var_name] = []
+            #print(var_name)
+            ty = env[var_name]
+            var_shape = ty[args.shape_field]
+            var_type = str(to_jsty_type(ty, type_lookup, JSTy))
+            for x in xs:
+                if var_shape == args.arrow_shape: # non-recursive because theyre only singly nested by the rule 
+                    a_ty = str(to_jsty_type(ty['A'], type_lookup, JSTy))
+                    b_ty = str(to_jsty_type(ty['B'], type_lookup, JSTy))
+                    a_ass_str = None
+                    b_ass_str = None
+                    if a_ty in x:
+                        a_ass_str = str(x[a_ty])
+                    if b_ty in x:
+                        b_ass_str = str(x[b_ty])
+                    result[var_name].append('To('+a_ass_str+', '+b_ass_str+')')
+                elif str(var_type) in x:
+                    string_of_type_ass = str(x[str(var_type)])
+                    result[var_name].append(string_of_type_ass)
+                    if string_of_type_ass == str(JSTy.Comp(JSTy.Ok)):
+                        any_fails.append(i)
+            i += 1
+
+        for top in result:
+            result[top] = uniques_in_list(result[top])
+        return {
+            'ass' : result,
+            'fails_at': any_fails
+        }
         #list(map(lambda x: if str(term_type) in x: str(x[str(term_type)]), xs))
     
-    term_type_assignments = term_ass(solns)
+    #print(env)
+    assigns_and_fails = term_ass(solns)
+    term_type_assignments = assigns_and_fails['ass']
+    fails_at = assigns_and_fails['fails_at']
+
     #all_term_type_assignments = term_ass(all_solns)
     #just take the uniques 
     #unique_all_term_type_ass = uniques_in_list(all_term_type_assignments)
-    unique_term_type_ass = uniques_in_list(term_type_assignments)
+    #unique_term_type_ass = uniques_in_list(term_type_assignments)
     #unique_top_type_ass = uniques_in_list(top_type_assignments)
     
     reply = {
@@ -278,7 +404,8 @@ def main():
         'sol': solns_to_strs(solns),
         #'sol_conj': show_constrs(list(map(lambda x: soln_to_constrs(x, type_lookup), solns))),
         #'type_vars': type_list,
-        'term_type_assignments': unique_term_type_ass,
+        'term_type_assignments': term_type_assignments,
+        'fails_at': uniques_in_list(fails_at)
         #'top_term_assignments': unique_top_type_ass,
         #'term_type_assignments_all': unique_all_term_type_ass,
         #'bound_in_top': bound_in_top

@@ -21,7 +21,15 @@ export class Assms{
 
     add(name, type){
         Utils.typeVarOrCrash(type);
+        if(this.typings[name] !== undefined) throw Utils.makeErr(`assms.add: ${name} not free in assms`);
         this.typings[name] = type;
+    }
+
+    addAll(assms){
+        Object.keys(assms.getTypings()).map(varName => {
+            //console.log(varName, assms[varName]);
+            this.add(varName, assms.get(varName));
+        });
     }
 
     show(){

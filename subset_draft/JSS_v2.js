@@ -282,7 +282,12 @@ const testInspection = async () => {
 // showsTree('composTree', 'const n = 1; n;');
 // showsTree('composTree2', 'const p = x => {const n = 1 + 1; return n + 1;}');
 // showsTree('composCurryTree', 'const c = x => y => 0;');
-showsTree('composE_WrongTree', 'const f = x => {const a = 1; const b = 2; const c = 3; return c;}')
+// showsTree('composE_WrongTree', 'const f = x => {const a = 1; const b = 2; const c = 3; return c;}')
+
+const prog = 'const x = 3; (0-0)(0); 0(0); 0(0);'
+//console.log((new Reconstructor()).reconstruct(prog)); 
+Solver.whereTypableAsOkC(prog);
+
 
 
 /**

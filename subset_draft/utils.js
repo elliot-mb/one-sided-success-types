@@ -34,6 +34,11 @@ export class Utils{
         return bs.reduce((acc, b) => acc && b, true);
     }
 
+    static head(xs){
+        if(Utils.isEmpty(xs)) throw Utils.makeErr(`last: list is empty`);
+        return xs[0];
+    }
+
     static last(xs){
         if(Utils.isEmpty(xs)) throw Utils.makeErr(`last: list is empty`);
         return xs[xs.length - 1];

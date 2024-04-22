@@ -40,7 +40,7 @@ export class Solver{
     static sendConstraints = async (constraints) => {
         if(typeof(constraints) !== 'string') throw Utils.makeErr('sendConstraints: must be a string');
         writeFileSync(Solver.transferFile, constraints);
-        return Solver.spawnGetString('python3', ['./wrapper_z3.py', '-cf', Solver.transferFile]);
+        return Solver.spawnGetString('python3', ['/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/wrapper_z3.py', '-cf', Solver.transferFile]);
     }
 
     static sendConstrsToObj = async (constraints) => {
@@ -55,40 +55,60 @@ export class Solver{
             const c = dictStr[i]
             builder += (c === '\'' ? '"' : c);
         }
+        builder = builder.replace('True', 'true');
+        builder = builder.replace('False', 'false');
         return builder;
     }
     
+    static toArrowJSTy = jsty => {
+        if(typeof(jsty) !== typeof('string')) throw Utils.makeErr('toArrowJSTy: jsty must be a string');
+        let noTo = jsty.replace(/To/g, '');
+        if(noTo[0] === '(' && noTo[noTo.length - 1] === ')'){
+            noTo = noTo.substring(1);
+            noTo = noTo.substring(0, noTo.length - 1);
+        }
+        return noTo.replace(/,/g, ' ->'); //add a space prior
+    }
+
+    static okC = 'Comp(Ok)';
 
     static isTypableAsOkC = async (program) => {
+        return (await Solver.whereTypableAsOkC(program)).length !== 0;
+    }
+
+    static whereTypableAsOkC = async (program) => {
+        const NO_LINES = -1;
         const r = new Reconstructor();
         //const program = '0 <= 0 ? (x => x) : 0';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
-        const dones = r.reconstruct(program);
-        const untypables = [];
-        for(let i = 0; i < dones.length; i++){
-            const done = dones[i];
-            const t = done.termType;
-            //console.log(`${done.show()}`);
-            const topLvls = done.constrs.toConstraintSet();
-            const topAndConstrs = {'term_type': t, 'top_type': topLvls, 'constrs': done.constrs};
-            const result = await Solver.sendConstrsToObj(topAndConstrs);
-            //console.log(pretty(result));
-            untypables.push(result['term_type_assignments'].length === 0);
-        } 
-        //console.log(JSON.stringify(done.constrs));
-        // const untypables = (await Promise.all(dones.map(async done => {
-        //         const t = done.termType;
-        //         console.log(`${done.show()}`);
-        //         const topLvls = done.constrs.toConstraintSet();
-        //         const topAndConstrs = {'term_type': t, 'top_type': topLvls, 'constrs': done.constrs};
-        //         const result = await Solver.sendConstrsToObj(topAndConstrs);
-        //         //console.log(pretty(result));
-        //         return result['term_type_assignments'].length === 0;
-        //     })));
-        const untypable = untypables.reduce((x, y) => x && y, true);
-        console.log(`${program}:`);
-        untypables.map(x => console.log(x ? '\tUntypable' : '\tComp(Ok)'));
-        if(untypable) console.log('\t\tUntypable');
-        else console.log('\t\tComp(Ok)')
-        return !untypable;
+        const judgementAndEnv = r.reconstruct(program);
+        if(judgementAndEnv === null){
+            console.log('empty program');
+            return NO_LINES;
+        }
+        const judgement = judgementAndEnv['judgement'];
+        //const ignoredJudgements = judgementAndEnv['ignored']; 
+        const env = judgementAndEnv['delta_assms'];
+
+        const t = judgement.termType;
+        //console.log(`${judgement.show()}`);
+        const envAndConstrs = {'env': env, 'term_type': t, 'constrs': judgement.constrs};
+        //console.log(envAndConstrs);
+        const result = await Solver.sendConstrsToObj(envAndConstrs);
+        const varAssignments = result['term_type_assignments'];
+        const anyFails = result['fails_at'];
+
+        console.log(`${program}`);
+        Object.keys(varAssignments)
+            .map((k, i) => {
+                console.log(`\t\t${k} :\n ${ false && anyFails.length > 0 && i > anyFails[0] 
+                ? 'Unknown'
+                : varAssignments[k].length === 0 
+                        ? 'Untypable' 
+                        : varAssignments[k].map(jsty => `\t\t\t${Solver.toArrowJSTy(jsty)}\n`)}`);
+            });
+        if(anyFails.length !== 0) console.log(`\t\tIll-typed and fails at ${anyFails}`);
+        else console.log(`\t\tInconclusive`); //we dont handle the case where individual terms evalute without assignment
+        //if(anyFails.length !== 0) console.log(`First fails on line ${anyFails[0]}`);
+        return anyFails;
     }
 }
