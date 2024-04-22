@@ -44,5 +44,3 @@ const r = x => x;
 const remainder = 3;//result(snd);
 
 
-// console.log(quotient);
-// console.log(remainder);

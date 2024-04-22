@@ -104,7 +104,7 @@ export class Solver{
                 ? 'Unknown'
                 : varAssignments[k].length === 0 
                         ? 'Untypable' 
-                        : varAssignments[k].map(jsty => `\t\t\t${Solver.toArrowJSTy(jsty)}\n`)}`);
+                        : varAssignments[k].map(jsty => `\t\t\t${Solver.toArrowJSTy(jsty)}`).reduce((acc, x) => `${acc}\n${x}`)}`);
             });
         if(anyFails.length !== 0) console.log(`\t\tIll-typed and fails at ${anyFails}`);
         else console.log(`\t\tInconclusive`); //we dont handle the case where individual terms evalute without assignment

@@ -44,43 +44,35 @@ const r = x => x;
 const remainder = 3;//result(snd);
 
 
-// console.log(quotient);
-// console.log(remainder);
-		pair :
- 			Num -> (Comp(Ok) -> Num)
-,			Ok -> (Ok -> (Num -> Ok))
-,			Ok -> (Ok -> (Ok -> Ok))
 
-		fst :
- 			Num -> (Comp(Ok) -> Num)
-,			Ok -> Ok
-,			(Num -> Num) -> Ok
-
-		snd :
- 			Comp(Ok) -> Num
-,			Num -> Ok
-
-		quotInner :
- 			((Num -> Num) -> (Num -> Num)) -> (Num -> (Num -> Comp(Ok)))
-,			((Num -> Ok) -> (Num -> Ok)) -> (Ok -> (Ok -> Comp(Ok)))
-,			(Comp((Num -> (Num -> Num))) -> Comp((Num -> (Num -> Num)))) -> (Ok -> (Ok -> Comp(Ok)))
-
-		quot :
- 			((Num -> Num) -> (Num -> Num)) -> (Num -> Comp(Ok))
-,			((Num -> Ok) -> (Num -> Ok)) -> (Ok -> Comp(Ok))
-,			(Comp((Num -> (Num -> Num))) -> Comp((Num -> (Num -> Num)))) -> (Ok -> Comp(Ok))
-
-		result :
- 			Comp(Ok)
-
-		quotient :
- 			Num
-,			Comp(Ok)
-
-		r :
- 			Num -> Num
-
-		remainder :
- 			Comp(Ok)
-
-		Ill-typed and fails at 5,6,8
+Solution
+	pair : (Num -> (Comp(Ok) -> Num))
+	fst : (Num -> (Comp(Ok) -> Num))
+	snd : (Comp(Ok) -> Num)
+	quotInner : (((Num -> Num) -> (Num -> Num)) -> (Num -> (Num -> Comp(Ok))))
+	quot : (((Num -> Num) -> (Num -> Num)) -> (Num -> Comp(Ok)))
+	result : Comp(Ok)
+	quotient : Num
+	r : (Num -> Num)
+	remainder : Unknown
+Solution
+	pair : (Ok -> (Comp(Ok) -> Num))
+	fst : (Comp(Ok) -> Num)
+	snd : (Num -> (Num -> Ok))
+	quotInner : ((Num -> Ok) -> (Ok -> (Num -> Comp(Ok))))
+	quot : ((Num -> Ok) -> (Ok -> Comp(Ok)))
+	result : Comp(Ok)
+	quotient : Comp(Ok)
+	r : (Num -> Num)
+	remainder : Unknown
+Solution
+	pair : (Ok -> (Comp(Ok) -> Num))
+	fst : (Comp(Ok) -> Num)
+	snd : (Num -> (Num -> Ok))
+	quotInner : ((Num -> Ok) -> (Ok -> (Num -> Comp(Ok))))
+	quot : ((Num -> Ok) -> (Ok -> Comp(Ok)))
+	result : Comp(Ok)
+	quotient : Comp(Ok)
+	r : (Num -> Num)
+	remainder : Comp(Ok)
+Ill-typed and fails at: result,quotient,remainder
