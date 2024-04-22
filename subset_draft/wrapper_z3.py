@@ -279,7 +279,7 @@ def main():
     
     env = recieved['env']['typings']
     constrs = recieved['constrs']
-    
+    #print(env)
 
     type_lookup = type_vars(constrs)
     type_list = list(type_lookup.keys())
@@ -312,17 +312,18 @@ def main():
     JSTy = JSTy.create()
 
     # try to stop it assigning to lft and right?
-    l = FreshConst(JSTy)
-    r = FreshConst(JSTy)
-    RecAddDefinition(JSTy.lft, l, l)
-    RecAddDefinition(JSTy.rgt, r, r)
+    # l = FreshConst(JSTy)
+    # r = FreshConst(JSTy)
+    # RecAddDefinition(JSTy.lft, l, l)
+    # RecAddDefinition(JSTy.rgt, r, r)
 
     #testing printing
-    # myTypeVar = Const('myvar', JSTy)
+    # myTypeVar = JSTy.Ok
     # myArrow = JSTy.To(myTypeVar, myTypeVar)
-    # myArrowConst = Const('myArrow', JSTy)
-    # print(myTypeVar.decl())
-    # print(myArrowConst.decl())
+    # #('cool_it_bro', JSTy).arg(0)
+    # Function('namer', JSTy, JSTy).params()
+    # print(myTypeVar)
+    # print(str(myArrow.params().pop()))
 
     for name in type_list:
         type_lookup[name] = Const(name, JSTy) # ComplTy can be put inside comps
