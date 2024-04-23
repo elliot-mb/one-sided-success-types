@@ -57,9 +57,6 @@ const delayed = go => {
     return go;
 }
 const normalRunThis = x => 0;
-const shouldFail = delayed(0);
-Solution
-	delayed : (Ok -> Comp(Ok))
-	normalRunThis : (Comp(Ok) -> Num)
-	shouldFail : Comp(Ok)
-Ill-typed and fails at: shouldFail
+	delayed : Untypable
+	normalRunThis : Untypable
+Inconclusive
