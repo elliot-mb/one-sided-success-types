@@ -12,6 +12,7 @@ import {Ander} from './ander.js';
 
 export class Reconstructor{
     static type = 'reconstructor';
+    static SYNTACTIC_DEFN_EXCLUSION = false; // it only partly fixed the issue of false positives in program lines, so keep false 
 
     constructor(){ //making a new one just resets the variable names (but there are an infinite number anyway)
         this.lastUsedVar = String.fromCharCode(Utils.firstCharCode);
@@ -122,7 +123,11 @@ export class Reconstructor{
             }
 
             const thisTermsAssms = assAccumulator.deepCopy();
-            thisTermsAssms.intersectionDom(getAllVariablesInDefn(exp));
+
+            //since steven mentioned that this doenst stop certain annoying false positives, we will make this 
+            //FALSE all the time! 
+            if(Reconstructor.SYNTACTIC_DEFN_EXCLUSION)thisTermsAssms.intersectionDom(getAllVariablesInDefn(exp));
+
             const empty = new EmptyJudgement(exp, thisTermsAssms);
             
             const full = this.typecheck(empty.asSubterm('M')); 
