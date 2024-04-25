@@ -1,0 +1,88 @@
+[y = Num, x = Comp(Ok)]
+Or(y != Num, x != Comp(Ok))
+[y = Ok, x = Comp(Ok)]
+Or(y != Ok, x != Comp(Ok))
+[y = To(Num, Num), x = Comp(Ok)]
+Or(y != To(Num, Num), x != Comp(Ok))
+[y = To(Num, Ok), x = Comp(Ok)]
+Or(y != To(Num, Ok), x != Comp(Ok))
+[y = Comp(Num),
+ x = Comp(Ok),
+ lft = [To(Comp(Num), Comp(Num)) -> Comp(Num),
+        Comp(Num) -> Ok,
+        else -> Num],
+ rgt = [To(Comp(Num), Comp(Num)) -> Comp(Num),
+        To(Num, Num) -> Num,
+        else -> Ok]]
+Traceback (most recent call last):
+  File "/home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/demo/datatype_ass.py", line 35, in <module>
+    neg = const_lookup[str(ass)] != mod[ass]
+KeyError: 'lft'
+
+// this shows just how simple it is to get an
+// assignment to datatype arguments 
+//
+//     Or(x == JSTy.Comp(JSTy.Ok), x == JSTy.To(y, y))
+//
+
+
+
+
+
+
+
+
+python program
+   | 
+   |
+   |
+   | 
+   |
+   |
+v  |  v
+ v | v
+  v|v
+   v
+import argparse
+import json
+import pprint
+from z3 import *
+
+JSTy = Datatype('JSTy')
+
+JSTy.declare('Num')
+JSTy.declare('Ok')
+JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
+# lft and rgt are always total
+JSTy.declare('Comp', ('comp', JSTy))
+# comp is always total 
+
+JSTy = JSTy.create()
+
+
+x = Const('x', JSTy)
+y = Const('y', JSTy)
+const_lookup = {
+    'x': x,
+    'y': y,
+}
+
+solver = Solver()
+solver.add(Or(x == JSTy.Comp(JSTy.Ok), x == JSTy.To(y, y)))
+
+
+solver.check()
+while(solver.check() == sat):
+    mod = solver.model()
+    print(mod)
+    mod_can_neg = []
+    for ass in mod:
+        neg = const_lookup[str(ass)] != mod[ass]
+        #print(ass, mod[ass])
+        mod_can_neg.append(neg)
+    mod_negation_or = Or(mod_can_neg)
+    print(mod_negation_or)
+    solver.add(mod_negation_or)
+
+
+

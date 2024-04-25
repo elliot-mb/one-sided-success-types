@@ -166,14 +166,14 @@ def make_solns(const_lookup, constrs, count, we_care_names, JSTy):
 
     solns = [] # can be added to a dict, array of dicts  
     solver = Solver()
-    solver.set(relevancy=2)
+    solver.set(relevancy=1)
     solver.add(constrs)
 
-    tyVarA = Const('tyVarA', JSTy)
-    tyVarB = Const('tyVarB', JSTy)
-    solver.add(ForAll([tyVarA, tyVarB], JSTy.To(tyVarA, tyVarB).arg(0) == tyVarA))
-    solver.add(ForAll([tyVarA, tyVarB], JSTy.To(tyVarA, tyVarB).arg(1) == tyVarB))
-    solver.add(ForAll([tyVarA], JSTy.Comp(tyVarA).arg(0) == tyVarA))
+    # tyVarA = Const('tyVarA', JSTy)
+    # tyVarB = Const('tyVarB', JSTy)
+    # solver.add(ForAll([tyVarA, tyVarB], JSTy.To(tyVarA, tyVarB).arg(0) == tyVarA))
+    # solver.add(ForAll([tyVarA, tyVarB], JSTy.To(tyVarA, tyVarB).arg(1) == tyVarB))
+    # solver.add(ForAll([tyVarA], JSTy.Comp(tyVarA).arg(0) == tyVarA))
 
     mod = None
     illegal_assign = False

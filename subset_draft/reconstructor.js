@@ -115,12 +115,15 @@ export class Reconstructor{
         let finalFull = null;
         for(let i = 0; i < exps.length; i++){
             const exp = exps[i];
-            const isntEval = evalIdents[`${i}`] === undefined;
+            const isEval = evalIdents[`${i}`] !== undefined;
             let conclusionTy;
-            if(isntEval){
+            const conclusionTyName = `T`;
+            if(!isEval){
+                const tyNameA = this.getFreshVar(conclusionTyName);
+                const tyNameB = this.getFreshVar(conclusionTyName);
                 conclusionTy = termShape(exp) === Rule.compoAbs 
-                    ? new ArrowT(new GenT(this.getFreshVar('T')), new GenT(this.getFreshVar('T')), GenT.ArrowT, true)
-                    : new GenT(this.getFreshVar('T'), true); //a type insterted into assums to reference the assignment 
+                    ? new ArrowT(new GenT(tyNameA), new GenT(tyNameB), GenT.ArrowT, true)
+                    : new GenT(this.getFreshVar(conclusionTyName), true); //a type insterted into assums to reference the assignment 
                 
                 assAccumulator.add(idents[`${i}`], conclusionTy);
             }
@@ -136,8 +139,10 @@ export class Reconstructor{
             const full = this.typecheck(empty.asSubterm('M')); 
             
             //the type we generated for this is equal to the resultant type 
-            if(isntEval){
+            if(!isEval){
                 full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, conclusionTy)))]); 
+            }else{
+                assEvalAccumulator.add(evalIdents[`${i}`], full.termType); //combine these at the end to scrutinise all the types in the program
             }
 
             const justThisFullConstrCopy = new Orer(); 
@@ -151,11 +156,6 @@ export class Reconstructor{
             // if(!isAbsDefn && idents[`${i}`] !== undefined){
             //     assAccumulator.add(idents[`${i}`], full.termType); //full.termType is mentioned in the constraints & assumptions, so we can use this in solving them! 
             // }
-            
-            //these are the terms that evaluated without defining a variable 
-            if(!isntEval){
-                assEvalAccumulator.add(evalIdents[`${i}`], full.termType); //combine these at the end to scrutinise all the types in the program
-            }
         }
         //////console.log(assEvalAccumulator.show());
         assAccumulator.addAll(assEvalAccumulator);
@@ -164,6 +164,7 @@ export class Reconstructor{
          
         //const F = new GenT(this.getFreshVar('F'));
         //full.addToLast(new Constraint(full.termType, F));
+        console.log(finalFull.show());
         return {
             'judgement': finalFull,
             'delta_assms': assAccumulator //represents how we type programs as type environments 

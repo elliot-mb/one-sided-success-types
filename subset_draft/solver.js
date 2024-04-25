@@ -61,7 +61,7 @@ export class Solver{
     }
     
     static makeArrows = jsty => {
-        if(typeof(jsty) !== typeof('string')) throw Utils.makeErr('toArrowJSTy: jsty must be a string');
+        if(typeof(jsty) !== typeof('string')) throw Utils.makeErr(`toArrowJSTy: jsty must be a string when it was ${jsty}`);
         let noTo = jsty.replace(/To/g, '');
         // if(noTo[0] === '(' && noTo[noTo.length - 1] === ')'){
         //     noTo = noTo.substring(1);
