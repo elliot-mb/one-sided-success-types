@@ -57,3 +57,4 @@ const delayed = go => {
     return go;
 }
 const normalRunThis = x => 0;
+const shouldFail = delayed(0);
