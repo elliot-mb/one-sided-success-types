@@ -22,10 +22,15 @@ export class GenT{
     static arrowShape = 'A -> B';
     static compShape = '!A';
     
-    constructor(id){
+    constructor(id, isTopLevel = false){
+        this.isTopLevel = isTopLevel;
         this.id = id;
         this.shapeV = GenT.genShape; //shapevar
         this.type = GenT.type;
+    }
+
+    topLevel(){
+        return this.isTopLevel;
     }
 
     getId(){
@@ -190,8 +195,8 @@ export class NumT extends GenT{
 
 export class ArrowT extends GenT{
 
-    constructor(A, B, id = GenT.ArrowT){
-        super(id);
+    constructor(A, B, id = GenT.ArrowT, isTopLevel = false){
+        super(id, isTopLevel);
         Utils.typeVarsOrCrash(A, B);
         this.A = A;
         this.B = B;

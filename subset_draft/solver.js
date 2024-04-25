@@ -125,6 +125,9 @@ export class Solver{
         const lineNames = Object.keys(env.getTypings());
         if(anyFails.length !== 0) console.log(`Ill-typed and fails at: ${anyFails.map(n => lineNames[n])}`);
         else console.log(`Inconclusive`); //we dont handle the case where individual terms evalute without assignment
+
+        //console.log(result['sol']);
+
         //if(anyFails.length !== 0) console.log(`First fails on line ${anyFails[0]}`);
         return anyFails;
     }

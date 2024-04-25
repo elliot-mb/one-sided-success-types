@@ -25,6 +25,8 @@ export class Assms{
         this.typings[name] = type;
     }
 
+
+
     addAll(assms){
         Object.keys(assms.getTypings()).map(varName => {
             //console.log(varName, assms[varName]);
@@ -44,6 +46,19 @@ export class Assms{
     //return a list of typings as constraints
     getTypings(){
         return this.typings; // return Object.keys(this.typings).map(k => new Constraint(new GenT(k), this.typings[k])); 
+    }
+
+    getLocalTypings(){
+        //create a type environment which just has type variables that arent top
+        //level types 
+        const noTopLevelTypings = {};
+        Object.keys(this.typings).map(k => {
+            const ty = this.typings[k];
+            if(!ty.topLevel()){ 
+                noTopLevelTypings[k] = ty;
+            }
+        });
+        return noTopLevelTypings;
     }
 
     deepCopy(){
