@@ -1,0 +1,3049 @@
+const failure = (x => x) - (y => y) - (z => z)
+                const eight = 8;
+                const nine  = 9;
+                const ten   = 10; //obviously these wouldnt actually go wrong
+                
+Solution
+	failure : Comp(Ok)
+	eight : Num
+	nine : Num
+	ten : Num
+Ill-typed and fails at: failure
+[
+  {
+    XG: 'Num',
+    YI: 'Num',
+    ZM: 'Num',
+    XQ: 'Num',
+    ZT: 'Num',
+    WL: 'Num',
+    XH: 'To(Num, Num)',
+    TZ: 'Num',
+    TX: 'Num',
+    YP: 'Num',
+    XD: 'To(Num, Num)',
+    ZK: 'Num',
+    YF: 'Num',
+    WS: 'Num',
+    WN: 'Num',
+    ZR: 'Num',
+    TV: 'Num',
+    XJ: 'Num',
+    WU: 'Num',
+    TB: 'Comp(Ok)',
+    XW: 'Num',
+    XY: 'Num',
+    XAA: 'Num',
+    XC: 'Comp(Ok)'
+  }
+]
+
+                const myWrong = 0(0);
+                const putAWrongIn = x => {
+                    const y = z => z;
+                    y(x);
+                    return 0;
+                }
+                const aRightIn = putAWrongIn(0);
+                const aWrongIn = putAWrongIn(myWrong);
+                
+Solution
+	myWrong : Comp(Ok)
+	putAWrongIn : (Num -> Num)
+	aRightIn : Num
+	aWrongIn : Num
+Solution
+	myWrong : Comp(Ok)
+	putAWrongIn : (Ok -> Ok)
+	aRightIn : Ok
+	aWrongIn : Comp(Ok)
+Ill-typed and fails at: myWrong,aWrongIn
+[
+  {
+    YN: 'Num',
+    TAI: 'Num',
+    YO: 'Num',
+    XAL: 'Comp(Ok)',
+    XAF: 'Num',
+    YU: 'Num',
+    TAC: 'Num',
+    XV: 'Num',
+    XL: 'Num',
+    XD: 'Num',
+    XY: 'To(Num, Num)',
+    XE: 'To(Num, Ok)',
+    XZ: 'Num',
+    XAE: 'To(Num, Num)',
+    TB: 'Comp(Ok)',
+    YK: 'Num',
+    WAB: 'To(Num, Num)',
+    ZAA: 'To(Num, Comp(Ok))',
+    ZF: 'Comp(Ok)',
+    WAH: 'Num',
+    XX: 'Num',
+    XT: 'To(Num, Num)',
+    ZAM: 'Comp(Ok)',
+    ZAG: 'Comp(Ok)',
+    XW: 'Num',
+    WAN: 'Num',
+    XM: 'Num',
+    YP: 'To(Num, Num)',
+    WG: 'Comp(Ok)',
+    TI: 'Num',
+    TH: 'Num',
+    XJ: 'To(Num, Num)',
+    XC: 'Comp(Ok)',
+    XAD: 'Num',
+    XAJ: 'Num'
+  },
+  {
+    YN: 'Num',
+    XAJ: 'Comp(Ok)',
+    TAI: 'Comp(Ok)',
+    YO: 'Num',
+    XAL: 'Comp(Ok)',
+    TH: 'Ok',
+    XAF: 'To(Num, Num)',
+    YU: 'Ok',
+    TAC: 'Ok',
+    XC: 'Comp(Ok)',
+    XX: 'Num',
+    XV: 'To(Num, Num)',
+    ZF: 'Comp(Ok)',
+    WG: 'Comp(Ok)',
+    XD: 'Num',
+    XL: 'Ok',
+    XAD: 'Ok',
+    TI: 'Ok',
+    XE: 'To(Num, Num)',
+    XZ: 'To(Num, Num)',
+    XJ: 'To(Ok, Ok)',
+    YK: 'Ok',
+    TB: 'Comp(Ok)'
+  }
+]
+
+                const id = x => x;
+                const mightFail = x => {
+                    return x <= 0 ? 1 : 2(3);
+                }
+                const guardFail = x => {
+                    return (y => y) + x ? 1 : 2;
+                }
+                const willFail = x => {
+                    return x <= 0 ? (0 <= 0 ? 0(0) : 0(0)) : id + id; 
+                }
+                const mgw = mightFail(guardFail(willFail));
+                const gmw = guardFail(mightFail(willFail));
+                const wgm = willFail(guardFail(mightFail));
+                const mNum = mightFail(0-1); //
+                const gNum = guardFail(0); //interesting it doesnt fail here 
+                const wNum = willFail(0);  //nor here 
+                
+Solution
+	id : (Num -> Num)
+	mightFail : ((Comp(Num) -> Num) -> Comp(Ok))
+	guardFail : (Num -> Num)
+	willFail : (Comp(Num) -> Num)
+	mgw : Ok
+	gmw : Comp(Ok)
+	wgm : Ok
+	mNum : Ok
+	gNum : Ok
+	wNum : Ok
+Solution
+	id : ((Ok -> Num) -> (Ok -> Num))
+	mightFail : ((Comp(Ok) -> Num) -> Comp(Ok))
+	guardFail : ((Comp(Ok) -> Num) -> Comp(Ok))
+	willFail : (Comp(Ok) -> Num)
+	mgw : Comp(Ok)
+	gmw : Comp(Ok)
+	wgm : Ok
+	mNum : Ok
+	gNum : Ok
+	wNum : Ok
+Solution
+	id : (Comp(Num) -> Comp(Num))
+	mightFail : ((Comp(Ok) -> Num) -> Comp(Ok))
+	guardFail : (Ok -> Comp(Ok))
+	willFail : (Comp(Ok) -> Num)
+	mgw : Comp(Ok)
+	gmw : Comp(Ok)
+	wgm : Comp(Ok)
+	mNum : Ok
+	gNum : Ok
+	wNum : Ok
+Solution
+	id : (Comp(Num) -> Comp(Num))
+	mightFail : ((Comp(Ok) -> Num) -> Comp(Ok))
+	guardFail : (Ok -> Comp(Ok))
+	willFail : (Comp(Ok) -> Num)
+	mgw : Comp(Ok)
+	gmw : Comp(Ok)
+	wgm : Comp(Ok)
+	mNum : Ok
+	gNum : Comp(Ok)
+	wNum : Ok
+Solution
+	id : (Comp(Num) -> Comp(Num))
+	mightFail : ((Num -> Comp(Ok)) -> Comp(Ok))
+	guardFail : (Ok -> Comp(Ok))
+	willFail : (Num -> Comp(Ok))
+	mgw : Comp(Ok)
+	gmw : Comp(Ok)
+	wgm : Comp(Ok)
+	mNum : Ok
+	gNum : Comp(Ok)
+	wNum : Comp(Ok)
+Ill-typed and fails at: mgw,gmw,wgm,gNum,wNum
+[
+  {
+    ZDB: 'Num',
+    XAF: 'To(Num, Num)',
+    XDI: 'Num',
+    XAO: 'Num',
+    ZAI: 'Num',
+    XAR: 'Comp(Num)',
+    XAZ: 'Num',
+    ZBL: 'Num',
+    XCO: 'Num',
+    ZCZ: 'Num',
+    TBP: 'Ok',
+    ZBN: 'Num',
+    WAJ: 'Num',
+    XBB: 'To(Num, Num)',
+    TDL: 'Ok',
+    YE: 'Num',
+    XCM: 'Num',
+    WDA: 'Num',
+    XDH: 'To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    TCT: 'Ok',
+    TBZ: 'Comp(Ok)',
+    XCC: 'Comp(Ok)',
+    XAW: 'To(Num, Num)',
+    YJ: 'To(Comp(Num), Num)',
+    WV: 'Num',
+    XK: 'Comp(Ok)',
+    XP: 'To(Num, Num)',
+    XAA: 'Num',
+    XBU: 'Num',
+    YZ: 'Num',
+    YAE: 'Ok',
+    XF: 'Num',
+    XBS: 'Num',
+    XCD: 'To(To(Comp(Num), Num), Comp(Ok))',
+    WDC: 'Num',
+    XCE: 'To(Comp(Num), Num)',
+    XR: 'To(Num, Num)',
+    ZU: 'Comp(Num)',
+    WBO: 'Num',
+    TDF: 'Ok',
+    WBK: 'Num',
+    XAH: 'Num',
+    XBT: 'To(Comp(To(Comp(Ok), Ok)), Comp(To(Comp(Ok), Ok)))',
+    XCW: 'Num',
+    XDO: 'To(Num, Num)',
+    ZBE: 'Num',
+    YAN: 'Comp(Num)',
+    WBF: 'Num',
+    TCJ: 'Ok',
+    WBM: 'Num',
+    XN: 'To(Comp(Num), Num)',
+    XCV: 'Comp(Comp(To(Comp(Ok), Ok)))',
+    ZBJ: 'Num',
+    ZCP: 'To(Num, Comp(Ok))',
+    ZCF: 'To(Num, Comp(Ok))',
+    ZBV: 'To(Num, Comp(Ok))',
+    WBD: 'To(Num, Num)',
+    ZBC: 'To(Num, Comp(Ok))',
+    WAY: 'To(Num, Num)',
+    ZAX: 'To(Num, Comp(Ok))',
+    WT: 'To(Num, To(Num, Num))',
+    ZS: 'To(Num, Comp(Ok))',
+    XAG: 'Num',
+    XAC: 'Num',
+    XAQ: 'Num',
+    XAP: 'Num',
+    ZDD: 'Comp(Ok)',
+    WCI: 'Comp(Ok)',
+    ZBX: 'Comp(Ok)',
+    WDQ: 'Ok',
+    XAB: 'Num',
+    XM: 'Comp(Ok)',
+    WDE: 'Ok',
+    XL: 'Comp(Ok)',
+    ZDP: 'Comp(Ok)',
+    WDK: 'Ok',
+    ZDJ: 'Comp(Ok)',
+    ZCH: 'Comp(Ok)',
+    XO: 'To(Num, Num)',
+    ZCR: 'Comp(Ok)',
+    XAU: 'Num',
+    WCS: 'Ok',
+    WBY: 'Ok',
+    XBG: 'Num',
+    XAS: 'Num',
+    TB: 'Num',
+    TW: 'Num',
+    TAK: 'Comp(Num)',
+    TG: 'To(Comp(Num), Num)',
+    TAL: 'Num',
+    TH: 'Comp(Ok)',
+    TC: 'Num',
+    TX: 'Num',
+    XCU: 'Ok',
+    XDG: 'Ok',
+    XBQ: 'Ok',
+    XCA: 'Comp(Ok)',
+    XI: 'To(To(Comp(Num), Num), Comp(Ok))',
+    XDM: 'Ok',
+    XY: 'To(Num, Num)',
+    XD: 'To(Num, Num)',
+    XCK: 'Ok',
+    XAM: 'To(Comp(Num), Num)'
+  },
+  {
+    ZDB: 'Num',
+    TH: 'Comp(Ok)',
+    XAF: 'To(Num, Ok)',
+    XDI: 'To(Num, Ok)',
+    TG: 'To(Comp(Ok), Num)',
+    ZAI: 'To(Num, Ok)',
+    XAO: 'Num',
+    XAZ: 'Num',
+    XCU: 'Ok',
+    ZBL: 'Ok',
+    XCO: 'To(To(Num, Num), Num)',
+    XY: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    ZCZ: 'Num',
+    TBP: 'Comp(Ok)',
+    XDG: 'Ok',
+    WAJ: 'To(Num, Ok)',
+    ZBN: 'Num',
+    XAM: 'To(Comp(Ok), Num)',
+    XCY: 'To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    XBB: 'To(Ok, Num)',
+    TDL: 'Ok',
+    XD: 'To(To(Ok, Num), To(Ok, Num))',
+    YE: 'To(Ok, Num)',
+    XCM: 'Num',
+    WDA: 'Num',
+    XDH: 'To(To(To(To(To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok))),To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok))),To(To(To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok))),To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    XCA: 'Comp(Ok)',
+    TCT: 'Ok',
+    TC: 'To(Ok, Num)',
+    TBZ: 'Comp(Ok)',
+    XAU: 'Num',
+    XCC: 'Comp(Ok)',
+    XAW: 'To(Num, Ok)',
+    YJ: 'To(Comp(Ok), Num)',
+    WV: 'Num',
+    XO: 'To(Comp(To(Comp(Ok), Ok)), Comp(To(Comp(Ok), Ok)))',
+    XK: 'Comp(Ok)',
+    XP: 'Num',
+    TAL: 'Num',
+    XAA: 'Comp(Ok)',
+    XBQ: 'Comp(Ok)',
+    XBU: 'To(Comp(Ok), Num)',
+    XCX: 'Comp(Comp(To(Comp(Ok), Ok)))',
+    YZ: 'To(Comp(Ok), Num)',
+    XAD: 'To(To(Num, Ok), To(Num, Ok))',
+    XM: 'Comp(Ok)',
+    XF: 'To(Ok, Num)',
+    XAB: 'Comp(Ok)',
+    XI: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    YAE: 'To(Num, Ok)',
+    XBS: 'Comp(Ok)',
+    XR: 'To(Num, Ok)',
+    ZU: 'Comp(Ok)',
+    WBO: 'Num',
+    XAC: 'Comp(Ok)',
+    TB: 'To(Ok, Num)',
+    XCD: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    XCE: 'To(Comp(Ok), Num)',
+    WBK: 'Ok',
+    XCK: 'Ok',
+    XBT: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    XCW: 'To(Num, Num)',
+    WDC: 'Num',
+    XDM: 'Ok',
+    TDF: 'Ok',
+    XDO: 'To(Ok, Num)',
+    TAK: 'Comp(Ok)',
+    ZBE: 'Num',
+    TX: 'Comp(Ok)',
+    XL: 'Comp(Ok)',
+    YAN: 'Comp(Ok)',
+    WBF: 'Num',
+    TCJ: 'Ok',
+    WBM: 'Ok',
+    XN: 'To(Comp(Ok), Num)',
+    TW: 'To(Comp(Ok), Num)',
+    XCV: 'To(To(To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok))),To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    ZBJ: 'Ok'
+  },
+  {
+    ZDB: 'Num',
+    TH: 'Comp(Ok)',
+    XAF: 'Comp(To(Num, Num))',
+    XDI: 'Comp(Num)',
+    TG: 'To(Comp(Ok), Num)',
+    ZAI: 'Comp(To(Num, Num))',
+    XAO: 'Num',
+    XAZ: 'Num',
+    XCU: 'Ok',
+    ZBL: 'Ok',
+    XCO: 'Ok',
+    XY: 'To(Ok, Comp(Ok))',
+    ZCZ: 'Num',
+    XCN: 'To(Ok, Comp(Ok))',
+    TBP: 'Comp(Ok)',
+    XDG: 'Ok',
+    WAJ: 'Comp(To(Num, Num))',
+    ZBN: 'Ok',
+    XAM: 'To(Comp(Ok), Num)',
+    XCY: 'Comp(Comp(To(Comp(Ok), Ok)))',
+    XBB: 'Comp(To(Num, Ok))',
+    TDL: 'Ok',
+    XD: 'To(Comp(Num), Comp(Num))',
+    YE: 'Comp(Num)',
+    XCM: 'Comp(Ok)',
+    WDA: 'Num',
+    XDH: 'To(To(To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok))),To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    XCA: 'Comp(Ok)',
+    TCT: 'Ok',
+    TC: 'Comp(Num)',
+    TBZ: 'Comp(Ok)',
+    XAU: 'Num',
+    XCC: 'Comp(Ok)',
+    XAW: 'Comp(Num)',
+    YJ: 'To(Comp(Ok), Num)',
+    WV: 'Num',
+    TAL: 'Num',
+    XK: 'Comp(Ok)',
+    XP: 'Num',
+    XBQ: 'Comp(Ok)',
+    XAA: 'Comp(Ok)',
+    XCX: 'To(Comp(To(Comp(Ok), Ok)), Comp(To(Comp(Ok), Ok)))',
+    XBU: 'Ok',
+    YZ: 'Ok',
+    XAD: 'To(Comp(To(Num, Num)), Comp(To(Num, Num)))',
+    XM: 'Comp(Ok)',
+    XF: 'Comp(Num)',
+    XAB: 'Comp(Ok)',
+    XI: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    YAE: 'Comp(To(Num, Num))',
+    XBS: 'Comp(Ok)',
+    XR: 'Comp(Num)',
+    ZU: 'Comp(Ok)',
+    WBO: 'Ok',
+    XAC: 'Comp(Ok)',
+    TB: 'Comp(Num)',
+    XCD: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    XCE: 'To(Comp(Ok), Num)',
+    WBK: 'Ok',
+    XCK: 'Comp(Ok)',
+    XBT: 'To(Ok, Comp(Ok))',
+    XCW: 'Comp(Ok)',
+    WDC: 'Num',
+    XDM: 'Ok',
+    TDF: 'Ok',
+    XDO: 'Comp(Num)',
+    TAK: 'Comp(Ok)',
+    ZBE: 'Num',
+    TX: 'Comp(Ok)',
+    XL: 'Comp(Ok)',
+    YAN: 'Comp(Ok)',
+    WBF: 'Num',
+    TCJ: 'Comp(Ok)',
+    WBM: 'Ok',
+    XN: 'To(Comp(Ok), Num)',
+    TW: 'Ok',
+    XCV: 'To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    ZBJ: 'Ok',
+    lft: '[To(Comp(Num), Comp(Num)) -> Comp(Num), To(Comp(Num), Num) -> Comp(Num), To(To(Comp(Ok), Num), Comp(Ok)) -> To(Comp(Ok), Num), To(Comp(To(Num, Num)), Comp(To(Num, Num))) -> Comp(To(Num, Num)), To(Comp(To(Num, Ok)), Num) -> Comp(To(Num, Ok)), To(Num, Num) -> Num, To(Comp(Ok), Num) -> Comp(Ok), To(Comp(Ok), Comp(Ok)) -> Comp(Ok), To(Comp(Ok), Ok) -> Comp(Ok), To(Comp(Num), Ok) -> Comp(Num), Ok -> To(Num, Num), Comp(To(Num, Ok)) -> To(Num, Num), To(Num, Ok) -> Num, else -> Ok]',
+    rgt: '[To(Comp(Num), Comp(Num)) -> Comp(Num), To(Comp(Num), Num) -> Num, To(To(Comp(Ok), Num), Comp(Ok)) -> Comp(Ok), To(Comp(To(Num, Num)), Comp(To(Num, Num))) -> Comp(To(Num, Num)), To(Ok, Comp(Ok)) -> Comp(Ok), To(Comp(To(Num, Ok)), Num) -> Num, To(Num, Num) -> Num, To(Comp(Ok), Num) -> Num, To(Comp(Ok), Comp(Ok)) -> Comp(Ok), else -> Ok]'
+  },
+  {
+    ZDB: 'Num',
+    TH: 'Comp(Ok)',
+    XAF: 'To(To(Num, Num), Ok)',
+    XDI: 'Ok',
+    TG: 'To(Comp(Ok), Num)',
+    ZAI: 'To(To(Num, Num), Ok)',
+    XAO: 'Num',
+    XAZ: 'Num',
+    XCU: 'Ok',
+    ZBL: 'Ok',
+    XCO: 'Ok',
+    XY: 'To(Ok, Comp(Ok))',
+    ZCZ: 'Num',
+    XCN: 'To(Ok, Comp(Ok))',
+    TBP: 'Comp(Ok)',
+    XDG: 'Comp(Ok)',
+    WAJ: 'To(To(Num, Num), Ok)',
+    ZBN: 'Ok',
+    XAM: 'To(Comp(Ok), Num)',
+    XCY: 'Comp(Comp(To(Comp(Ok), Ok)))',
+    XBB: 'Comp(Comp(Num))',
+    TDL: 'Ok',
+    XD: 'To(Comp(Num), Comp(Num))',
+    YE: 'Comp(Num)',
+    XCM: 'Comp(Ok)',
+    WDA: 'Num',
+    XDH: 'To(Ok, Comp(Ok))',
+    XCA: 'Comp(Ok)',
+    TCT: 'Ok',
+    TC: 'Comp(Num)',
+    TBZ: 'Comp(Ok)',
+    XAU: 'Num',
+    XCC: 'Comp(Ok)',
+    XAW: 'Comp(Num)',
+    YJ: 'To(Comp(Ok), Num)',
+    WV: 'Num',
+    TAL: 'Num',
+    XK: 'Comp(Ok)',
+    XP: 'Num',
+    XBQ: 'Comp(Ok)',
+    XAA: 'Comp(Ok)',
+    XCX: 'To(Comp(To(Comp(Ok), Ok)), Comp(To(Comp(Ok), Ok)))',
+    XBU: 'Ok',
+    YZ: 'Ok',
+    XAD: 'To(To(To(Num, Num), Ok), To(To(Num, Num), Ok))',
+    XM: 'Comp(Ok)',
+    XF: 'Comp(Num)',
+    XAB: 'Comp(Ok)',
+    XI: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    YAE: 'To(To(Num, Num), Ok)',
+    XBS: 'Comp(Ok)',
+    XR: 'Comp(Num)',
+    ZU: 'Comp(Ok)',
+    WBO: 'Ok',
+    XAC: 'Comp(Ok)',
+    TB: 'Comp(Num)',
+    XCD: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    XCE: 'To(Comp(Ok), Num)',
+    WBK: 'Ok',
+    XCK: 'Comp(Ok)',
+    XBT: 'To(Ok, Comp(Ok))',
+    XCW: 'To(Ok, Ok)',
+    WDC: 'Num',
+    XDM: 'Ok',
+    TDF: 'Comp(Ok)',
+    XDO: 'Comp(Num)',
+    TAK: 'Comp(Ok)',
+    ZBE: 'Ok',
+    TX: 'Comp(Ok)',
+    XL: 'Comp(Ok)',
+    YAN: 'Comp(Ok)',
+    WBF: 'Ok',
+    TCJ: 'Comp(Ok)',
+    WBM: 'Ok',
+    XN: 'To(Comp(Ok), Num)',
+    TW: 'Ok',
+    XCV: 'To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    ZBJ: 'Ok',
+    lft: '[To(To(Comp(Ok), Num), Comp(Ok)) -> To(Comp(Ok), Num), To(To(To(Num, Num), Ok), To(To(Num, Num), Ok)) -> To(To(Num, Num), Ok), To(Ok, Comp(Ok)) -> Ok, To(Comp(Comp(Num)), Num) -> Comp(Comp(Num)), To(Comp(Ok), Num) -> Comp(Ok), To(Comp(Ok), Comp(Ok)) -> Comp(Ok), To(To(Ok, Ok), Ok) -> To(Ok, Ok), To(Comp(Ok), Ok) -> Comp(Ok), To(Ok, Ok) -> Ok, Comp(Num) -> Ok, To(To(Num, Num), Ok) -> To(Num, Num), To(Num, Num) -> Num, else -> Comp(Num)]',
+    rgt: '[To(Comp(Num), Comp(Num)) -> Comp(Num), To(Comp(Num), Num) -> Num, To(To(Comp(Ok), Num), Comp(Ok)) -> Comp(Ok), To(To(To(Num, Num), Ok), To(To(Num, Num), Ok)) -> To(To(Num, Num), Ok), To(Ok, Comp(Ok)) -> Comp(Ok), To(Comp(Comp(Num)), Num) -> Num, To(Comp(Ok), Num) -> Num, To(Comp(Ok), Comp(Ok)) -> Comp(Ok), To(Num, Num) -> Num, else -> Ok]',
+    comp: '[Comp(Ok) -> Ok, Comp(Num) -> Num, Comp(To(Comp(Ok), Num)) -> To(Comp(Ok), Num), Comp(To(Comp(Ok), Comp(Ok))) -> To(Comp(Ok), Comp(Ok)), Comp(To(Comp(Ok), Ok)) -> To(Comp(Ok), Ok), To(Ok, Ok) -> Ok, else -> Comp(Num)]'
+  },
+  {
+    XAS: 'Comp(Ok)',
+    XCV: 'To(To(To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok))),To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    ZDB: 'Num',
+    TH: 'Comp(Ok)',
+    XAF: 'To(To(Num, Num), Ok)',
+    XDI: 'Ok',
+    TG: 'To(Num, Comp(Ok))',
+    ZAI: 'To(To(Num, Num), Ok)',
+    XAO: 'Comp(Ok)',
+    XAZ: 'Comp(Ok)',
+    XAR: 'To(Comp(To(Comp(Ok), Ok)), Comp(To(Comp(Ok), Ok)))',
+    WAY: 'Comp(Ok)',
+    XCU: 'Ok',
+    ZBL: 'Comp(Num)',
+    XCO: 'Ok',
+    XY: 'To(Ok, Comp(Ok))',
+    ZCZ: 'Num',
+    XAV: 'Num',
+    XCN: 'To(Ok, Comp(Ok))',
+    TBP: 'Comp(Ok)',
+    XDG: 'Comp(Ok)',
+    WAJ: 'To(To(Num, Num), Ok)',
+    ZBN: 'Ok',
+    XAM: 'To(Num, Comp(Ok))',
+    XCY: 'To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    XBB: 'Comp(Comp(Num))',
+    TDL: 'Comp(Ok)',
+    XD: 'To(Comp(Num), Comp(Num))',
+    YE: 'Comp(Num)',
+    XDN: 'To(Num, Comp(Ok))',
+    XAP: 'Comp(Ok)',
+    XCM: 'Comp(Ok)',
+    WDA: 'Num',
+    XAQ: 'Comp(Ok)',
+    TCT: 'Ok',
+    XDH: 'To(Ok, Comp(Ok))',
+    XCA: 'Comp(Ok)',
+    TC: 'Comp(Num)',
+    TBZ: 'Comp(Ok)',
+    XAU: 'Comp(Ok)',
+    XCC: 'Comp(Ok)',
+    XAW: 'Comp(Num)',
+    YJ: 'To(Num, Comp(Ok))',
+    WV: 'Comp(Ok)',
+    ZAX: 'Comp(Ok)',
+    XK: 'Comp(Ok)',
+    XP: 'Num',
+    XBA: 'Num',
+    XAA: 'Comp(Ok)',
+    TAL: 'Comp(Ok)',
+    XBQ: 'Comp(Ok)',
+    XBU: 'Ok',
+    XCX: 'Comp(Comp(To(Comp(Ok), Ok)))',
+    YZ: 'Ok',
+    XAD: 'To(To(To(Num, Num), Ok), To(To(Num, Num), Ok))',
+    XM: 'Comp(Ok)',
+    XF: 'Comp(Num)',
+    XAB: 'Comp(Ok)',
+    XI: 'To(To(Num, Comp(Ok)), Comp(Ok))',
+    YAE: 'To(To(Num, Num), Ok)',
+    XBS: 'Comp(Ok)',
+    XR: 'Comp(Num)',
+    ZU: 'Num',
+    WBO: 'Ok',
+    XAC: 'Comp(Ok)',
+    TB: 'Comp(Num)',
+    XCD: 'To(To(Num, Comp(Ok)), Comp(Ok))',
+    XCE: 'To(Num, Comp(Ok))',
+    WBK: 'Ok',
+    XCK: 'Comp(Ok)',
+    XBT: 'To(Ok, Comp(Ok))',
+    XCW: 'To(Ok, Ok)',
+    XBI: 'To(Comp(Num), Comp(Num))',
+    XDM: 'Comp(Ok)',
+    ZBC: 'Comp(Ok)',
+    WDC: 'Num',
+    XDO: 'Num',
+    WBD: 'Comp(Ok)',
+    ZBE: 'Ok',
+    TAK: 'Num',
+    TDF: 'Comp(Ok)',
+    TX: 'Comp(Ok)',
+    XL: 'Comp(Ok)',
+    YAN: 'Num',
+    WBF: 'Ok',
+    TCJ: 'Comp(Ok)',
+    WBM: 'Comp(Num)',
+    XN: 'To(Num, Comp(Ok))',
+    TW: 'Ok',
+    XAT: 'Num',
+    XBG: 'Comp(Ok)',
+    ZBJ: 'Ok',
+    lft: '[To(Comp(Ok), Num) -> Comp(Ok), To(To(Num, Comp(Ok)), Comp(Ok)) -> To(Num, Comp(Ok)), To(To(To(Num, Num), Ok), To(To(Num, Num), Ok)) -> To(To(Num, Num), Ok), To(Ok, Comp(Ok)) -> Ok, To(Comp(Comp(Num)), Comp(Ok)) -> Comp(Comp(Num)), To(Ok, Ok) -> Ok, To(Num, Comp(Ok)) -> Num, To(Comp(Ok), Comp(Ok)) -> Comp(Ok), To(To(Ok, Ok), Ok) -> To(Ok, Ok), To(Comp(Ok), Ok) -> Comp(Ok), Comp(Num) -> Ok, To(To(Num, Num), Ok) -> To(Num, Num), Num -> Ok, To(Num, Num) -> Num, else -> Comp(Num)]',
+    rgt: '[To(Comp(Num), Comp(Num)) -> Comp(Num), To(Comp(Num), Num) -> Num, To(Comp(Ok), Num) -> Num, To(To(Num, Comp(Ok)), Comp(Ok)) -> Comp(Ok), To(To(To(Num, Num), Ok), To(To(Num, Num), Ok)) -> To(To(Num, Num), Ok), To(Ok, Comp(Ok)) -> Comp(Ok), To(Comp(Num), Comp(Ok)) -> Comp(Ok), To(Comp(Comp(Num)), Comp(Ok)) -> Comp(Ok), To(Num, Comp(Ok)) -> Comp(Ok), To(Comp(Ok), Comp(Ok)) -> Comp(Ok), To(Num, Num) -> Num, else -> Ok]',
+    comp: '[Comp(Ok) -> Ok, Comp(Num) -> Num, Comp(To(Comp(Ok), Num)) -> To(Comp(Ok), Num), Comp(To(Comp(Ok), Comp(Ok))) -> To(Comp(Ok), Comp(Ok)), Comp(To(Comp(Ok), Ok)) -> To(Comp(Ok), Ok), To(Ok, Ok) -> Ok, else -> Comp(Num)]'
+  }
+]
+
+                const superIffy = cond => {
+                    const if1 = x => cond <= 0 ? x : x + 1;
+                    const if2 = x => if1(x) <= 0 ? x : x - 1;
+                    const if3 = x => if2(x) <= 0 ? x - 1 : x;
+                    return if3(if2(if1(cond))) <= 0 ? if1(if2(if3(cond))) : if3(if1(if2(cond)));
+                }
+                superIffy(0);
+                
+	superIffy : Untypable
+	eval#0 : Untypable
+Inconclusive
+[]
+
+            const pair = s => t => p => p(s)(t);
+            const fst = s => t => s;
+            const snd = s => t => t;
+            const quotInner = n => d => q => { 
+                const lastQ = q - 1;
+                const nextQ = q + 1;
+                const lastR = n + d;
+                const nextR = n - d;
+                return n + 1 <= 0 ? pair(lastQ)(lastR) : quotInner(nextR)(d)(nextQ);
+            }
+            const quot = n => d => quotInner(n)(d)(0);
+            const result = quot(x => x)(12);
+        
+Solution
+	pair : (Comp(Ok) -> Num)
+	fst : (Comp(Ok) -> Num)
+	snd : (Comp(Ok) -> Num)
+	quotInner : ((Num -> Num) -> (Ok -> (Ok -> Comp(Ok))))
+	quot : ((Num -> Num) -> (Num -> Comp(Ok)))
+	result : Comp(Ok)
+Ill-typed and fails at: result
+[
+  {
+    XPM: 'To(Ok, Num)',
+    XPP: 'Num',
+    WHI: 'Num',
+    XQR: 'To(Ok, Comp(Ok))',
+    ZLX: 'Num',
+    XAO: 'Comp(Ok)',
+    XPY: 'To(To(To(To(To(To(To(To(To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(To(To(To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(To(To(To(To(To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(To(To(To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))',
+    XNX: 'Comp(Ok)',
+    XH: 'Num',
+    XNQ: 'To(To(Comp(To(Ok, Comp(Ok))), Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))',
+    XPX: 'To(Num, Num)',
+    WLW: 'Num',
+    ZPQ: 'To(Num, Comp(Ok))',
+    XY: 'Num',
+    XPG: 'To(Num, Num)',
+    XQO: 'To(Num, Comp(Ok))',
+    XPD: 'Comp(Ok)',
+    XRM: 'Num',
+    XAM: 'To(Ok, Comp(Ok))',
+    ZHH: 'Num',
+    XPO: 'To(To(To(To(To(To(To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(To(To(To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))',
+    YI: 'To(Num, Num)',
+    ZPB: 'Num',
+    XQC: 'Ok',
+    YV: 'Comp(Ok)',
+    WNU: 'Num',
+    YMA: 'To(To(Comp(To(Ok, Comp(Ok))), Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))',
+    XQQ: 'Comp(Ok)',
+    XPH: 'To(To(To(To(To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))),Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))',
+    XQS: 'To(Ok, To(Ok, Comp(Ok)))',
+    YE: 'Comp(Ok)',
+    WLY: 'Num',
+    XOW: 'To(To(To(To(Comp(To(Ok, Comp(Ok))), Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))), Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))',
+    ZLV: 'Num',
+    XPS: 'To(Ok, Num)',
+    XQX: 'Ok',
+    XPV: 'Num',
+    XHE: 'To(To(Ok, Comp(Ok)), To(Ok, Comp(Ok)))',
+    XPE: 'Comp(Ok)',
+    XPF: 'Comp(Num)',
+    ZQI: 'Num',
+    XRJ: 'Num',
+    XNR: 'To(Num, Num)',
+    WPC: 'Num',
+    XK: 'To(Num, Num)',
+    XP: 'Ok',
+    XQU: 'To(Num, Num)',
+    XLS: 'Ok',
+    XLZ: 'Comp(Ok)',
+    ZNT: 'Num',
+    XRF: 'To(Num, Comp(Ok))',
+    XLU: 'Comp(To(Ok, Comp(Ok)))',
+    ZHF: 'Num',
+    XM: 'Num',
+    XF: 'Num',
+    XRG: 'To(To(Num, Num), To(Num, Comp(Ok)))',
+    YAJ: 'To(Num, Num)',
+    YRI: 'Num',
+    WHG: 'Num',
+    XPN: 'To(Num, Num)',
+    XPW: 'To(Num, Num)',
+    XJ: 'Num',
+    XPZ: 'To(To(Num, Num), Num)',
+    XRH: 'To(Num, Num)',
+    YQN: 'To(Num, Num)',
+    ZOZ: 'Num',
+    ZPK: 'Num',
+    XAK: 'To(Ok, To(Ok, Comp(Ok)))',
+    YHK: 'Ok',
+    YNY: 'To(To(To(To(Comp(To(Ok, Comp(Ok))), Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok))),To(To(Comp(To(Ok, Comp(Ok))), Comp(To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))), To(Ok, Comp(Ok)))',
+    WPJ: 'Num',
+    WPL: 'Num',
+    YG: 'Num',
+    ZNV: 'Num',
+    WQJ: 'Num',
+    YAN: 'Ok',
+    XQF: 'Ok',
+    YQP: 'Num',
+    WNW: 'Num',
+    WPA: 'Num',
+    YAQ: 'Ok',
+    XQT: 'To(To(Num, Num), To(Ok, To(Ok, Comp(Ok))))',
+    XOX: 'To(Num, Num)',
+    ZPI: 'Num',
+    XRA: 'Ok',
+    YX: 'Num',
+    YAL: 'Ok',
+    WQZ: 'To(Num, To(Ok, Comp(Ok)))',
+    ZQY: 'To(Num, Comp(Ok))',
+    WQW: 'To(Num, To(Ok, To(Ok, Comp(Ok))))',
+    ZQV: 'To(Num, Comp(Ok))',
+    WQH: 'To(Num, Num)',
+    ZQG: 'To(Num, Comp(Ok))',
+    WQE: 'To(Num, To(Num, Num))',
+    ZQD: 'To(Num, Comp(Ok))',
+    WQB: 'To(Num, To(Num, Num))',
+    ZQA: 'To(Num, Comp(Ok))',
+    WPU: 'To(Num, To(Ok, Num))',
+    ZPT: 'To(Num, Comp(Ok))',
+    WPR: 'To(Num, To(Num, Num))',
+    WO: 'To(Num, To(Num, Num))',
+    ZN: 'To(Num, Comp(Ok))',
+    WRL: 'To(Num, To(Num, Comp(Ok)))',
+    ZRK: 'To(Num, Comp(Ok))',
+    WR: 'Num',
+    ZRB: 'Comp(Ok)',
+    XHJ: 'Comp(Ok)',
+    ZRN: 'Comp(Ok)',
+    YAC: 'Comp(Ok)',
+    XAP: 'Comp(Ok)',
+    WRC: 'Comp(Ok)',
+    ZQ: 'Comp(Ok)',
+    XHC: 'Ok',
+    WRO: 'Comp(Ok)',
+    TZ: 'Comp(Ok)',
+    TB: 'Comp(Ok)',
+    TS: 'Comp(Ok)',
+    TQL: 'To(Num, Comp(Ok))',
+    TQK: 'To(Num, Num)',
+    XAD: 'Num',
+    TAA: 'Num',
+    TAG: 'To(Num, Num)',
+    TAH: 'To(Ok, To(Ok, Comp(Ok)))',
+    TC: 'Num',
+    XW: 'Num',
+    TT: 'Num',
+    TRD: 'Comp(Ok)',
+    XQM: 'To(To(Num, Num), To(Num, Comp(Ok)))',
+    XAI: 'To(To(Num, Num), To(Ok, To(Ok, Comp(Ok))))',
+    XAB: 'To(Comp(Ok), Num)',
+    XRE: 'Comp(Ok)',
+    XD: 'To(Comp(Ok), Num)',
+    XU: 'To(Comp(Ok), Num)'
+  }
+]
+
+            const k = 0;
+            const w = (x => x)((y => y) + (z => z));
+            const z = 0(0);
+        
+Solution
+	k : Num
+	w : Comp(Ok)
+	z : Ok
+Solution
+	k : Ok
+	w : Comp(Ok)
+	z : Comp(Ok)
+Ill-typed and fails at: w,z
+[
+  {
+    YN: 'Num',
+    WQ: 'Num',
+    XO: 'Num',
+    XH: 'To(Num, Num)',
+    YG: 'Ok',
+    XL: 'To(Num, Num)',
+    XY: 'To(Num, Num)',
+    XM: 'To(Num, Num)',
+    WS: 'Num',
+    XI: 'Comp(Ok)',
+    ZR: 'Num',
+    TV: 'Ok',
+    ZP: 'Num',
+    XF: 'To(Comp(Num), Comp(Num))',
+    TD: 'Comp(Ok)',
+    TB: 'Num',
+    YK: 'Ok',
+    WAA: 'Ok',
+    WU: 'Comp(Ok)',
+    ZT: 'Comp(Ok)',
+    ZZ: 'Comp(Ok)',
+    XW: 'Ok',
+    XC: 'Num',
+    XE: 'Comp(Ok)'
+  },
+  {
+    YN: 'To(Num, Num)',
+    YK: 'To(Num, Num)',
+    ZZ: 'Comp(Ok)',
+    WQ: 'To(Num, Num)',
+    XE: 'Comp(Ok)',
+    XO: 'Num',
+    XC: 'Ok',
+    XH: 'To(Num, Num)',
+    XX: 'Num',
+    YG: 'To(Num, Num)',
+    XL: 'To(Num, Num)',
+    XY: 'Num',
+    WS: 'Num',
+    XW: 'Comp(Ok)',
+    XI: 'Comp(Ok)',
+    TV: 'Comp(Ok)',
+    ZR: 'Num',
+    ZP: 'To(Num, Num)',
+    TD: 'Comp(Ok)',
+    XJ: 'To(To(Num, Num), To(Num, Num))',
+    TB: 'Ok',
+    WAA: 'Comp(Ok)'
+  }
+]
+
+            0;
+            0(0);
+            0;
+            0(0);
+        
+Solution
+	eval#0 : Num
+	eval#1 : Comp(Ok)
+	eval#2 : Num
+	eval#3 : Ok
+Solution
+	eval#0 : Ok
+	eval#1 : Comp(Ok)
+	eval#2 : Num
+	eval#3 : Comp(Ok)
+Ill-typed and fails at: eval#1,eval#3
+[
+  {
+    XD: 'Num',
+    XI: 'Ok',
+    XB: 'Num',
+    XK: 'To(Num, Num)',
+    XE: 'Num',
+    XC: 'Comp(Ok)',
+    XJ: 'To(Comp(To(Comp(Ok), Ok)), Comp(To(Comp(Ok), Ok)))',
+    XH: 'Num',
+    ZF: 'Comp(Ok)',
+    ZL: 'Comp(Ok)',
+    WG: 'Comp(Ok)',
+    WM: 'Ok'
+  },
+  {
+    WG: 'Comp(Ok)',
+    ZL: 'Comp(Ok)',
+    XD: 'Num',
+    XB: 'Ok',
+    WM: 'Comp(Ok)',
+    XI: 'Comp(Ok)',
+    XK: 'To(Num, Num)',
+    XE: 'To(Num, Num)',
+    XC: 'Comp(Ok)',
+    XJ: 'Num',
+    XH: 'Num',
+    ZF: 'Comp(Ok)'
+  }
+]
+
+            const middleFail = x => {
+                const x2 = x + x;
+                ((num => num <= 0 ? z => z : y => y)(0)) + 0;
+                return 6;
+            }
+            middleFail(0);
+        
+Solution
+	middleFail : (Num -> Comp(Ok))
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    WBG: 'Num',
+    YQ: 'Num',
+    WAL: 'Num',
+    ZBH: 'Num',
+    XAG: 'Num',
+    WAC: 'Num',
+    XAW: 'To(Num, Num)',
+    XAO: 'To(Num, Num)',
+    XK: 'To(Ok, Num)',
+    XAR: 'To(Num, Num)',
+    ZAI: 'Num',
+    ZAK: 'Num',
+    XAA: 'To(To(To(To(Comp(Ok), To(Num, Num)), To(Comp(Ok), To(Num, Num))),To(To(Comp(Ok), To(Num, Num)), To(Comp(Ok), To(Num, Num)))), To(Comp(Ok), To(Num, Num)))',
+    YT: 'To(Num, Num)',
+    XBE: 'To(To(To(To(To(To(Comp(Ok), To(Num, Num)), To(Comp(Ok), To(Num, Num))),To(To(Comp(Ok), To(Num, Num)), To(Comp(Ok), To(Num, Num)))), To(Comp(Ok), To(Num, Num))),To(To(To(To(Comp(Ok), To(Num, Num)), To(Comp(Ok), To(Num, Num))),To(To(Comp(Ok), To(Num, Num)), To(Comp(Ok), To(Num, Num)))), To(Comp(Ok), To(Num, Num)))), To(Comp(Ok), To(Num, Num)))',
+    YAU: 'Num',
+    XF: 'Comp(Ok)',
+    YH: 'Num',
+    WBI: 'Num',
+    XBK: 'To(Num, Comp(Ok))',
+    XR: 'Num',
+    XAV: 'Num',
+    WAE: 'Num',
+    WAJ: 'Num',
+    YM: 'Num',
+    ZV: 'Num',
+    WBA: 'Num',
+    XAH: 'Num',
+    ZAD: 'Num',
+    XBL: 'Num',
+    WW: 'Num',
+    XBB: 'Ok',
+    XX: 'To(Num, Num)',
+    ZAB: 'Num',
+    YE: 'Num',
+    XL: 'To(To(Comp(Ok), To(Num, Num)), To(Comp(Ok), To(Num, Num)))',
+    YAQ: 'Ok',
+    XU: 'Num',
+    ZAZ: 'Num',
+    XAP: 'To(Ok, To(Num, Num))',
+    XN: 'Num',
+    XAY: 'Num',
+    XAT: 'To(Num, Num)',
+    ZBF: 'Num',
+    YAX: 'Num',
+    ZY: 'To(Num, Comp(Ok))',
+    ZBC: 'To(Num, Comp(Ok))',
+    XG: 'Comp(Ok)',
+    XJ: 'Comp(Ok)',
+    WBN: 'Comp(Ok)',
+    XI: 'Comp(Ok)',
+    XAF: 'Num',
+    XAN: 'Comp(Ok)',
+    XAM: 'Comp(Ok)',
+    ZBM: 'Comp(Ok)',
+    TB: 'Num',
+    TC: 'Comp(Ok)',
+    XBJ: 'Comp(Ok)',
+    XD: 'To(Num, Comp(Ok))'
+  }
+]
+
+            const right1 = 0;
+            const right2 = 0;
+            const wrong1 = (x => x) - (x => x);
+            const wrong2 = (x => x) - (x => x);
+        
+Solution
+	right1 : Num
+	right2 : Num
+	wrong1 : Comp(Ok)
+	wrong2 : Num
+Solution
+	right1 : Num
+	right2 : Num
+	wrong1 : Comp(Ok)
+	wrong2 : Comp(Ok)
+Ill-typed and fails at: wrong1,wrong2
+[
+  {
+    TB: 'Num',
+    WAA: 'Num',
+    ZZ: 'Num',
+    WQ: 'Num',
+    YI: 'Num',
+    WAC: 'Num',
+    YU: 'Num',
+    XK: 'To(Comp(Ok), Comp(Ok))',
+    XH: 'To(Num, Num)',
+    XV: 'Ok',
+    WO: 'Num',
+    ZAB: 'Num',
+    TF: 'Comp(Ok)',
+    XY: 'Num',
+    XM: 'Num',
+    YL: 'Ok',
+    XW: 'To(Num, Num)',
+    ZP: 'Num',
+    ZN: 'Num',
+    XJ: 'Num',
+    TD: 'Num',
+    YX: 'Num',
+    XG: 'Comp(Ok)',
+    XC: 'Num',
+    TR: 'Num',
+    XS: 'Num',
+    XE: 'Num'
+  },
+  {
+    XG: 'Comp(Ok)',
+    WAC: 'Num',
+    TR: 'Comp(Ok)',
+    XH: 'To(Num, Num)',
+    XV: 'To(Num, Num)',
+    WO: 'Num',
+    XY: 'Num',
+    XM: 'To(Num, Num)',
+    YL: 'Ok',
+    XW: 'To(Comp(Ok), Num)',
+    XE: 'Num',
+    ZP: 'Num',
+    ZN: 'Num',
+    XJ: 'Num',
+    TB: 'Num',
+    ZZ: 'Num',
+    XS: 'Comp(Ok)',
+    WQ: 'Num',
+    YI: 'Num',
+    YU: 'Ok',
+    XC: 'Num',
+    ZAB: 'Comp(Ok)',
+    TF: 'Comp(Ok)',
+    TD: 'Num',
+    YX: 'Comp(Ok)',
+    WAA: 'Num'
+  }
+]
+const failure = (x => x) - (y => y) - (z => z)
+                const eight = 8;
+                const nine  = 9;
+                const ten   = 10; //obviously these wouldnt actually go wrong
+                
+Solution
+	failure : Comp(Ok)
+	eight : Num
+	nine : Num
+	ten : Num
+Ill-typed and fails at: failure
+[
+  {
+    XG: 'Num',
+    YI: 'Num',
+    ZM: 'Num',
+    XQ: 'Num',
+    ZT: 'Num',
+    WL: 'Num',
+    XH: 'To(Num, Num)',
+    TZ: 'Num',
+    TX: 'Num',
+    YP: 'Num',
+    XD: 'To(Num, Num)',
+    ZK: 'Num',
+    YF: 'Num',
+    WS: 'Num',
+    WN: 'Num',
+    ZR: 'Num',
+    TV: 'Num',
+    XJ: 'Num',
+    WU: 'Num',
+    TB: 'Comp(Ok)',
+    XW: 'Num',
+    XY: 'Num',
+    XAA: 'Num',
+    XC: 'Comp(Ok)'
+  }
+]
+
+                const myWrong = 0(0);
+                const putAWrongIn = x => {
+                    const y = z => z;
+                    y(x);
+                    return 0;
+                }
+                const aRightIn = putAWrongIn(0);
+                const aWrongIn = putAWrongIn(myWrong);
+                
+Solution
+	myWrong : Comp(Ok)
+	putAWrongIn : (Num -> Num)
+	aRightIn : Num
+	aWrongIn : Num
+Solution
+	myWrong : Comp(Ok)
+	putAWrongIn : (Ok -> Ok)
+	aRightIn : Ok
+	aWrongIn : Comp(Ok)
+Ill-typed and fails at: myWrong,aWrongIn
+[
+  {
+    YN: 'Num',
+    TAI: 'Num',
+    YO: 'Num',
+    XAL: 'Comp(Ok)',
+    XAF: 'Num',
+    YU: 'Num',
+    TAC: 'Num',
+    XV: 'Num',
+    XL: 'Num',
+    XD: 'Num',
+    XY: 'To(Num, Num)',
+    XE: 'To(Num, Ok)',
+    XZ: 'Num',
+    XAE: 'To(Num, Num)',
+    TB: 'Comp(Ok)',
+    YK: 'Num',
+    WAB: 'To(Num, Num)',
+    ZAA: 'To(Num, Comp(Ok))',
+    ZF: 'Comp(Ok)',
+    WAH: 'Num',
+    XX: 'Num',
+    XT: 'To(Num, Num)',
+    ZAM: 'Comp(Ok)',
+    ZAG: 'Comp(Ok)',
+    XW: 'Num',
+    WAN: 'Num',
+    XM: 'Num',
+    YP: 'To(Num, Num)',
+    WG: 'Comp(Ok)',
+    TI: 'Num',
+    TH: 'Num',
+    XJ: 'To(Num, Num)',
+    XC: 'Comp(Ok)',
+    XAD: 'Num',
+    XAJ: 'Num'
+  },
+  {
+    YN: 'Num',
+    XAJ: 'Comp(Ok)',
+    TAI: 'Comp(Ok)',
+    YO: 'Num',
+    XAL: 'Comp(Ok)',
+    TH: 'Ok',
+    XAF: 'To(Num, Num)',
+    YU: 'Ok',
+    TAC: 'Ok',
+    XC: 'Comp(Ok)',
+    XX: 'Num',
+    XV: 'To(Num, Num)',
+    ZF: 'Comp(Ok)',
+    WG: 'Comp(Ok)',
+    XD: 'Num',
+    XL: 'Ok',
+    XAD: 'Ok',
+    TI: 'Ok',
+    XE: 'To(Num, Num)',
+    XZ: 'To(Num, Num)',
+    XJ: 'To(Ok, Ok)',
+    YK: 'Ok',
+    TB: 'Comp(Ok)'
+  }
+]
+
+                const id = x => x;
+                const mightFail = x => {
+                    return x <= 0 ? 1 : 2(3);
+                }
+                const guardFail = x => {
+                    return (y => y) + x ? 1 : 2;
+                }
+                const willFail = x => {
+                    return x <= 0 ? (0 <= 0 ? 0(0) : 0(0)) : id + id; 
+                }
+                const mgw = mightFail(guardFail(willFail));
+                const gmw = guardFail(mightFail(willFail));
+                const wgm = willFail(guardFail(mightFail));
+                const mNum = mightFail(0-1); //
+                const gNum = guardFail(0); //interesting it doesnt fail here 
+                const wNum = willFail(0);  //nor here 
+                
+Solution
+	id : (Num -> Num)
+	mightFail : ((Comp(Num) -> Num) -> Comp(Ok))
+	guardFail : (Num -> Num)
+	willFail : (Comp(Num) -> Num)
+	mgw : Ok
+	gmw : Comp(Ok)
+	wgm : Ok
+	mNum : Ok
+	gNum : Ok
+	wNum : Ok
+Solution
+	id : ((Ok -> Num) -> (Ok -> Num))
+	mightFail : ((Comp(Ok) -> Num) -> Comp(Ok))
+	guardFail : ((Comp(Ok) -> Num) -> Comp(Ok))
+	willFail : (Comp(Ok) -> Num)
+	mgw : Comp(Ok)
+	gmw : Comp(Ok)
+	wgm : Ok
+	mNum : Ok
+	gNum : Ok
+	wNum : Ok
+Solution
+	id : (Comp(Num) -> Comp(Num))
+	mightFail : ((Comp(Ok) -> Num) -> Comp(Ok))
+	guardFail : (Ok -> Comp(Ok))
+	willFail : (Comp(Ok) -> Num)
+	mgw : Comp(Ok)
+	gmw : Comp(Ok)
+	wgm : Comp(Ok)
+	mNum : Ok
+	gNum : Ok
+	wNum : Ok
+Solution
+	id : (Comp(Num) -> Comp(Num))
+	mightFail : ((Comp(Ok) -> Num) -> Comp(Ok))
+	guardFail : (Ok -> Comp(Ok))
+	willFail : (Comp(Ok) -> Num)
+	mgw : Comp(Ok)
+	gmw : Comp(Ok)
+	wgm : Comp(Ok)
+	mNum : Ok
+	gNum : Comp(Ok)
+	wNum : Ok
+Solution
+	id : (Comp(Num) -> Comp(Num))
+	mightFail : ((Num -> Comp(Ok)) -> Comp(Ok))
+	guardFail : (Ok -> Comp(Ok))
+	willFail : (Num -> Comp(Ok))
+	mgw : Comp(Ok)
+	gmw : Comp(Ok)
+	wgm : Comp(Ok)
+	mNum : Ok
+	gNum : Comp(Ok)
+	wNum : Comp(Ok)
+Ill-typed and fails at: mgw,gmw,wgm,gNum,wNum
+[
+  {
+    ZDB: 'Num',
+    XAF: 'To(Num, Num)',
+    XDI: 'Num',
+    XAO: 'Num',
+    ZAI: 'Num',
+    XAR: 'Comp(Num)',
+    XAZ: 'Num',
+    ZBL: 'Num',
+    XCO: 'Num',
+    ZCZ: 'Num',
+    TBP: 'Ok',
+    ZBN: 'Num',
+    WAJ: 'Num',
+    XBB: 'To(Num, Num)',
+    TDL: 'Ok',
+    YE: 'Num',
+    XCM: 'Num',
+    WDA: 'Num',
+    XDH: 'To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    TCT: 'Ok',
+    TBZ: 'Comp(Ok)',
+    XCC: 'Comp(Ok)',
+    XAW: 'To(Num, Num)',
+    YJ: 'To(Comp(Num), Num)',
+    WV: 'Num',
+    XK: 'Comp(Ok)',
+    XP: 'To(Num, Num)',
+    XAA: 'Num',
+    XBU: 'Num',
+    YZ: 'Num',
+    YAE: 'Ok',
+    XF: 'Num',
+    XBS: 'Num',
+    XCD: 'To(To(Comp(Num), Num), Comp(Ok))',
+    WDC: 'Num',
+    XCE: 'To(Comp(Num), Num)',
+    XR: 'To(Num, Num)',
+    ZU: 'Comp(Num)',
+    WBO: 'Num',
+    TDF: 'Ok',
+    WBK: 'Num',
+    XAH: 'Num',
+    XBT: 'To(Comp(To(Comp(Ok), Ok)), Comp(To(Comp(Ok), Ok)))',
+    XCW: 'Num',
+    XDO: 'To(Num, Num)',
+    ZBE: 'Num',
+    YAN: 'Comp(Num)',
+    WBF: 'Num',
+    TCJ: 'Ok',
+    WBM: 'Num',
+    XN: 'To(Comp(Num), Num)',
+    XCV: 'Comp(Comp(To(Comp(Ok), Ok)))',
+    ZBJ: 'Num',
+    ZCP: 'To(Num, Comp(Ok))',
+    ZCF: 'To(Num, Comp(Ok))',
+    ZBV: 'To(Num, Comp(Ok))',
+    WBD: 'To(Num, Num)',
+    ZBC: 'To(Num, Comp(Ok))',
+    WAY: 'To(Num, Num)',
+    ZAX: 'To(Num, Comp(Ok))',
+    WT: 'To(Num, To(Num, Num))',
+    ZS: 'To(Num, Comp(Ok))',
+    XAG: 'Num',
+    XAC: 'Num',
+    XAQ: 'Num',
+    XAP: 'Num',
+    ZDD: 'Comp(Ok)',
+    WCI: 'Comp(Ok)',
+    ZBX: 'Comp(Ok)',
+    WDQ: 'Ok',
+    XAB: 'Num',
+    XM: 'Comp(Ok)',
+    WDE: 'Ok',
+    XL: 'Comp(Ok)',
+    ZDP: 'Comp(Ok)',
+    WDK: 'Ok',
+    ZDJ: 'Comp(Ok)',
+    ZCH: 'Comp(Ok)',
+    XO: 'To(Num, Num)',
+    ZCR: 'Comp(Ok)',
+    XAU: 'Num',
+    WCS: 'Ok',
+    WBY: 'Ok',
+    XBG: 'Num',
+    XAS: 'Num',
+    TB: 'Num',
+    TW: 'Num',
+    TAK: 'Comp(Num)',
+    TG: 'To(Comp(Num), Num)',
+    TAL: 'Num',
+    TH: 'Comp(Ok)',
+    TC: 'Num',
+    TX: 'Num',
+    XCU: 'Ok',
+    XDG: 'Ok',
+    XBQ: 'Ok',
+    XCA: 'Comp(Ok)',
+    XI: 'To(To(Comp(Num), Num), Comp(Ok))',
+    XDM: 'Ok',
+    XY: 'To(Num, Num)',
+    XD: 'To(Num, Num)',
+    XCK: 'Ok',
+    XAM: 'To(Comp(Num), Num)'
+  },
+  {
+    ZDB: 'Num',
+    TH: 'Comp(Ok)',
+    XAF: 'To(Num, Ok)',
+    XDI: 'To(Num, Ok)',
+    TG: 'To(Comp(Ok), Num)',
+    ZAI: 'To(Num, Ok)',
+    XAO: 'Num',
+    XAZ: 'Num',
+    XCU: 'Ok',
+    ZBL: 'Ok',
+    XCO: 'To(To(Num, Num), Num)',
+    XY: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    ZCZ: 'Num',
+    TBP: 'Comp(Ok)',
+    XDG: 'Ok',
+    WAJ: 'To(Num, Ok)',
+    ZBN: 'Num',
+    XAM: 'To(Comp(Ok), Num)',
+    XCY: 'To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    XBB: 'To(Ok, Num)',
+    TDL: 'Ok',
+    XD: 'To(To(Ok, Num), To(Ok, Num))',
+    YE: 'To(Ok, Num)',
+    XCM: 'Num',
+    WDA: 'Num',
+    XDH: 'To(To(To(To(To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok))),To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok))),To(To(To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok))),To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    XCA: 'Comp(Ok)',
+    TCT: 'Ok',
+    TC: 'To(Ok, Num)',
+    TBZ: 'Comp(Ok)',
+    XAU: 'Num',
+    XCC: 'Comp(Ok)',
+    XAW: 'To(Num, Ok)',
+    YJ: 'To(Comp(Ok), Num)',
+    WV: 'Num',
+    XO: 'To(Comp(To(Comp(Ok), Ok)), Comp(To(Comp(Ok), Ok)))',
+    XK: 'Comp(Ok)',
+    XP: 'Num',
+    TAL: 'Num',
+    XAA: 'Comp(Ok)',
+    XBQ: 'Comp(Ok)',
+    XBU: 'To(Comp(Ok), Num)',
+    XCX: 'Comp(Comp(To(Comp(Ok), Ok)))',
+    YZ: 'To(Comp(Ok), Num)',
+    XAD: 'To(To(Num, Ok), To(Num, Ok))',
+    XM: 'Comp(Ok)',
+    XF: 'To(Ok, Num)',
+    XAB: 'Comp(Ok)',
+    XI: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    YAE: 'To(Num, Ok)',
+    XBS: 'Comp(Ok)',
+    XR: 'To(Num, Ok)',
+    ZU: 'Comp(Ok)',
+    WBO: 'Num',
+    XAC: 'Comp(Ok)',
+    TB: 'To(Ok, Num)',
+    XCD: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    XCE: 'To(Comp(Ok), Num)',
+    WBK: 'Ok',
+    XCK: 'Ok',
+    XBT: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    XCW: 'To(Num, Num)',
+    WDC: 'Num',
+    XDM: 'Ok',
+    TDF: 'Ok',
+    XDO: 'To(Ok, Num)',
+    TAK: 'Comp(Ok)',
+    ZBE: 'Num',
+    TX: 'Comp(Ok)',
+    XL: 'Comp(Ok)',
+    YAN: 'Comp(Ok)',
+    WBF: 'Num',
+    TCJ: 'Ok',
+    WBM: 'Ok',
+    XN: 'To(Comp(Ok), Num)',
+    TW: 'To(Comp(Ok), Num)',
+    XCV: 'To(To(To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok))),To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    ZBJ: 'Ok'
+  },
+  {
+    ZDB: 'Num',
+    TH: 'Comp(Ok)',
+    XAF: 'Comp(To(Num, Num))',
+    XDI: 'Comp(Num)',
+    TG: 'To(Comp(Ok), Num)',
+    ZAI: 'Comp(To(Num, Num))',
+    XAO: 'Num',
+    XAZ: 'Num',
+    XCU: 'Ok',
+    ZBL: 'Ok',
+    XCO: 'Ok',
+    XY: 'To(Ok, Comp(Ok))',
+    ZCZ: 'Num',
+    XCN: 'To(Ok, Comp(Ok))',
+    TBP: 'Comp(Ok)',
+    XDG: 'Ok',
+    WAJ: 'Comp(To(Num, Num))',
+    ZBN: 'Ok',
+    XAM: 'To(Comp(Ok), Num)',
+    XCY: 'Comp(Comp(To(Comp(Ok), Ok)))',
+    XBB: 'Comp(To(Num, Ok))',
+    TDL: 'Ok',
+    XD: 'To(Comp(Num), Comp(Num))',
+    YE: 'Comp(Num)',
+    XCM: 'Comp(Ok)',
+    WDA: 'Num',
+    XDH: 'To(To(To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok))),To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    XCA: 'Comp(Ok)',
+    TCT: 'Ok',
+    TC: 'Comp(Num)',
+    TBZ: 'Comp(Ok)',
+    XAU: 'Num',
+    XCC: 'Comp(Ok)',
+    XAW: 'Comp(Num)',
+    YJ: 'To(Comp(Ok), Num)',
+    WV: 'Num',
+    TAL: 'Num',
+    XK: 'Comp(Ok)',
+    XP: 'Num',
+    XBQ: 'Comp(Ok)',
+    XAA: 'Comp(Ok)',
+    XCX: 'To(Comp(To(Comp(Ok), Ok)), Comp(To(Comp(Ok), Ok)))',
+    XBU: 'Ok',
+    YZ: 'Ok',
+    XAD: 'To(Comp(To(Num, Num)), Comp(To(Num, Num)))',
+    XM: 'Comp(Ok)',
+    XF: 'Comp(Num)',
+    XAB: 'Comp(Ok)',
+    XI: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    YAE: 'Comp(To(Num, Num))',
+    XBS: 'Comp(Ok)',
+    XR: 'Comp(Num)',
+    ZU: 'Comp(Ok)',
+    WBO: 'Ok',
+    XAC: 'Comp(Ok)',
+    TB: 'Comp(Num)',
+    XCD: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    XCE: 'To(Comp(Ok), Num)',
+    WBK: 'Ok',
+    XCK: 'Comp(Ok)',
+    XBT: 'To(Ok, Comp(Ok))',
+    XCW: 'Comp(Ok)',
+    WDC: 'Num',
+    XDM: 'Ok',
+    TDF: 'Ok',
+    XDO: 'Comp(Num)',
+    TAK: 'Comp(Ok)',
+    ZBE: 'Num',
+    TX: 'Comp(Ok)',
+    XL: 'Comp(Ok)',
+    YAN: 'Comp(Ok)',
+    WBF: 'Num',
+    TCJ: 'Comp(Ok)',
+    WBM: 'Ok',
+    XN: 'To(Comp(Ok), Num)',
+    TW: 'Ok',
+    XCV: 'To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    ZBJ: 'Ok',
+    lft: '[To(Comp(Num), Comp(Num)) -> Comp(Num), To(Comp(Num), Num) -> Comp(Num), To(To(Comp(Ok), Num), Comp(Ok)) -> To(Comp(Ok), Num), To(Comp(To(Num, Num)), Comp(To(Num, Num))) -> Comp(To(Num, Num)), To(Comp(To(Num, Ok)), Num) -> Comp(To(Num, Ok)), To(Num, Num) -> Num, To(Comp(Ok), Num) -> Comp(Ok), To(Comp(Ok), Comp(Ok)) -> Comp(Ok), To(Comp(Ok), Ok) -> Comp(Ok), To(Comp(Num), Ok) -> Comp(Num), Ok -> To(Num, Num), Comp(To(Num, Ok)) -> To(Num, Num), To(Num, Ok) -> Num, else -> Ok]',
+    rgt: '[To(Comp(Num), Comp(Num)) -> Comp(Num), To(Comp(Num), Num) -> Num, To(To(Comp(Ok), Num), Comp(Ok)) -> Comp(Ok), To(Comp(To(Num, Num)), Comp(To(Num, Num))) -> Comp(To(Num, Num)), To(Ok, Comp(Ok)) -> Comp(Ok), To(Comp(To(Num, Ok)), Num) -> Num, To(Num, Num) -> Num, To(Comp(Ok), Num) -> Num, To(Comp(Ok), Comp(Ok)) -> Comp(Ok), else -> Ok]'
+  },
+  {
+    ZDB: 'Num',
+    TH: 'Comp(Ok)',
+    XAF: 'To(To(Num, Num), Ok)',
+    XDI: 'Ok',
+    TG: 'To(Comp(Ok), Num)',
+    ZAI: 'To(To(Num, Num), Ok)',
+    XAO: 'Num',
+    XAZ: 'Num',
+    XCU: 'Ok',
+    ZBL: 'Ok',
+    XCO: 'Ok',
+    XY: 'To(Ok, Comp(Ok))',
+    ZCZ: 'Num',
+    XCN: 'To(Ok, Comp(Ok))',
+    TBP: 'Comp(Ok)',
+    XDG: 'Comp(Ok)',
+    WAJ: 'To(To(Num, Num), Ok)',
+    ZBN: 'Ok',
+    XAM: 'To(Comp(Ok), Num)',
+    XCY: 'Comp(Comp(To(Comp(Ok), Ok)))',
+    XBB: 'Comp(Comp(Num))',
+    TDL: 'Ok',
+    XD: 'To(Comp(Num), Comp(Num))',
+    YE: 'Comp(Num)',
+    XCM: 'Comp(Ok)',
+    WDA: 'Num',
+    XDH: 'To(Ok, Comp(Ok))',
+    XCA: 'Comp(Ok)',
+    TCT: 'Ok',
+    TC: 'Comp(Num)',
+    TBZ: 'Comp(Ok)',
+    XAU: 'Num',
+    XCC: 'Comp(Ok)',
+    XAW: 'Comp(Num)',
+    YJ: 'To(Comp(Ok), Num)',
+    WV: 'Num',
+    TAL: 'Num',
+    XK: 'Comp(Ok)',
+    XP: 'Num',
+    XBQ: 'Comp(Ok)',
+    XAA: 'Comp(Ok)',
+    XCX: 'To(Comp(To(Comp(Ok), Ok)), Comp(To(Comp(Ok), Ok)))',
+    XBU: 'Ok',
+    YZ: 'Ok',
+    XAD: 'To(To(To(Num, Num), Ok), To(To(Num, Num), Ok))',
+    XM: 'Comp(Ok)',
+    XF: 'Comp(Num)',
+    XAB: 'Comp(Ok)',
+    XI: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    YAE: 'To(To(Num, Num), Ok)',
+    XBS: 'Comp(Ok)',
+    XR: 'Comp(Num)',
+    ZU: 'Comp(Ok)',
+    WBO: 'Ok',
+    XAC: 'Comp(Ok)',
+    TB: 'Comp(Num)',
+    XCD: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    XCE: 'To(Comp(Ok), Num)',
+    WBK: 'Ok',
+    XCK: 'Comp(Ok)',
+    XBT: 'To(Ok, Comp(Ok))',
+    XCW: 'To(Ok, Ok)',
+    WDC: 'Num',
+    XDM: 'Ok',
+    TDF: 'Comp(Ok)',
+    XDO: 'Comp(Num)',
+    TAK: 'Comp(Ok)',
+    ZBE: 'Ok',
+    TX: 'Comp(Ok)',
+    XL: 'Comp(Ok)',
+    YAN: 'Comp(Ok)',
+    WBF: 'Ok',
+    TCJ: 'Comp(Ok)',
+    WBM: 'Ok',
+    XN: 'To(Comp(Ok), Num)',
+    TW: 'Ok',
+    XCV: 'To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    ZBJ: 'Ok',
+    lft: '[To(To(Comp(Ok), Num), Comp(Ok)) -> To(Comp(Ok), Num), To(To(To(Num, Num), Ok), To(To(Num, Num), Ok)) -> To(To(Num, Num), Ok), To(Ok, Comp(Ok)) -> Ok, To(Comp(Comp(Num)), Num) -> Comp(Comp(Num)), To(Comp(Ok), Num) -> Comp(Ok), To(Comp(Ok), Comp(Ok)) -> Comp(Ok), To(To(Ok, Ok), Ok) -> To(Ok, Ok), To(Comp(Ok), Ok) -> Comp(Ok), To(Ok, Ok) -> Ok, Comp(Num) -> Ok, To(To(Num, Num), Ok) -> To(Num, Num), To(Num, Num) -> Num, else -> Comp(Num)]',
+    rgt: '[To(Comp(Num), Comp(Num)) -> Comp(Num), To(Comp(Num), Num) -> Num, To(To(Comp(Ok), Num), Comp(Ok)) -> Comp(Ok), To(To(To(Num, Num), Ok), To(To(Num, Num), Ok)) -> To(To(Num, Num), Ok), To(Ok, Comp(Ok)) -> Comp(Ok), To(Comp(Comp(Num)), Num) -> Num, To(Comp(Ok), Num) -> Num, To(Comp(Ok), Comp(Ok)) -> Comp(Ok), To(Num, Num) -> Num, else -> Ok]',
+    comp: '[Comp(Ok) -> Ok, Comp(Num) -> Num, Comp(To(Comp(Ok), Num)) -> To(Comp(Ok), Num), Comp(To(Comp(Ok), Comp(Ok))) -> To(Comp(Ok), Comp(Ok)), Comp(To(Comp(Ok), Ok)) -> To(Comp(Ok), Ok), To(Ok, Ok) -> Ok, else -> Comp(Num)]'
+  },
+  {
+    XAS: 'Comp(Ok)',
+    XCV: 'To(To(To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok))),To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    ZDB: 'Num',
+    TH: 'Comp(Ok)',
+    XAF: 'To(To(Num, Num), Ok)',
+    XDI: 'Ok',
+    TG: 'To(Num, Comp(Ok))',
+    ZAI: 'To(To(Num, Num), Ok)',
+    XAO: 'Comp(Ok)',
+    XAZ: 'Comp(Ok)',
+    XAR: 'To(Comp(To(Comp(Ok), Ok)), Comp(To(Comp(Ok), Ok)))',
+    WAY: 'Comp(Ok)',
+    XCU: 'Ok',
+    ZBL: 'Comp(Num)',
+    XCO: 'Ok',
+    XY: 'To(Ok, Comp(Ok))',
+    ZCZ: 'Num',
+    XAV: 'Num',
+    XCN: 'To(Ok, Comp(Ok))',
+    TBP: 'Comp(Ok)',
+    XDG: 'Comp(Ok)',
+    WAJ: 'To(To(Num, Num), Ok)',
+    ZBN: 'Ok',
+    XAM: 'To(Num, Comp(Ok))',
+    XCY: 'To(To(Comp(Comp(To(Comp(Ok), Ok))),Comp(Comp(To(Comp(Ok), Ok)))), Comp(To(Comp(Ok), Ok)))',
+    XBB: 'Comp(Comp(Num))',
+    TDL: 'Comp(Ok)',
+    XD: 'To(Comp(Num), Comp(Num))',
+    YE: 'Comp(Num)',
+    XDN: 'To(Num, Comp(Ok))',
+    XAP: 'Comp(Ok)',
+    XCM: 'Comp(Ok)',
+    WDA: 'Num',
+    XAQ: 'Comp(Ok)',
+    TCT: 'Ok',
+    XDH: 'To(Ok, Comp(Ok))',
+    XCA: 'Comp(Ok)',
+    TC: 'Comp(Num)',
+    TBZ: 'Comp(Ok)',
+    XAU: 'Comp(Ok)',
+    XCC: 'Comp(Ok)',
+    XAW: 'Comp(Num)',
+    YJ: 'To(Num, Comp(Ok))',
+    WV: 'Comp(Ok)',
+    ZAX: 'Comp(Ok)',
+    XK: 'Comp(Ok)',
+    XP: 'Num',
+    XBA: 'Num',
+    XAA: 'Comp(Ok)',
+    TAL: 'Comp(Ok)',
+    XBQ: 'Comp(Ok)',
+    XBU: 'Ok',
+    XCX: 'Comp(Comp(To(Comp(Ok), Ok)))',
+    YZ: 'Ok',
+    XAD: 'To(To(To(Num, Num), Ok), To(To(Num, Num), Ok))',
+    XM: 'Comp(Ok)',
+    XF: 'Comp(Num)',
+    XAB: 'Comp(Ok)',
+    XI: 'To(To(Num, Comp(Ok)), Comp(Ok))',
+    YAE: 'To(To(Num, Num), Ok)',
+    XBS: 'Comp(Ok)',
+    XR: 'Comp(Num)',
+    ZU: 'Num',
+    WBO: 'Ok',
+    XAC: 'Comp(Ok)',
+    TB: 'Comp(Num)',
+    XCD: 'To(To(Num, Comp(Ok)), Comp(Ok))',
+    XCE: 'To(Num, Comp(Ok))',
+    WBK: 'Ok',
+    XCK: 'Comp(Ok)',
+    XBT: 'To(Ok, Comp(Ok))',
+    XCW: 'To(Ok, Ok)',
+    XBI: 'To(Comp(Num), Comp(Num))',
+    XDM: 'Comp(Ok)',
+    ZBC: 'Comp(Ok)',
+    WDC: 'Num',
+    XDO: 'Num',
+    WBD: 'Comp(Ok)',
+    ZBE: 'Ok',
+    TAK: 'Num',
+    TDF: 'Comp(Ok)',
+    TX: 'Comp(Ok)',
+    XL: 'Comp(Ok)',
+    YAN: 'Num',
+    WBF: 'Ok',
+    TCJ: 'Comp(Ok)',
+    WBM: 'Comp(Num)',
+    XN: 'To(Num, Comp(Ok))',
+    TW: 'Ok',
+    XAT: 'Num',
+    XBG: 'Comp(Ok)',
+    ZBJ: 'Ok',
+    lft: '[To(Comp(Ok), Num) -> Comp(Ok), To(To(Num, Comp(Ok)), Comp(Ok)) -> To(Num, Comp(Ok)), To(To(To(Num, Num), Ok), To(To(Num, Num), Ok)) -> To(To(Num, Num), Ok), To(Ok, Comp(Ok)) -> Ok, To(Comp(Comp(Num)), Comp(Ok)) -> Comp(Comp(Num)), To(Ok, Ok) -> Ok, To(Num, Comp(Ok)) -> Num, To(Comp(Ok), Comp(Ok)) -> Comp(Ok), To(To(Ok, Ok), Ok) -> To(Ok, Ok), To(Comp(Ok), Ok) -> Comp(Ok), Comp(Num) -> Ok, To(To(Num, Num), Ok) -> To(Num, Num), Num -> Ok, To(Num, Num) -> Num, else -> Comp(Num)]',
+    rgt: '[To(Comp(Num), Comp(Num)) -> Comp(Num), To(Comp(Num), Num) -> Num, To(Comp(Ok), Num) -> Num, To(To(Num, Comp(Ok)), Comp(Ok)) -> Comp(Ok), To(To(To(Num, Num), Ok), To(To(Num, Num), Ok)) -> To(To(Num, Num), Ok), To(Ok, Comp(Ok)) -> Comp(Ok), To(Comp(Num), Comp(Ok)) -> Comp(Ok), To(Comp(Comp(Num)), Comp(Ok)) -> Comp(Ok), To(Num, Comp(Ok)) -> Comp(Ok), To(Comp(Ok), Comp(Ok)) -> Comp(Ok), To(Num, Num) -> Num, else -> Ok]',
+    comp: '[Comp(Ok) -> Ok, Comp(Num) -> Num, Comp(To(Comp(Ok), Num)) -> To(Comp(Ok), Num), Comp(To(Comp(Ok), Comp(Ok))) -> To(Comp(Ok), Comp(Ok)), Comp(To(Comp(Ok), Ok)) -> To(Comp(Ok), Ok), To(Ok, Ok) -> Ok, else -> Comp(Num)]'
+  }
+]
+
+                const superIffy = cond => {
+                    const if1 = x => cond <= 0 ? x : x + 1;
+                    const if2 = x => if1(x) <= 0 ? x : x - 1;
+                    const if3 = x => if2(x) <= 0 ? x - 1 : x;
+                    return if3(if2(if1(cond))) <= 0 ? if1(if2(if3(cond))) : if3(if1(if2(cond)));
+                }
+                superIffy(0);
+                
+	superIffy : Untypable
+	eval#0 : Untypable
+Inconclusive
+[]
+
+            const fn = x => {
+                0(0);
+                return 0;
+            }
+            fn(0);
+        
+Solution
+	fn : (Ok -> Comp(Ok))
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    XO: 'Ok',
+    YE: 'Ok',
+    XN: 'To(Ok, Comp(Ok))',
+    XF: 'Comp(Ok)',
+    XJ: 'Num',
+    XI: 'Num',
+    XG: 'Comp(Ok)',
+    WL: 'Comp(Ok)',
+    XH: 'Comp(Ok)',
+    ZK: 'Comp(Ok)',
+    WQ: 'Comp(Ok)',
+    ZP: 'Comp(Ok)',
+    TB: 'Ok',
+    TC: 'Comp(Ok)',
+    XM: 'Comp(Ok)',
+    XD: 'To(Ok, Comp(Ok))'
+  }
+]
+
+            const app2 = 0(0); //Disj(T1, Comp(Ok) -> A);
+        
+Solution
+	app2 : Comp(Ok)
+Ill-typed and fails at: app2
+[
+  {
+    XD: 'Num',
+    XE: 'To(Num, Num)',
+    ZF: 'Comp(Ok)',
+    WG: 'Comp(Ok)',
+    TB: 'Comp(Ok)',
+    XC: 'Comp(Ok)'
+  }
+]
+
+            const id = x => x;
+            const app3 = (id)(id + id); //T2 = Comp(Ok);
+        
+Solution
+	id : (Num -> Num)
+	app3 : Comp(Ok)
+Ill-typed and fails at: app3
+[
+  {
+    YE: 'Num',
+    XL: 'To(Num, Num)',
+    WN: 'Num',
+    XF: 'Num',
+    ZM: 'Ok',
+    XI: 'To(Comp(Num), Comp(Num))',
+    ZO: 'Num',
+    XJ: 'Comp(Ok)',
+    WP: 'Num',
+    WR: 'Comp(Ok)',
+    ZQ: 'Comp(Ok)',
+    TB: 'Num',
+    TC: 'Num',
+    XH: 'Comp(Ok)',
+    XD: 'To(Num, Num)',
+    TG: 'Comp(Ok)'
+  }
+]
+
+            const pred = x => x - 1;
+            const ifZ1 = pred <= 0 ? 1 : 2; //Disj(T1, Num)
+        
+Solution
+	pred : ((Num -> Num) -> (Num -> Num))
+	ifZ1 : Comp(Ok)
+Ill-typed and fails at: ifZ1
+[
+  {
+    YE: 'To(Num, Num)',
+    ZK: 'Num',
+    XF: 'To(Num, Num)',
+    WS: 'To(Num, Num)',
+    XO: 'To(To(Num, Num), To(Num, Num))',
+    ZI: 'Num',
+    WJ: 'Num',
+    ZR: 'To(Num, Num)',
+    WL: 'Num',
+    XG: 'To(Num, Num)',
+    TB: 'To(Num, Num)',
+    TC: 'To(Num, Num)',
+    TM: 'Comp(Ok)',
+    XN: 'Comp(Ok)',
+    XD: 'To(To(Num, Num), To(Num, Num))'
+  }
+]
+
+            const succ = x => x + 1;
+            succ(succ); //A = A -> B (untypable)
+        
+	succ : Untypable
+	eval#0 : Untypable
+Inconclusive
+[]
+
+            (x => x + 1)(x => x + 1); // free conclusion type from NumOp2
+        
+Solution
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    WT: 'Num',
+    YD: 'To(Ok, Ok)',
+    ZH: 'Ok',
+    XC: 'To(To(Ok, Ok), Comp(Ok))',
+    WR: 'Num',
+    XL: 'To(Ok, Ok)',
+    ZS: 'Num',
+    ZQ: 'Num',
+    XF: 'To(Ok, Ok)',
+    WK: 'Num',
+    XE: 'Comp(Ok)',
+    ZJ: 'Num',
+    XN: 'Ok',
+    WI: 'Ok',
+    YM: 'Ok',
+    WV: 'Comp(Ok)',
+    ZU: 'Comp(Ok)',
+    XB: 'Comp(Ok)'
+  }
+]
+
+            const ifZ2 = 0 <= 0 ? (x => x + 1)(x => x + 1) : (x => x + 1)(x => x + 1); 
+        
+Solution
+	ifZ2 : Comp(Ok)
+Ill-typed and fails at: ifZ2
+[
+  {
+    ZAO: 'Num',
+    WAV: 'Num',
+    XAL: 'Num',
+    ZAQ: 'Num',
+    XO: 'To(To(Num, Ok), To(Ok, Num))',
+    ZT: 'Num',
+    XH: 'Comp(Ok)',
+    XAA: 'To(To(To(Num, Num), Num), Comp(Ok))',
+    YAK: 'To(Num, Num)',
+    XAD: 'To(To(Num, Num), Num)',
+    ZK: 'To(Num, Ok)',
+    XF: 'To(To(To(Num, Ok), To(Ok, Num)), Comp(Ok))',
+    XI: 'To(To(Num, Ok), To(Ok, Num))',
+    XR: 'To(Num, Ok)',
+    XAE: 'To(To(To(Num, Num), Num), To(To(Num, Num), Num))',
+    ZAF: 'To(Num, Num)',
+    XAC: 'Comp(Ok)',
+    WAP: 'Num',
+    XAM: 'To(Num, Num)',
+    XAJ: 'To(To(Num, Num), Num)',
+    ZV: 'Num',
+    WAG: 'Num',
+    WAR: 'Num',
+    ZM: 'Num',
+    XQ: 'To(Ok, Num)',
+    WW: 'Num',
+    WL: 'To(Ok, Num)',
+    YG: 'To(To(Num, Ok), To(Ok, Num))',
+    YP: 'To(Num, Ok)',
+    WN: 'Num',
+    ZAH: 'Num',
+    WAI: 'Num',
+    WU: 'Ok',
+    ZAU: 'Num',
+    YAB: 'To(To(Num, Num), Num)',
+    WY: 'Comp(Ok)',
+    WAT: 'Comp(Ok)',
+    ZAS: 'Comp(Ok)',
+    XZ: 'Comp(Ok)',
+    ZX: 'Comp(Ok)',
+    XE: 'Comp(Ok)',
+    TB: 'Comp(Ok)',
+    XC: 'Comp(Ok)'
+  }
+]
+
+            const okC1 = (x => x)(0(0)); //variable x goes wrong (Y1 = Comp(Ok))
+        
+Solution
+	okC1 : Comp(Ok)
+Ill-typed and fails at: okC1
+[
+  {
+    ZJ: 'Comp(Ok)',
+    YE: 'Ok',
+    XH: 'Num',
+    XG: 'Comp(Ok)',
+    XF: 'To(Num, Num)',
+    WK: 'Comp(Ok)',
+    XI: 'Num',
+    ZL: 'Comp(Ok)',
+    WM: 'Comp(Ok)',
+    TB: 'Comp(Ok)',
+    XC: 'Comp(Ok)'
+  }
+]
+f => x => f(f(x));
+	eval#0 : Untypable
+Inconclusive
+[]
+(f => g => f + g);
+	eval#0 : Untypable
+Inconclusive
+[]
+(f => g => f + g)(0);
+	eval#0 : Untypable
+Inconclusive
+[]
+(f => g => f + g)(0)(0);
+	eval#0 : Untypable
+Inconclusive
+[]
+(f => g => f + g(0))(0)(x => x);
+	eval#0 : Untypable
+Inconclusive
+[]
+(x => x)(0) + 0;
+	eval#0 : Untypable
+Inconclusive
+[]
+(x => x);
+	eval#0 : Untypable
+Inconclusive
+[]
+(x => x)(0);
+	eval#0 : Untypable
+Inconclusive
+[]
+(x => x)(x => x);
+	eval#0 : Untypable
+Inconclusive
+[]
+0 + 0;
+	eval#0 : Untypable
+Inconclusive
+[]
+1 <= 0 ? 0(0) : 0;
+	eval#0 : Untypable
+Inconclusive
+[]
+(f => x => f(f(x)))(y => y + 1)((x => 0)(1));
+	eval#0 : Untypable
+Inconclusive
+[]
+(f => x => f(f(x)))(y => x => y)(0);
+	eval#0 : Untypable
+Inconclusive
+[]
+x => 0(x);
+	eval#0 : Untypable
+Inconclusive
+[]
+0(0);
+Solution
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    XD: 'To(Num, Num)',
+    XC: 'Num',
+    ZE: 'Comp(Ok)',
+    WF: 'Comp(Ok)',
+    XB: 'Comp(Ok)'
+  }
+]
+(x => x) + 0;
+Solution
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    ZI: 'Num',
+    WJ: 'Num',
+    YD: 'Num',
+    XE: 'Num',
+    WH: 'Num',
+    XC: 'To(Num, Num)',
+    ZG: 'Num',
+    XB: 'Comp(Ok)'
+  }
+]
+(x => x <= 0 ? 0 : 0)(y => y);
+Solution
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    YD: 'To(Num, Num)',
+    XM: 'Num',
+    XF: 'To(Num, Num)',
+    YL: 'Num',
+    ZI: 'Num',
+    WJ: 'Num',
+    XE: 'Comp(Ok)',
+    XK: 'To(Num, Num)',
+    XC: 'To(To(Num, Num), Comp(Ok))',
+    WO: 'Comp(Ok)',
+    ZN: 'Comp(Ok)',
+    XB: 'Comp(Ok)'
+  }
+]
+(f => g => f + g)(0)(x => x);
+Solution
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    YS: 'Comp(Ok)',
+    ZM: 'Comp(Ok)',
+    XO: 'Num',
+    WL: 'Num',
+    XH: 'Comp(Ok)',
+    XT: 'Num',
+    YG: 'To(Comp(Ok), Num)',
+    XC: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    YE: 'Num',
+    XD: 'To(Num, To(To(Comp(Ok), Num), Comp(Ok)))',
+    ZK: 'Num',
+    WN: 'Num',
+    XF: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    XR: 'To(Comp(Ok), Num)',
+    XJ: 'To(Comp(Ok), Num)',
+    WQ: 'To(Num, To(To(Comp(Ok), Num), Comp(Ok)))',
+    ZP: 'To(Num, Comp(Ok))',
+    WV: 'Comp(Ok)',
+    ZU: 'Comp(Ok)',
+    XB: 'Comp(Ok)'
+  }
+]
+0 - (x => x <= 0 ? 1 : 0);
+Solution
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    YE: 'Comp(Ok)',
+    XD: 'To(Comp(Ok), Num)',
+    ZL: 'Num',
+    XF: 'Num',
+    WK: 'Num',
+    WM: 'Num',
+    ZJ: 'Num',
+    ZN: 'Comp(Ok)',
+    WO: 'Num',
+    XI: 'Num',
+    XH: 'Num',
+    XB: 'Comp(Ok)'
+  }
+]
+(x => x) - (y => y);
+Solution
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    YD: 'Ok',
+    ZK: 'Num',
+    XF: 'To(Num, Num)',
+    ZI: 'Num',
+    WJ: 'Num',
+    XE: 'To(Num, Num)',
+    WL: 'Num',
+    XH: 'Num',
+    YG: 'Num',
+    XB: 'Comp(Ok)'
+  }
+]
+(f => x => 0 - f(x)(0)) <= 0 ? 0 : 0;
+Solution
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    YD: 'Num',
+    ZX: 'Num',
+    XO: 'Num',
+    ZT: 'Num',
+    XC: 'To(Num, To(Comp(Ok), To(Num, Num)))',
+    XL: 'Comp(Ok)',
+    YF: 'Comp(Ok)',
+    WS: 'Num',
+    XI: 'To(Num, Num)',
+    ZR: 'Num',
+    WY: 'To(Comp(Ok), To(Num, Num))',
+    XE: 'To(Comp(Ok), To(Num, Num))',
+    WU: 'Num',
+    XJ: 'To(Num, To(Num, Num))',
+    XG: 'To(Num, Num)',
+    ZP: 'To(Num, Comp(Ok))',
+    WN: 'To(Num, To(Num, To(Num, Num)))',
+    ZM: 'To(Num, Comp(Ok))',
+    XB: 'Comp(Ok)'
+  }
+]
+(y => x => y(1) + y(x))(x => x + 1)((z => z <= 0 ? (x => x) : (y => y))(0));
+Solution
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    XAU: 'Num',
+    WAC: 'Num',
+    WV: 'Num',
+    XO: 'To(To(Comp(Ok), Num), To(Num, Num))',
+    XK: 'Ok',
+    XP: 'To(Comp(Ok), Num)',
+    XAR: 'Num',
+    XAO: 'Num',
+    XH: 'Comp(Ok)',
+    XAA: 'To(Comp(Num), Comp(Num))',
+    XAI: 'To(Num, To(Comp(Ok), Num))',
+    XY: 'To(Num, Num)',
+    XF: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    YAJ: 'Num',
+    XI: 'To(Num, Ok)',
+    XW: 'To(To(Comp(Ok), Num), To(Num, Num))',
+    WAE: 'Num',
+    ZU: 'Num',
+    XAM: 'To(Comp(Ok), Num)',
+    WT: 'Num',
+    ZAD: 'Num',
+    XAH: 'To(Comp(Ok), Num)',
+    XAK: 'To(Comp(Ok), Num)',
+    WAT: 'Num',
+    XC: 'To(To(Comp(Ok), Num), Comp(Ok))',
+    YG: 'To(Comp(Ok), Num)',
+    ZAB: 'Comp(Ok)',
+    YE: 'To(To(Comp(Ok), Num), To(Num, Num))',
+    XD: 'To(To(To(Comp(Ok), Num), To(Num, Num)), To(To(Comp(Ok), Num), Comp(Ok)))',
+    ZS: 'Num',
+    YAN: 'Comp(Ok)',
+    YAQ: 'Comp(Ok)',
+    XZ: 'To(Comp(Ok), Num)',
+    XN: 'To(Num, Num)',
+    XAP: 'To(Comp(Ok), Num)',
+    YX: 'To(Comp(Ok), Num)',
+    ZAS: 'Num',
+    WAG: 'To(Num, To(To(Comp(Ok), Num), Comp(Ok)))',
+    ZAF: 'To(Num, Comp(Ok))',
+    ZQ: 'To(Num, Comp(Ok))',
+    ZL: 'To(Num, Comp(Ok))',
+    ZAV: 'To(Num, Comp(Ok))',
+    WAY: 'Comp(Ok)',
+    ZAX: 'Comp(Ok)',
+    XB: 'Comp(Ok)'
+  }
+]
+(x => x(0))(0);
+Solution
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    ZH: 'Comp(Ok)',
+    YD: 'Num',
+    XF: 'Num',
+    WI: 'Comp(Ok)',
+    XE: 'Comp(Ok)',
+    XC: 'To(Num, Comp(Ok))',
+    XJ: 'Num',
+    XG: 'To(Num, Num)',
+    WL: 'Comp(Ok)',
+    ZK: 'Comp(Ok)',
+    XB: 'Comp(Ok)'
+  }
+]
+thing => thing
+	eval#0 : Untypable
+Inconclusive
+[]
+(cannotBeNum => cannotBeNum(0))(0)
+Solution
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    ZH: 'Comp(Ok)',
+    YD: 'Num',
+    XF: 'Num',
+    WI: 'Comp(Ok)',
+    XE: 'Comp(Ok)',
+    XC: 'To(Num, Comp(Ok))',
+    XJ: 'Num',
+    XG: 'To(Num, Num)',
+    WL: 'Comp(Ok)',
+    ZK: 'Comp(Ok)',
+    XB: 'Comp(Ok)'
+  }
+]
+
+            const x = 0;
+        
+	x : Untypable
+Inconclusive
+[]
+
+            const x = y => y;
+            const z = w => {
+                return x(w);
+            }
+        
+	x : Untypable
+	z : Untypable
+Inconclusive
+[]
+
+            const x = 0;
+        
+	x : Untypable
+Inconclusive
+[]
+
+            x => x
+        
+	eval#0 : Untypable
+Inconclusive
+[]
+
+            const x = y => y;
+        
+	x : Untypable
+Inconclusive
+[]
+
+            const mul = x => y => {
+                return x <= 0 ? y : y + mul(x - 1)(y);
+            }
+        
+	mul : Untypable
+Inconclusive
+[]
+
+            const mul = x => y => {
+                return x <= 0 ? y : y + mul(x - 1)(y);
+            }
+            const result = mul(2)(3);
+        
+	mul : Untypable
+	result : Untypable
+Inconclusive
+[]
+
+            const pair = m => n => p => p(m)(n);
+            const div = n => d => q => {
+                const r = n - d; 
+                return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
+            }
+            const goodResult = div(10)(2)(0);
+        
+	pair : Untypable
+	div : Untypable
+	goodResult : Untypable
+Inconclusive
+[]
+
+            const fst = x => y => x;
+            const snd = x => y => y;
+            const pair = m => n => p => p(m)(n);
+            const listZeros = pair(0)(pair(0)(pair(0)(pair(0)(0))));
+            const head = fst;
+            listZeros(head);
+        
+	fst : Untypable
+	snd : Untypable
+	pair : Untypable
+	listZeros : Untypable
+	head : Untypable
+	eval#0 : Untypable
+Inconclusive
+[]
+
+            const boomPair = m => n => p => 1(x => x) - 1(0)(0)(m)(n);
+            const listZeros = boomPair(0)(boomPair(0)(boomPair(0)(boomPair(0)(0))));
+        
+	boomPair : Untypable
+	listZeros : Untypable
+Inconclusive
+[]
+
+            const pfst = s => t => s;
+            const psnd = s => t => t;
+            const qfst = q => r => s => t => q;
+            const qsnd = q => r => s => t => r;
+            const qtrd = q => r => s => t => s;
+            const qfrt = q => r => s => t => t;
+            const quad = q => r => s => t => p => p(q)(r)(s)(t);
+            const pair = r => s => p => p(r)(s);
+            const toTwoPairs = inQuad => {
+                const p1 = pair(inQuad(qfst))(inQuad(qsnd));
+                const p2 = pair(inQuad(qtrd))(inQuad(qfrt));
+                return pair(p1)(p2);
+            }
+            const myQuad = quad(0)(1)(2)(3);
+            const firstPair = toTwoPairs(myQuad)(pfst);
+            const sndPair = toTwoPairs(myQuad)(psnd);
+        
+	pfst : Untypable
+	psnd : Untypable
+	qfst : Untypable
+	qsnd : Untypable
+	qtrd : Untypable
+	qfrt : Untypable
+	quad : Untypable
+	pair : Untypable
+	toTwoPairs : Untypable
+	myQuad : Untypable
+	firstPair : Untypable
+	sndPair : Untypable
+Inconclusive
+[]
+
+            const id = x => x;
+            const explode = x => id - 1;
+            const zero = id(0);
+        
+	id : Untypable
+	explode : Untypable
+	zero : Untypable
+Inconclusive
+[]
+
+            const earlyFail = (x => 0)(0)(0);
+            const two = 1 + 1;
+            two + 1;
+        
+Solution
+	earlyFail : Comp(Ok)
+	two : Num
+	eval#0 : Ok
+Ill-typed and fails at: earlyFail
+[
+  {
+    XG: 'Num',
+    WAB: 'Num',
+    WZ: 'Num',
+    XQ: 'Num',
+    XK: 'To(Num, Num)',
+    XP: 'Num',
+    ZT: 'Num',
+    XH: 'Ok',
+    ZY: 'Num',
+    XV: 'Ok',
+    XD: 'Num',
+    YF: 'Ok',
+    TN: 'Num',
+    WS: 'Num',
+    XW: 'To(To(Comp(Ok), Num), To(Comp(Ok), Num))',
+    ZR: 'Num',
+    XE: 'To(Ok, Num)',
+    WU: 'Num',
+    ZAA: 'Num',
+    TB: 'Comp(Ok)',
+    WJ: 'To(Num, Num)',
+    ZI: 'To(Num, Comp(Ok))',
+    ZL: 'Comp(Ok)',
+    WM: 'Comp(Ok)',
+    XC: 'Comp(Ok)',
+    XO: 'Num'
+  }
+]
+
+            const zeroer = x => y => {
+                return 0(x) <= 0 ? 0 : 0;
+            }
+            zeroer(0)(0);
+        
+Solution
+	zeroer : (Num -> (Ok -> Comp(Ok)))
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    ZN: 'Comp(Ok)',
+    XK: 'To(Num, Num)',
+    WO: 'To(Num, Num)',
+    XH: 'Comp(Ok)',
+    XV: 'To(Num, To(Ok, Comp(Ok)))',
+    YG: 'Ok',
+    YE: 'Num',
+    XL: 'Num',
+    XM: 'To(Num, Num)',
+    XF: 'To(Ok, Comp(Ok))',
+    WS: 'Num',
+    XW: 'Num',
+    XU: 'To(Ok, Comp(Ok))',
+    ZR: 'Num',
+    XZ: 'Ok',
+    WY: 'To(Num, To(Ok, Comp(Ok)))',
+    ZX: 'To(Num, Comp(Ok))',
+    XI: 'Comp(Ok)',
+    ZAA: 'Comp(Ok)',
+    XJ: 'Comp(Ok)',
+    XQ: 'Num',
+    XP: 'Num',
+    WAB: 'Comp(Ok)',
+    TB: 'Num',
+    TC: 'To(Ok, Comp(Ok))',
+    XT: 'Comp(Ok)',
+    XD: 'To(Num, To(Ok, Comp(Ok)))'
+  }
+]
+
+            const mul = 0(0);
+        
+Solution
+	mul : Comp(Ok)
+Ill-typed and fails at: mul
+[
+  {
+    XD: 'Num',
+    XE: 'To(Num, Num)',
+    ZF: 'Comp(Ok)',
+    WG: 'Comp(Ok)',
+    TB: 'Comp(Ok)',
+    XC: 'Comp(Ok)'
+  }
+]
+
+            const pair = m => n => p => p(m)(n);
+            const div = n => d => q => {
+                const r = n - d; 
+                return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
+            }
+            
+            const badResult = div(x => x)(10)(0);
+        
+Solution
+	pair : (Comp(Ok) -> Num)
+	div : ((Num -> Ok) -> (Ok -> (Num -> Comp(Ok))))
+	badResult : Comp(Ok)
+Ill-typed and fails at: badResult
+[
+  {
+    WAU: 'Num',
+    ZBT: 'Ok',
+    XAR: 'Comp(Num)',
+    XAI: 'To(Num, Ok)',
+    ZAK: 'Num',
+    YCH: 'Num',
+    XH: 'To(Num, Num)',
+    XCO: 'Num',
+    XAX: 'To(Num, Num)',
+    XY: 'To(Num, Comp(Ok))',
+    XW: 'To(Ok, To(Num, Comp(Ok)))',
+    WAN: 'Num',
+    WCA: 'Ok',
+    XBK: 'To(Num, Num)',
+    ZBV: 'Num',
+    ZAT: 'Num',
+    XBN: 'To(Num, Num)',
+    YI: 'Ok',
+    XCL: 'Ok',
+    YV: 'To(Num, Ok)',
+    ZAM: 'Num',
+    YE: 'Comp(Ok)',
+    XCI: 'Ok',
+    XBD: 'To(Num, Num)',
+    XAP: 'Comp(Ok)',
+    XAQ: 'To(Ok, Ok)',
+    XCF: 'To(To(Num, Ok), To(Ok, To(Num, Comp(Ok))))',
+    XCG: 'To(Num, Ok)',
+    WAL: 'Ok',
+    WAW: 'Num',
+    WBW: 'Num',
+    XBA: 'To(Num, Ok)',
+    XK: 'Ok',
+    XP: 'To(Ok, Num)',
+    YAC: 'Comp(Num)',
+    XAA: 'Comp(Ok)',
+    ZAV: 'Num',
+    XBQ: 'To(Num, Num)',
+    YZ: 'Num',
+    XM: 'To(Num, Num)',
+    XCD: 'To(Num, Comp(Ok))',
+    XF: 'Num',
+    XCE: 'To(Ok, To(Num, Comp(Ok)))',
+    XJ: 'To(Num, Num)',
+    XBI: 'Num',
+    XBH: 'To(Ok, Num)',
+    YG: 'Ok',
+    WBU: 'Ok',
+    ZBZ: 'Ok',
+    XAY: 'To(Ok, Num)',
+    YX: 'Ok',
+    XBG: 'Num',
+    WBY: 'To(Num, Num)',
+    ZBX: 'To(Num, Comp(Ok))',
+    WBP: 'To(Num, To(Ok, Num))',
+    ZBO: 'To(Num, Comp(Ok))',
+    WBM: 'To(Num, Num)',
+    ZBL: 'To(Num, Comp(Ok))',
+    WBF: 'To(Num, To(Num, Num))',
+    ZBE: 'To(Num, Comp(Ok))',
+    WBC: 'To(Num, To(Ok, Num))',
+    ZBB: 'To(Num, Comp(Ok))',
+    WO: 'To(Num, Ok)',
+    ZN: 'To(Num, Comp(Ok))',
+    WCN: 'To(Num, To(Num, Comp(Ok)))',
+    ZCM: 'To(Num, Comp(Ok))',
+    WCK: 'To(Num, To(Ok, To(Num, Comp(Ok))))',
+    ZCJ: 'To(Num, Comp(Ok))',
+    WCQ: 'Comp(Ok)',
+    XAB: 'Comp(Ok)',
+    ZQ: 'Comp(Ok)',
+    ZCP: 'Comp(Ok)',
+    XAO: 'Comp(Ok)',
+    XAH: 'Comp(Num)',
+    WR: 'To(Num, Num)',
+    TB: 'Comp(Ok)',
+    TS: 'To(Num, Ok)',
+    TC: 'Num',
+    TT: 'To(Ok, To(Num, Comp(Ok)))',
+    XCC: 'Comp(Ok)',
+    TCB: 'Comp(Ok)',
+    XD: 'To(Comp(Ok), Num)',
+    XU: 'To(To(Num, Ok), To(Ok, To(Num, Comp(Ok))))'
+  }
+]
+
+            const fst = x => y => x;
+            const pair = m => n => p => 10(m)(n); 
+            const listZeros = pair(0)(pair(0)(pair(0)(pair(0)(0))));
+            listZeros(fst);
+        
+Solution
+	fst : (Num -> (Num -> Ok))
+	pair : (Ok -> (Ok -> (Ok -> Comp(Ok))))
+	listZeros : (Ok -> Comp(Ok))
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    XAS: 'Num',
+    XO: 'To(Ok, Comp(Ok))',
+    XH: 'Ok',
+    XAD: 'Ok',
+    XM: 'To(Ok, To(Ok, Comp(Ok)))',
+    XF: 'To(Num, Ok)',
+    YL: 'Ok',
+    XW: 'Ok',
+    XAN: 'To(Ok, Num)',
+    XAV: 'To(Num, Num)',
+    XR: 'To(Ok, Comp(Ok))',
+    XAB: 'To(Ok, To(Ok, Comp(Ok)))',
+    XAC: 'To(Ok, To(Ok, To(Ok, Comp(Ok))))',
+    YN: 'Ok',
+    XAM: 'Num',
+    XAH: 'To(Num, Num)',
+    XS: 'Num',
+    XAJ: 'To(Num, Num)',
+    XBI: 'To(Ok, Comp(Ok))',
+    XBJ: 'Ok',
+    XQ: 'Comp(Ok)',
+    XBH: 'Comp(Ok)',
+    XT: 'Num',
+    TZ: 'To(Ok, Comp(Ok))',
+    YG: 'Num',
+    ZU: 'Comp(Ok)',
+    YE: 'Num',
+    YP: 'Ok',
+    WV: 'To(Ok, Comp(Ok))',
+    XAP: 'To(Num, Num)',
+    XAY: 'Num',
+    XAT: 'To(To(Num, Num), Num)',
+    XAG: 'Ok',
+    WAF: 'To(Num, To(Ok, To(Ok, Comp(Ok))))',
+    ZAE: 'To(Num, Comp(Ok))',
+    ZBD: 'To(Num, Comp(Ok))',
+    WAL: 'To(Num, To(Num, Num))',
+    ZAK: 'To(Num, Comp(Ok))',
+    ZBB: 'To(Num, Comp(Ok))',
+    WAR: 'To(Num, To(Ok, Num))',
+    ZAQ: 'To(Num, Comp(Ok))',
+    ZAZ: 'To(Num, Comp(Ok))',
+    WAX: 'To(Num, To(To(Num, Num), Num))',
+    ZAW: 'To(Num, Comp(Ok))',
+    WY: 'Comp(Ok)',
+    ZBF: 'Comp(Ok)',
+    ZX: 'Comp(Ok)',
+    ZBK: 'Comp(Ok)',
+    WBL: 'Comp(Ok)',
+    WBG: 'To(Ok, Comp(Ok))',
+    TI: 'Ok',
+    TB: 'Num',
+    TJ: 'To(Ok, To(Ok, Comp(Ok)))',
+    TC: 'To(Num, Ok)',
+    XAA: 'To(Ok, Comp(Ok))',
+    XK: 'To(Ok, To(Ok, To(Ok, Comp(Ok))))',
+    XD: 'To(Num, To(Num, Ok))'
+  }
+]
+
+            const snd = x => y => y;
+            const pair = m => n => p => p(m)(n);
+            const confusedList = pair(0)(0)(0);
+        
+Solution
+	snd : (Comp(Ok) -> Num)
+	pair : (Ok -> (Ok -> (Num -> Comp(Ok))))
+	confusedList : Comp(Ok)
+Ill-typed and fails at: confusedList
+[
+  {
+    YN: 'Ok',
+    XAH: 'Ok',
+    XS: 'Num',
+    XQ: 'Comp(Ok)',
+    XO: 'To(Num, Comp(Ok))',
+    XAK: 'Num',
+    XT: 'To(Num, Num)',
+    XAD: 'To(Ok, To(Ok, To(Num, Comp(Ok))))',
+    YP: 'Num',
+    XM: 'To(Ok, To(Num, Comp(Ok)))',
+    YL: 'Ok',
+    ZU: 'Comp(Ok)',
+    XAB: 'To(Num, Comp(Ok))',
+    XW: 'Comp(Num)',
+    XR: 'Num',
+    XAE: 'Ok',
+    WV: 'Num',
+    XAC: 'To(Ok, To(Num, Comp(Ok)))',
+    WAJ: 'To(Num, To(Num, Comp(Ok)))',
+    ZAI: 'To(Num, Comp(Ok))',
+    WAG: 'To(Num, To(Ok, To(Num, Comp(Ok))))',
+    ZAF: 'To(Num, Comp(Ok))',
+    WAM: 'Comp(Ok)',
+    ZAL: 'Comp(Ok)',
+    ZX: 'Comp(Ok)',
+    YE: 'Comp(Ok)',
+    WY: 'Comp(Ok)',
+    TI: 'Ok',
+    TB: 'Comp(Ok)',
+    TJ: 'To(Ok, To(Num, Comp(Ok)))',
+    XF: 'Num',
+    TC: 'Num',
+    TZ: 'Comp(Ok)',
+    XAA: 'Comp(Ok)',
+    XK: 'To(Ok, To(Ok, To(Num, Comp(Ok))))',
+    XD: 'To(Comp(Ok), Num)',
+    lft: '[To(Ok, To(Ok, To(Num, Comp(Ok)))) -> Ok, To(Ok, To(Num, Comp(Ok))) -> Ok, To(Num, Comp(Ok)) -> Num, To(To(Num, Num), Num) -> To(Num, Num), To(Comp(Num), Comp(Ok)) -> Comp(Num), Comp(Num) -> Ok, To(Num, Num) -> Num, else -> Comp(Ok)]',
+    rgt: '[To(Comp(Ok), To(Ok, To(Num, Comp(Ok)))) -> To(Ok, To(Num, Comp(Ok))), To(Ok, To(Ok, To(Num, Comp(Ok)))) -> To(Ok, To(Num, Comp(Ok))), To(Ok, To(Num, Comp(Ok))) -> To(Num, Comp(Ok)), To(Comp(Ok), To(Num, Comp(Ok))) -> To(Num, Comp(Ok)), To(To(Num, Num), Num) -> Num, To(Comp(Ok), Num) -> Num, Comp(Num) -> Ok, To(Num, Num) -> Num, else -> Comp(Ok)]'
+  }
+]
+
+            const fst = s => t => s;
+            const snd = s => t => t;
+            const pair = s => t => p => p(s)(t);
+            const p1 = pair(0)(1);
+            const p2 = pair(2)(3);
+            const zipSumPairs = pair1 => pair2 => {
+                const e1 = pair1(fst) + pair2(fst);
+                const e2 = pair1(snd) + snd(pair2); 
+                return pair(e1)(e2);
+            }
+            const sumPair = zipSumPairs(p1)(p2);
+        
+Solution
+	fst : (Ok -> Ok)
+	snd : (Ok -> (Num -> Num))
+	pair : (Comp(Ok) -> Num)
+	p1 : Ok
+	p2 : Ok
+	zipSumPairs : (Ok -> (Ok -> Comp(Ok)))
+	sumPair : Comp(Ok)
+Ill-typed and fails at: sumPair
+[
+  {
+    XAS: 'To(Num, Num)',
+    YBI: 'Ok',
+    TEI: 'Comp(Ok)',
+    XH: 'To(Num, Num)',
+    XAI: 'To(Num, Num)',
+    XBE: 'To(Ok, Comp(Ok))',
+    XAX: 'Num',
+    XDP: 'To(Num, Num)',
+    XY: 'To(Num, Num)',
+    YL: 'Ok',
+    XCS: 'Ok',
+    XCN: 'Num',
+    ZCV: 'Num',
+    XEM: 'Ok',
+    XEP: 'Ok',
+    XEA: 'Num',
+    XCQ: 'To(Ok, Num)',
+    XDK: 'To(Num, Ok)',
+    YU: 'Num',
+    XCL: 'Ok',
+    YDA: 'Comp(Ok)',
+    ZDW: 'Num',
+    WCW: 'Num',
+    YE: 'Ok',
+    WDX: 'Num',
+    TAG: 'Ok',
+    TAQ: 'Ok',
+    YBF: 'Ok',
+    YS: 'Comp(Ok)',
+    XEK: 'To(Ok, Comp(Ok))',
+    XAU: 'To(Num, Num)',
+    XDZ: 'To(Ok, Num)',
+    XO: 'Num',
+    XAA: 'Num',
+    XV: 'Num',
+    XEF: 'Ok',
+    XAD: 'To(Num, Num)',
+    XM: 'To(Num, Num)',
+    XF: 'Ok',
+    XAN: 'To(Num, Num)',
+    XDR: 'Ok',
+    XEC: 'To(Num, Num)',
+    YN: 'Num',
+    WDV: 'Num',
+    XDM: 'Num',
+    XAK: 'To(Num, Num)',
+    XT: 'Num',
+    XX: 'Num',
+    WCY: 'Num',
+    YG: 'Num',
+    ZDU: 'Num',
+    XEL: 'To(Ok, To(Ok, Comp(Ok)))',
+    YBD: 'Ok',
+    XDQ: 'To(Ok, To(Num, Num))',
+    XBG: 'Comp(Ok)',
+    ZCX: 'Num',
+    YW: 'To(Num, Num)',
+    WEH: 'To(Num, To(Ok, Num))',
+    ZEG: 'To(Num, Comp(Ok))',
+    WEE: 'To(Num, Num)',
+    ZED: 'To(Num, Comp(Ok))',
+    ZDS: 'To(Num, Comp(Ok))',
+    ZDN: 'To(Num, Comp(Ok))',
+    ZCT: 'To(Num, Comp(Ok))',
+    ZCO: 'To(Num, Comp(Ok))',
+    WAW: 'To(Num, To(Num, Num))',
+    ZAV: 'To(Num, Comp(Ok))',
+    WAM: 'To(Num, To(Num, Num))',
+    ZAL: 'To(Num, Comp(Ok))',
+    WAC: 'To(Num, To(Num, Num))',
+    ZAB: 'To(Num, Comp(Ok))',
+    WEO: 'To(Num, To(Ok, Comp(Ok)))',
+    ZEN: 'To(Num, Comp(Ok))',
+    WAP: 'Ok',
+    XDY: 'Comp(Ok)',
+    XBH: 'Comp(Ok)',
+    WAF: 'Num',
+    WER: 'Comp(Ok)',
+    ZEQ: 'Comp(Ok)',
+    WAZ: 'Ok',
+    ZAY: 'Comp(Ok)',
+    XDJ: 'Comp(Ok)',
+    ZAE: 'Comp(Ok)',
+    ZAO: 'Comp(Ok)',
+    XCZ: 'Comp(Ok)',
+    XCK: 'Ok',
+    TB: 'Ok',
+    TJ: 'To(Num, Num)',
+    TBB: 'To(Ok, Comp(Ok))',
+    TI: 'Ok',
+    TQ: 'Num',
+    TP: 'Comp(Ok)',
+    TC: 'Ok',
+    TBA: 'Ok',
+    XAR: 'Ok',
+    XAH: 'Ok',
+    XR: 'To(Comp(Ok), Num)',
+    XK: 'To(Ok, To(Num, Num))',
+    XD: 'To(Ok, Ok)',
+    XEJ: 'Comp(Ok)',
+    XBC: 'To(Ok, To(Ok, Comp(Ok)))'
+  }
+]
+
+            const fst = s => t => s;
+            const snd = s => t => t;
+            const sndFst = snd(fst);
+            const idPlus1 = sndFst + 1;
+        
+Solution
+	fst : (Num -> (Num -> Num))
+	snd : (Ok -> (Num -> Num))
+	sndFst : (Num -> Num)
+	idPlus1 : Comp(Ok)
+Ill-typed and fails at: idPlus1
+[
+  {
+    YN: 'Num',
+    ZZ: 'Num',
+    XS: 'Ok',
+    WAC: 'Num',
+    XO: 'Num',
+    XX: 'To(Num, Num)',
+    XH: 'Num',
+    YG: 'Num',
+    ZAB: 'Num',
+    YE: 'Num',
+    TP: 'To(Num, Num)',
+    XY: 'To(To(Comp(Ok), To(Num, Num)), To(Comp(Ok), To(Num, Num)))',
+    XF: 'To(Num, Num)',
+    YL: 'Ok',
+    XM: 'To(Num, Num)',
+    TV: 'Comp(Ok)',
+    XR: 'To(Ok, To(Num, Num))',
+    WAA: 'Num',
+    WU: 'To(Num, Num)',
+    ZT: 'Comp(Ok)',
+    TI: 'Ok',
+    TB: 'Num',
+    TJ: 'To(Num, Num)',
+    TC: 'To(Num, Num)',
+    XW: 'Comp(Ok)',
+    XK: 'To(Ok, To(Num, Num))',
+    XD: 'To(Num, To(Num, Num))',
+    XQ: 'To(Num, Num)'
+  }
+]
+
+            const boomRecursion = x => {
+                return x <= 0 ? 0(boomRecursion(x - 1)) : 0(x);
+            }
+            boomRecursion(10);
+        
+Solution
+	boomRecursion : (Ok -> Comp(Ok))
+	eval#0 : Comp(Ok)
+Ill-typed and fails at: eval#0
+[
+  {
+    ZAD: 'Num',
+    XAH: 'Ok',
+    WT: 'Num',
+    XK: 'Num',
+    ZAB: 'Comp(Ok)',
+    XAA: 'Ok',
+    WR: 'Num',
+    ZW: 'Comp(Ok)',
+    YE: 'Ok',
+    XL: 'Num',
+    ZS: 'Num',
+    WAC: 'Comp(Ok)',
+    XF: 'Comp(Ok)',
+    XY: 'Comp(Ok)',
+    ZQ: 'Num',
+    WX: 'Comp(Ok)',
+    WAE: 'Num',
+    XN: 'To(Num, Num)',
+    XZ: 'Num',
+    XAG: 'To(Ok, Comp(Ok))',
+    ZU: 'To(Num, Comp(Ok))',
+    XG: 'Comp(Ok)',
+    WAJ: 'Comp(Ok)',
+    XH: 'Comp(Ok)',
+    ZAI: 'Comp(Ok)',
+    XJ: 'Comp(Ok)',
+    TB: 'Ok',
+    TC: 'Comp(Ok)',
+    XAF: 'Comp(Ok)',
+    XD: 'To(Ok, Comp(Ok))'
+  }
+]
+
+            const id = x => x;
+            const funcGoesWrongWhenRun = y => id + id;
+            const three = 2 + 1;
+        
+	id : Untypable
+	funcGoesWrongWhenRun : Untypable
+	three : Untypable
+Inconclusive
+[]
+
+            const tenOrId = lTOrGTZ => {
+                return lTOrGTZ <= 0 ? x => x : 10;
+            }
+            const eleven = tenOrId(1) + 1;
+        
+	tenOrId : Untypable
+	eleven : Untypable
+Inconclusive
+[]
+
+            const id = x => x;
+        
+	id : Untypable
+Inconclusive
+[]
+[32m successes (103/103):
+ 	testVariables: line 105
+	testVariables: line 106
+	testVariables: line 107
+	testVariables: line 108
+	testVariables: line 109
+	testVariables: line 110
+	testVariables: line 116
+	testExcludeTopDefns: line 554
+	testExcludeTopDefns: line 555
+	testWhereFails: line 402
+	testWhereFails: line 412
+	testWhereFails: line 427
+	testWhereFails: line 450
+	testEarlyFailAt: line 559
+	testEarlyFailAt: line 573
+	testEarlyFailAt: line 578
+	testEarlyFailAt: line 584
+	testEarlyFailAt: line 593
+	testWhereFails: line 402
+	testWhereFails: line 412
+	testWhereFails: line 427
+	testWhereFails: line 450
+	testBlockIgnoresStillIllTyped: line 539
+	testTypabilityByRule: line 467
+	testTypabilityByRule: line 470
+	testTypabilityByRule: line 474
+	testTypabilityByRule: line 484
+	testTypabilityByRule: line 493
+	testTypabilityByRule: line 497
+	testTypabilityByRule: line 500
+	testTypeEquality: line 131
+	testTypeEquality: line 132
+	testTypeEquality: line 133
+	testTypeEquality: line 134
+	testTypeEquality: line 135
+	testTypeEquality: line 137
+	testTypeEquality: line 140
+	testTypeEquality: line 141
+	testTypeEquality: line 142
+	testTypeEquality: line 143
+	testUntypability: line 147
+	testUntypability: line 148
+	testUntypability: line 149
+	testUntypability: line 150
+	testUntypability: line 151
+	testUntypability: line 152
+	testUntypability: line 153
+	testUntypability: line 154
+	testUntypability: line 155
+	testUntypability: line 156
+	testUntypability: line 157
+	testUntypability: line 158
+	testUntypability: line 159
+	testUntypability: line 160
+	testTypability: line 164
+	testTypability: line 165
+	testTypability: line 166
+	testTypability: line 167
+	testTypability: line 168
+	testTypability: line 169
+	testTypability: line 170
+	testTypability: line 171
+	testTypability: line 173
+	testFreshTypes: line 185
+	testCheckTypeShape: line 189
+	testCheckTypeShape: line 190
+	testLongIdentifiers: line 194
+	testLongIdentifiers: line 195
+	testValidityOfNewGrammar: line 199
+	testValidityOfNewGrammar: line 200
+	testValidityOfNewGrammar: line 204
+	testValidityOfNewGrammar: line 209
+	testValidityOfNewGrammar: line 215
+	testReconstrNewGrammarSucceeds: line 224
+	testReconstrNewGrammarSucceeds: line 225
+	testReconstrNewGrammarSucceeds: line 229
+	testReconstrNewGrammarSucceeds: line 240
+	testUntypableNewGrammar: line 249
+	testUntypableNewGrammar: line 252
+	testUntypableNewGrammar: line 258
+	testUntypableNewGrammar: line 261
+	testUntypableNewGrammar: line 264
+	testUntypableNewGrammar: line 267
+	testUntypableNewGrammar: line 272
+	testUntypableNewGrammar: line 278
+	testUntypableNewGrammar: line 286
+	testUntypableNewGrammar: line 295
+	testUntypableNewGrammar: line 299
+	testUntypableNewGrammar: line 317
+	testTypeableNewGrammar: line 334
+	testTypeableNewGrammar: line 340
+	testTypeableNewGrammar: line 346
+	testTypeableNewGrammar: line 350
+	testTypeableNewGrammar: line 360
+	testTypeableNewGrammar: line 366
+	testTypeableNewGrammar: line 373
+	testTypeableNewGrammar: line 387
+	testTypeableNewGrammar: line 393
+	falsePositivesWeCantShowWrong: line 603
+	falsePositivesWeCantShowWrong: line 608
+	showSimpleRights: line 618
+	testProgramsRun: line 525
+	testProgramsRun: line 534 [0m
+[31m failures (0/103):
+ 	 [0m

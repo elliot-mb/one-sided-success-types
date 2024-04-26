@@ -61,7 +61,7 @@ export class Solver{
     }
     
     static makeArrows = jsty => {
-        if(typeof(jsty) !== typeof('string')) throw Utils.makeErr('toArrowJSTy: jsty must be a string');
+        if(typeof(jsty) !== typeof('string')) throw Utils.makeErr(`toArrowJSTy: jsty must be a string when it was ${jsty}`);
         let noTo = jsty.replace(/To/g, '');
         // if(noTo[0] === '(' && noTo[noTo.length - 1] === ')'){
         //     noTo = noTo.substring(1);
@@ -125,6 +125,9 @@ export class Solver{
         const lineNames = Object.keys(env.getTypings());
         if(anyFails.length !== 0) console.log(`Ill-typed and fails at: ${anyFails.map(n => lineNames[n])}`);
         else console.log(`Inconclusive`); //we dont handle the case where individual terms evalute without assignment
+
+        //console.log(result['sol']);
+
         //if(anyFails.length !== 0) console.log(`First fails on line ${anyFails[0]}`);
         return anyFails;
     }

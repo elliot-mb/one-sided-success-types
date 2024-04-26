@@ -154,10 +154,27 @@ def show_constrs(constrs):
 # iteratively acquires more solutions by constraining assignments against what they come up as 
 # whitelist tells us which assignments to not try and negate (a list of variable names)
 def make_solns(const_lookup, constrs, count, we_care_names, JSTy):
+    # # the grammar for types 
+    # JSTy = Datatype('JSTy')
+
+    # JSTy.declare('Num')
+    # JSTy.declare('Ok')
+    # JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
+    # # lft and rgt are always total
+    # JSTy.declare('Comp', ('comp', JSTy))#C))
+    # # comp is always total 
+
     solns = [] # can be added to a dict, array of dicts  
     solver = Solver()
-    solver.set(relevancy=2)
+    solver.set(relevancy=1) # write about relevancy propagation 
     solver.add(constrs)
+
+    # tyVarA = Const('tyVarA', JSTy)
+    # tyVarB = Const('tyVarB', JSTy)
+    # solver.add(ForAll([tyVarA, tyVarB], JSTy.To(tyVarA, tyVarB).arg(0) == tyVarA))
+    # solver.add(ForAll([tyVarA, tyVarB], JSTy.To(tyVarA, tyVarB).arg(1) == tyVarB))
+    # solver.add(ForAll([tyVarA], JSTy.Comp(tyVarA).arg(0) == tyVarA))
+
     mod = None
     illegal_assign = False
     max_solves = count
@@ -190,7 +207,7 @@ def make_solns(const_lookup, constrs, count, we_care_names, JSTy):
                     uncared_for_typestrs.remove(assStr)
             else:                     #print('reassign ' + assStr)
                 #print('ILLEGAL ASSIGN to ' + assStr)
-                #sol[assStr] = mod[ass]
+                sol[assStr] = mod[ass]
                 illegal_assign = True
         
         for s in uncared_for_typestrs:
@@ -205,7 +222,8 @@ def make_solns(const_lookup, constrs, count, we_care_names, JSTy):
         
         mod_negation = Or(mod_can_neg)
         #print(mod_negation)
-        solns.append(sol) 
+        if(not illegal_assign):
+            solns.append(sol) 
         # if(len(mod_must_neg) > 0):
         #     solver.add(And(mod_negation))
         solver.add(mod_negation)
@@ -308,6 +326,7 @@ def main():
     JSTy.declare('To', ('lft', JSTy), ('rgt', JSTy))
     # lft and rgt are always total
     JSTy.declare('Comp', ('comp', JSTy))#C))
+    # comp is always total 
 
     JSTy = JSTy.create()
 

@@ -47,7 +47,7 @@ export class Rule {
     //Ok^c, hopefully
     static addOkC1 = (assms) => { //structural 
         Utils.typeIsOrCrash(assms, Assms.type);
-        const assmTypings = assms.getTypings();
+        const assmTypings = assms.getLocalTypings();
         const okCVarTypes = Object.keys(assmTypings).map(x => new Constraint(assmTypings[x], Rule.okC()));
         return new Orer(...okCVarTypes.map(x => new Ander(x)));
     }
@@ -170,7 +170,7 @@ export class Rule {
     /////////////////////////////////////////////////
 
     static cTVar = (r, empty) => {
-        const OkC1Constrs = Rule.addOkC1(empty.getAssms());
+        const OkC1Constrs = Rule.addOkC1(empty.getAssms()); 
         const X = new GenT(r.getFreshVar('X'));
         const typeInAssms = empty.variableType(empty.getSubterm('x'));
         const conclusn = empty.constrain(X); //(CTVar)

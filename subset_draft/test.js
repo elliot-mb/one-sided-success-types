@@ -3,6 +3,7 @@ import { GenT, NumT, ArrowT, OkT, CompT } from './typevar.js';
 import {Solver} from './solver.js';
 import {Reconstructor} from './reconstructor.js';
 import {toASTTrees, getAllVariablesInDefn} from './wrapper_acorn.js'
+import {Assms} from './assms.js';
 
 export class Test {
 
@@ -27,8 +28,10 @@ export class Test {
 
          */
         await this.testVariables();
-
+        await this.testExcludeTopDefns();
+        await this.testWhereFails();
         await this.testEarlyFailAt();
+        await this.testWhereFails();
         await this.testBlockIgnoresStillIllTyped();
         await this.testTypabilityByRule();
         await this.testTypeEquality();
@@ -94,20 +97,23 @@ export class Test {
      * tests
      */
 
+    auxillaryAllEq(xs, ys){
+        return xs.length == ys.length && Utils.all(xs.map((x, i) => x === ys[i]));
+    }
+
     testVariables(){
-        const allEqual = (arr1, arr2) => arr1.length == arr2.length && Utils.all(arr1.map((x, i) => x === arr2[i]));
-        this.assert(allEqual(getAllVariablesInDefn(toASTTrees('const x = 0;', false, true)[0]), ['x']));
-        this.assert(allEqual(getAllVariablesInDefn(toASTTrees('const xyz = x => y => z => 0;', false, true)[0]), ['xyz','x', 'y', 'z']));
-        this.assert(allEqual(getAllVariablesInDefn(toASTTrees('x => y => y + x + 3;', false, true)[0]), ['x', 'y']));
-        this.assert(allEqual(getAllVariablesInDefn(toASTTrees('x - 1;', false, true)[0]), ['x']));
-        this.assert(allEqual(getAllVariablesInDefn(toASTTrees('const doesntNeedAny = 0;', false, true)[0]), ['doesntNeedAny']));
-        this.assert(allEqual(getAllVariablesInDefn(toASTTrees(
+        this.assert(this.auxillaryAllEq(getAllVariablesInDefn(toASTTrees('const x = 0;', false, true)[0]), ['x']));
+        this.assert(this.auxillaryAllEq(getAllVariablesInDefn(toASTTrees('const xyz = x => y => z => 0;', false, true)[0]), ['xyz','x', 'y', 'z']));
+        this.assert(this.auxillaryAllEq(getAllVariablesInDefn(toASTTrees('x => y => y + x + 3;', false, true)[0]), ['x', 'y']));
+        this.assert(this.auxillaryAllEq(getAllVariablesInDefn(toASTTrees('x - 1;', false, true)[0]), ['x']));
+        this.assert(this.auxillaryAllEq(getAllVariablesInDefn(toASTTrees('const doesntNeedAny = 0;', false, true)[0]), ['doesntNeedAny']));
+        this.assert(this.auxillaryAllEq(getAllVariablesInDefn(toASTTrees(
             `const fn = x => {
                 const z = f - y;
                 return 6;
             };`
         , false, true)[0]), ['fn', 'x', 'z', 'f', 'y']));
-        this.assert(allEqual(getAllVariablesInDefn(toASTTrees(
+        this.assert(this.auxillaryAllEq(getAllVariablesInDefn(toASTTrees(
             `
             const quotInner = n => d => q => { 
                 const lastQ = q - 1;
@@ -392,6 +398,112 @@ export class Test {
         `));
     }
 
+    async testWhereFails(){
+        this.assert(this.auxillaryAllEq(
+            await Solver.whereTypableAsOkC(
+                `const failure = (x => x) - (y => y) - (z => z)
+                const eight = 8;
+                const nine  = 9;
+                const ten   = 10; //obviously these wouldnt actually go wrong
+                `
+            ), 
+            [0]
+        ));
+        this.assert(this.auxillaryAllEq(
+            await Solver.whereTypableAsOkC(
+                `
+                const myWrong = 0(0);
+                const putAWrongIn = x => {
+                    const y = z => z;
+                    y(x);
+                    return 0;
+                }
+                const aRightIn = putAWrongIn(0);
+                const aWrongIn = putAWrongIn(myWrong);
+                `
+            ), 
+            [0, 3]
+        ));
+        this.assert(this.auxillaryAllEq(
+            await Solver.whereTypableAsOkC(
+                `
+                const id = x => x;
+                const mightFail = x => {
+                    return x <= 0 ? 1 : 2(3);
+                }
+                const guardFail = x => {
+                    return (y => y) + x ? 1 : 2;
+                }
+                const willFail = x => {
+                    return x <= 0 ? (0 <= 0 ? 0(0) : 0(0)) : id + id; 
+                }
+                const mgw = mightFail(guardFail(willFail));
+                const gmw = guardFail(mightFail(willFail));
+                const wgm = willFail(guardFail(mightFail));
+                const mNum = mightFail(0-1); //
+                const gNum = guardFail(0); //interesting it doesnt fail here 
+                const wNum = willFail(0);  //nor here 
+                `
+            ), 
+            [4, 5, 6, 8, 9]
+        ));
+        this.assert(this.auxillaryAllEq(
+            await Solver.whereTypableAsOkC(
+                `
+                const superIffy = cond => {
+                    const if1 = x => cond <= 0 ? x : x + 1;
+                    const if2 = x => if1(x) <= 0 ? x : x - 1;
+                    const if3 = x => if2(x) <= 0 ? x - 1 : x;
+                    return if3(if2(if1(cond))) <= 0 ? if1(if2(if3(cond))) : if3(if1(if2(cond)));
+                }
+                superIffy(0);
+                `
+            ), 
+            []
+        ));
+        this.assert(this.auxillaryAllEq(
+            await Solver.whereTypableAsOkC(
+                `
+                const stop = 0;  
+                const treeNode = lft => val => rgt => lftValRgt => lftValRgt(lft)(val)(rgt);
+                const emptyTree = val => treeNode(stop)(val)(stop);
+                const pft120 = treeNode
+                    (treeNode
+                        (emptyTree(3))
+                        (12)
+                        (treeNode
+                            (emptyTree(2))
+                            (4)
+                            (emptyTree(2))))
+                    (120)
+                    (treeNode
+                        (emptyTree(5))
+                        (10)
+                        (emptyTree(2)));
+                const lft = t => u => v => t;
+                const rgt = t => u => v => v;
+                const val = t => u => v => u;
+                const factorTwiceLeft = pft120(lft)(lft)(val);
+                const factorOffTree = pft120(rgt)(lft)(rgt)(lft)(val);
+                const factorOffTreeInline = 
+                    (treeNode
+                            (emptyTree(3))
+                        (12)
+                            (treeNode
+                                    (emptyTree(2))
+                                (4)
+                                    (emptyTree(2))))
+                    (120)
+                        (treeNode
+                            (emptyTree(5))
+                        (10)
+                            (emptyTree(2)))(rgt)(lft)(rgt)(lft)(val);
+                `
+            ), 
+            [9]
+        ));
+    }
+
     async testTypabilityByRule(){
         this.assert(await Solver.isTypableAsOkC(`
             const app2 = 0(0); //Disj(T1, Comp(Ok) -> A);
@@ -475,6 +587,15 @@ export class Test {
 
     }
 
+    async testExcludeTopDefns(){
+        const assms = new Assms();
+        assms.add('x', new GenT('X'));
+        assms.add('y', new GenT('Y', true));
+        const locs = new Assms(assms.getLocalTypings());
+        this.assert(locs.isIn('x'));
+        this.assert(!locs.isIn('y'));
+    }
+
     async testEarlyFailAt(){
         this.assert((await Solver.whereTypableAsOkC(`
             const pair = s => t => p => p(s)(t);
@@ -492,7 +613,7 @@ export class Test {
         `))[0] == 5);
         this.assert((await Solver.whereTypableAsOkC(`
             const k = 0;
-            const y = (x => x)((y => y) + (z => z));
+            const w = (x => x)((y => y) + (z => z));
             const z = 0(0);
         `))[0] == 1);
         this.assert((await Solver.whereTypableAsOkC(`

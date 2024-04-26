@@ -115,11 +115,17 @@ export class Reconstructor{
         let finalFull = null;
         for(let i = 0; i < exps.length; i++){
             const exp = exps[i];
-
-            let isAbsDefn = termShape(exp) === Rule.compoAbs; //add a type for recursion when we confirm its an arrow function defn
-            const typeIfArr = new ArrowT(new GenT(this.getFreshVar('T')), new GenT(this.getFreshVar('T'))); //a type insterted into assums to reference the assignment 
-            if(isAbsDefn){
-                assAccumulator.add(idents[`${i}`], typeIfArr);
+            const isEval = evalIdents[`${i}`] !== undefined;
+            let conclusionTy;
+            const conclusionTyName = `T`;
+            if(!isEval){
+                const tyNameA = this.getFreshVar(conclusionTyName);
+                const tyNameB = this.getFreshVar(conclusionTyName);
+                conclusionTy = termShape(exp) === Rule.compoAbs 
+                    ? new ArrowT(new GenT(tyNameA), new GenT(tyNameB), GenT.ArrowT, true)
+                    : new GenT(this.getFreshVar(conclusionTyName), true); //a type insterted into assums to reference the assignment 
+                
+                assAccumulator.add(idents[`${i}`], conclusionTy);
             }
 
             const thisTermsAssms = assAccumulator.deepCopy();
@@ -132,9 +138,12 @@ export class Reconstructor{
             
             const full = this.typecheck(empty.asSubterm('M')); 
             
-            if(isAbsDefn)
-                full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, typeIfArr)))]); //constrain the free arrow type to being equal to the conclusion
-            //type after the type reconstruction is done 
+            //the type we generated for this is equal to the resultant type 
+            if(!isEval){
+                full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, conclusionTy)))]); 
+            }else{
+                assEvalAccumulator.add(evalIdents[`${i}`], full.termType); //combine these at the end to scrutinise all the types in the program
+            }
 
             const justThisFullConstrCopy = new Orer(); 
             full.constrs.xs.map(ander => justThisFullConstrCopy.add(ander));
@@ -142,14 +151,11 @@ export class Reconstructor{
             constrAccumulator.push(justThisFullConstrCopy); //put all the constraints from this full judgement into the accumualtor
              
             finalFull = full;
-            //add the conclusion type to the accumulator after if we didnt add it as an arrow before
-            //and dont reassign arrow 
-            if(!isAbsDefn && idents[`${i}`] !== undefined){
-                assAccumulator.add(idents[`${i}`], full.termType); //full.termType is mentioned in the constraints & assumptions, so we can use this in solving them! 
-            }
-            if(evalIdents[`${i}`] !== undefined){
-                assEvalAccumulator.add(evalIdents[`${i}`], full.termType); //combine these at the end to scrutinise all the types in the program
-            }
+            // //add the conclusion type to the accumulator after if we didnt add it as an arrow before
+            // //and dont reassign arrow 
+            // if(!isAbsDefn && idents[`${i}`] !== undefined){
+            //     assAccumulator.add(idents[`${i}`], full.termType); //full.termType is mentioned in the constraints & assumptions, so we can use this in solving them! 
+            // }
         }
         //////console.log(assEvalAccumulator.show());
         assAccumulator.addAll(assEvalAccumulator);
@@ -158,6 +164,7 @@ export class Reconstructor{
          
         //const F = new GenT(this.getFreshVar('F'));
         //full.addToLast(new Constraint(full.termType, F));
+        //console.log(finalFull.show());
         return {
             'judgement': finalFull,
             'delta_assms': assAccumulator //represents how we type programs as type environments 
