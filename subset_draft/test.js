@@ -500,7 +500,7 @@ export class Test {
                             (emptyTree(2)))(rgt)(lft)(rgt)(lft)(val);
                 `
             ), 
-            []
+            [9]
         ));
     }
 
