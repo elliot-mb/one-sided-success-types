@@ -1,11 +1,46 @@
-const fst = s => t => s;
-const snd = s => t => t;
-const pair = s => t => p => p(s)(t);
-const p1 = pair(0)(1);
-const p2 = pair(2)(3);
-const zipSumPairs = pair1 => pair2 => {
-    const e1 = pair1(fst) + pair2(fst);
-    const e2 = pair1(snd) + snd(pair2); 
-    return pair(e1)(e2);
-}
-const sumPair = zipSumPairs(p1)(p2);
+const stop = 0;  
+const treeNode = lft => val => rgt => lftValRgt => lftValRgt(lft)(val)(rgt);
+const emptyTree = val => treeNode(stop)(val)(stop);
+const pft120 = treeNode
+    (treeNode
+        (emptyTree(3))
+        (12)
+        (treeNode
+            (emptyTree(2))
+            (4)
+            (emptyTree(2))))
+    (120)
+    (treeNode
+        (emptyTree(5))
+        (10)
+        (emptyTree(2)));
+const pft65 = treeNode
+        (emptyTree(13))
+    (65)
+        (emptyTree(5));
+const pft65Inline = treeNode
+        (treeNode(stop)(13)(stop))
+    (65)
+        (treeNode(stop)(5)(stop));
+const pft2 = emptyTree(2);
+const lft = t => u => v => t;
+const rgt = t => u => v => v;
+const val = t => u => v => u;
+//const factorTwiceLeft = pft120(lft)(lft)(val);
+//const factorOffTree = pft120(rgt)(lft)(rgt)(lft)(val);
+
+//const factorTwiceLeft2 = pft2(lft)(lft)(val);
+const factorThriceLeft65 = pft65Inline(lft)(lft)(lft)(val);
+// const factorOffTreeInline = 
+//     (treeNode
+//             (emptyTree(3))
+//         (12)
+//             (treeNode
+//                     (emptyTree(2))
+//                 (4)
+//                     (emptyTree(2))))
+//     (120)
+//         (treeNode
+//             (emptyTree(5))
+//         (10)
+//             (emptyTree(2)))(rgt)(lft)(rgt)(lft)(val);

@@ -164,7 +164,7 @@ export class Reconstructor{
          
         //const F = new GenT(this.getFreshVar('F'));
         //full.addToLast(new Constraint(full.termType, F));
-        console.log(finalFull.show());
+        //console.log(finalFull.show());
         return {
             'judgement': finalFull,
             'delta_assms': assAccumulator //represents how we type programs as type environments 

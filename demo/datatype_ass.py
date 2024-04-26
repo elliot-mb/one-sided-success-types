@@ -23,6 +23,7 @@ const_lookup = {
 }
 
 solver = Solver()
+solver.set(relevancy=1)
 solver.add(Or(x == JSTy.Comp(JSTy.Ok), x == JSTy.To(y, y)))
 
 

@@ -1,8 +1,58 @@
-snd: TB -> TC, pair: TI -> TJ, confusedList: TZ ⊢ M(N) : XAA | [([([([([(XAD == TI -> TJ) v (XAD == Ok)] ∧ [(XAE == Num) v (XAE == Ok)] ∧ XAD == XAE -> XAC) v (XAC == Ok) v ([(XAD == Num ∧ (!(Ok)) -> XAC == ZAF -> WAG) v (XAD == ZAF -> WAG ∧ (!(Ok)) -> XAC == Num) v (XAD == !((!(Ok)) -> XAC)) v (!(XAD) == (!(Ok)) -> XAC)] ∧ [(XAD == TI -> TJ) v (XAD == Ok)]) v ([(XAE == Num) v (XAE == Ok)] ∧ XAE == !(Ok))] ∧ [(XAH == Num) v (XAH == Ok)] ∧ XAC == XAH -> XAB) v (XAB == Ok) v ([(XAC == Num ∧ (!(Ok)) -> XAB == ZAI -> WAJ) v (XAC == ZAI -> WAJ ∧ (!(Ok)) -> XAB == Num) v (XAC == !((!(Ok)) -> XAB)) v (!(XAC) == (!(Ok)) -> XAB)] ∧ [([(XAD == TI -> TJ) v (XAD == Ok)] ∧ [(XAE == Num) v (XAE == Ok)] ∧ XAD == XAE -> XAC) v (XAC == Ok) v ([(XAD == Num ∧ (!(Ok)) -> XAC == ZAF -> WAG) v (XAD == ZAF -> WAG ∧ (!(Ok)) -> XAC == Num) v (XAD == !((!(Ok)) -> XAC)) v (!(XAD) == (!(Ok)) -> XAC)] ∧ [(XAD == TI -> TJ) v (XAD == Ok)]) v ([(XAE == Num) v (XAE == Ok)] ∧ XAE == !(Ok))]) v ([(XAH == Num) v (XAH == Ok)] ∧ XAH == !(Ok))] ∧ [(XAK == Num) v (XAK == Ok)] ∧ XAB == XAK -> XAA) v (XAA == Ok) v ([(XAB == Num ∧ (!(Ok)) -> XAA == ZAL -> WAM) v (XAB == ZAL -> WAM ∧ (!(Ok)) -> XAA == Num) v (XAB == !((!(Ok)) -> XAA)) v (!(XAB) == (!(Ok)) -> XAA)] ∧ [([([(XAD == TI -> TJ) v (XAD == Ok)] ∧ [(XAE == Num) v (XAE == Ok)] ∧ XAD == XAE -> XAC) v (XAC == Ok) v ([(XAD == Num ∧ (!(Ok)) -> XAC == ZAF -> WAG) v (XAD == ZAF -> WAG ∧ (!(Ok)) -> XAC == Num) v (XAD == !((!(Ok)) -> XAC)) v (!(XAD) == (!(Ok)) -> XAC)] ∧ [(XAD == TI -> TJ) v (XAD == Ok)]) v ([(XAE == Num) v (XAE == Ok)] ∧ XAE == !(Ok))] ∧ [(XAH == Num) v (XAH == Ok)] ∧ XAC == XAH -> XAB) v (XAB == Ok) v ([(XAC == Num ∧ (!(Ok)) -> XAB == ZAI -> WAJ) v (XAC == ZAI -> WAJ ∧ (!(Ok)) -> XAB == Num) v (XAC == !((!(Ok)) -> XAB)) v (!(XAC) == (!(Ok)) -> XAB)] ∧ [([(XAD == TI -> TJ) v (XAD == Ok)] ∧ [(XAE == Num) v (XAE == Ok)] ∧ XAD == XAE -> XAC) v (XAC == Ok) v ([(XAD == Num ∧ (!(Ok)) -> XAC == ZAF -> WAG) v (XAD == ZAF -> WAG ∧ (!(Ok)) -> XAC == Num) v (XAD == !((!(Ok)) -> XAC)) v (!(XAD) == (!(Ok)) -> XAC)] ∧ [(XAD == TI -> TJ) v (XAD == Ok)]) v ([(XAE == Num) v (XAE == Ok)] ∧ XAE == !(Ok))]) v ([(XAH == Num) v (XAH == Ok)] ∧ XAH == !(Ok))]) v ([(XAK == Num) v (XAK == Ok)] ∧ XAK == !(Ok))] ∧ XAA == TZ ∧ [([([(XH == YG) v (XH == Ok) v ([(YE == !(Ok)) v (YG == !(Ok))])] ∧ XF == YG -> XH) v (XF == Ok) v (YE == !(Ok))] ∧ XD == YE -> XF) v (XD == Ok)] ∧ XD == TB -> TC ∧ [([([([([([(XS == YP) v (XS == Ok) v ([(YL == !(Ok)) v (YN == !(Ok)) v (YP == !(Ok))])] ∧ [(XT == YL) v (XT == Ok) v ([(YL == !(Ok)) v (YN == !(Ok)) v (YP == !(Ok))])] ∧ XS == XT -> XR) v (XR == Ok) v ([(YL == !(Ok)) v (YN == !(Ok)) v (YP == !(Ok))]) v ([(XS == Num ∧ (!(Ok)) -> XR == ZU -> WV) v (XS == ZU -> WV ∧ (!(Ok)) -> XR == Num) v (XS == !((!(Ok)) -> XR)) v (!(XS) == (!(Ok)) -> XR)] ∧ [(XS == YP) v (XS == Ok) v ([(YL == !(Ok)) v (YN == !(Ok)) v (YP == !(Ok))])]) v ([(XT == YL) v (XT == Ok) v ([(YL == !(Ok)) v (YN == !(Ok)) v (YP == !(Ok))])] ∧ XT == !(Ok))] ∧ [(XW == YN) v (XW == Ok) v ([(YL == !(Ok)) v (YN == !(Ok)) v (YP == !(Ok))])] ∧ XR == XW -> XQ) v (XQ == Ok) v ([(YL == !(Ok)) v (YN == !(Ok)) v (YP == !(Ok))]) v ([(XR == Num ∧ (!(Ok)) -> XQ == ZX -> WY) v (XR == ZX -> WY ∧ (!(Ok)) -> XQ == Num) v (XR == !((!(Ok)) -> XQ)) v (!(XR) == (!(Ok)) -> XQ)] ∧ [([(XS == YP) v (XS == Ok) v ([(YL == !(Ok)) v (YN == !(Ok)) v (YP == !(Ok))])] ∧ [(XT == YL) v (XT == Ok) v ([(YL == !(Ok)) v (YN == !(Ok)) v (YP == !(Ok))])] ∧ XS == XT -> XR) v (XR == Ok) v ([(YL == !(Ok)) v (YN == !(Ok)) v (YP == !(Ok))]) v ([(XS == Num ∧ (!(Ok)) -> XR == ZU -> WV) v (XS == ZU -> WV ∧ (!(Ok)) -> XR == Num) v (XS == !((!(Ok)) -> XR)) v (!(XS) == (!(Ok)) -> XR)] ∧ [(XS == YP) v (XS == Ok) v ([(YL == !(Ok)) v (YN == !(Ok)) v (YP == !(Ok))])]) v ([(XT == YL) v (XT == Ok) v ([(YL == !(Ok)) v (YN == !(Ok)) v (YP == !(Ok))])] ∧ XT == !(Ok))]) v ([(XW == YN) v (XW == Ok) v ([(YL == !(Ok)) v (YN == !(Ok)) v (YP == !(Ok))])] ∧ XW == !(Ok))] ∧ XO == YP -> XQ) v (XO == Ok) v ([(YL == !(Ok)) v (YN == !(Ok))])] ∧ XM == YN -> XO) v (XM == Ok) v (YL == !(Ok))] ∧ XK == YL -> XM) v (XK == Ok)] ∧ XK == TI -> TJ)]
-const snd = x => y => y;
-const pair = m => n => p => p(m)(n);
-const confusedList = pair(0)(0)(0);
-	snd : Untypable
-	pair : Untypable
-	confusedList : Untypable
+const stop = 0;  
+const treeNode = lft => val => rgt => lftValRgt => lftValRgt(lft)(val)(rgt);
+const emptyTree = val => treeNode(stop)(val)(stop);
+const pft120 = treeNode
+    (treeNode
+        (emptyTree(3))
+        (12)
+        (treeNode
+            (emptyTree(2))
+            (4)
+            (emptyTree(2))))
+    (120)
+    (treeNode
+        (emptyTree(5))
+        (10)
+        (emptyTree(2)));
+const pft65 = treeNode
+        (emptyTree(13))
+    (65)
+        (emptyTree(5));
+const pft65Inline = treeNode
+        (treeNode(stop)(13)(stop))
+    (65)
+        (treeNode(stop)(5)(stop));
+const pft2 = emptyTree(2);
+const lft = t => u => v => t;
+const rgt = t => u => v => v;
+const val = t => u => v => u;
+//const factorTwiceLeft = pft120(lft)(lft)(val);
+//const factorOffTree = pft120(rgt)(lft)(rgt)(lft)(val);
+
+//const factorTwiceLeft2 = pft2(lft)(lft)(val);
+const factorThriceLeft65 = pft65Inline(lft)(lft)(lft)(val);
+// const factorOffTreeInline = 
+//     (treeNode
+//             (emptyTree(3))
+//         (12)
+//             (treeNode
+//                     (emptyTree(2))
+//                 (4)
+//                     (emptyTree(2))))
+//     (120)
+//         (treeNode
+//             (emptyTree(5))
+//         (10)
+//             (emptyTree(2)))(rgt)(lft)(rgt)(lft)(val);
+	stop : Untypable
+	treeNode : Untypable
+	emptyTree : Untypable
+	pft120 : Untypable
+	pft65 : Untypable
+	pft65Inline : Untypable
+	pft2 : Untypable
+	lft : Untypable
+	rgt : Untypable
+	val : Untypable
+	factorThriceLeft65 : Untypable
 Inconclusive

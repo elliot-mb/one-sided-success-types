@@ -166,7 +166,7 @@ def make_solns(const_lookup, constrs, count, we_care_names, JSTy):
 
     solns = [] # can be added to a dict, array of dicts  
     solver = Solver()
-    solver.set(relevancy=1)
+    solver.set(relevancy=1) # write about relevancy propagation 
     solver.add(constrs)
 
     # tyVarA = Const('tyVarA', JSTy)

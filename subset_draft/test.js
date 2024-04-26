@@ -461,6 +461,47 @@ export class Test {
             ), 
             []
         ));
+        this.assert(this.auxillaryAllEq(
+            await Solver.whereTypableAsOkC(
+                `
+                const stop = 0;  
+                const treeNode = lft => val => rgt => lftValRgt => lftValRgt(lft)(val)(rgt);
+                const emptyTree = val => treeNode(stop)(val)(stop);
+                const pft120 = treeNode
+                    (treeNode
+                        (emptyTree(3))
+                        (12)
+                        (treeNode
+                            (emptyTree(2))
+                            (4)
+                            (emptyTree(2))))
+                    (120)
+                    (treeNode
+                        (emptyTree(5))
+                        (10)
+                        (emptyTree(2)));
+                const lft = t => u => v => t;
+                const rgt = t => u => v => v;
+                const val = t => u => v => u;
+                const factorTwiceLeft = pft120(lft)(lft)(val);
+                const factorOffTree = pft120(rgt)(lft)(rgt)(lft)(val);
+                const factorOffTreeInline = 
+                    (treeNode
+                            (emptyTree(3))
+                        (12)
+                            (treeNode
+                                    (emptyTree(2))
+                                (4)
+                                    (emptyTree(2))))
+                    (120)
+                        (treeNode
+                            (emptyTree(5))
+                        (10)
+                            (emptyTree(2)))(rgt)(lft)(rgt)(lft)(val);
+                `
+            ), 
+            []
+        ));
     }
 
     async testTypabilityByRule(){
