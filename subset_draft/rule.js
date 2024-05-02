@@ -356,18 +356,34 @@ export class Rule {
         return conclusn;
     }
 
-    // M; get subterm M
+    // M; E
     static cTExpSmt = (r, empty) => {
+        console.log(`ctexpstmt just looks at `);
+        console.log(empty.asSubterm('M').term);
+        console.log(`in`);
+        console.log(empty.term);
+
+        const body = empty.asSubterm('M');
+        const next = empty.asSubterm('E');
+
         const OkC1Constrs = Rule.addOkC1(empty.getAssms());
         const X = new GenT(r.getFreshVar('X'));
-        const premise1 = r.typecheck(empty.asSubterm('M'));
+        const premise1 = r.typecheck(body);
+        const premise2 = r.typecheck(next);
         const C1 = premise1.constrs;
+        const C2 = premise2.constrs;
+        const T1 = premise1.termType;
+        const T2 = premise2.termType;
         const conclusn = empty.constrain(X);
 
         conclusn.addToLast(C1);
-        conclusn.addToLast(new Constraint(premise1.termType, X));
+        conclusn.addToLast(C2);
+        conclusn.addToLast(new Constraint(T2, X));
 
         if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(C1);
+            conclusn.addToLast(new Constraint(T1, Rule.okC())); //or the statement goes wrong
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
             if(!OkC1Constrs.isEmpty()){

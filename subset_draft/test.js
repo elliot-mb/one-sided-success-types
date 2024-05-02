@@ -440,9 +440,9 @@ export class Test {
                 const mgw = mightFail(guardFail(willFail));
                 const gmw = guardFail(mightFail(willFail));
                 const wgm = willFail(guardFail(mightFail));
-                const mNum = mightFail(0-1); //
-                const gNum = guardFail(0); //interesting it doesnt fail here 
-                const wNum = willFail(0);  //nor here 
+                const mNum = mightFail(0-1);
+                const gNum = guardFail(0); 
+                const wNum = willFail(0);  
                 `
             ), 
             [4, 5, 6, 8, 9]
