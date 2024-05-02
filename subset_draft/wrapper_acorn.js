@@ -113,6 +113,9 @@ export const termShape = (term) => {
             select = SND;
         }
     }
+    if(shapesByAST[select] === Rule.topStmt){
+        if(term.next !== undefined) select = SND;
+    }
 
     // 
     return shapesByAST[select];

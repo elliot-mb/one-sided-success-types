@@ -41,6 +41,7 @@ export class Reconstructor{
          
         const maybeRule = Rule.appliesTo[empty.shape];
         if(maybeRule !== undefined){
+            //console.log(maybeRule);
             const full = maybeRule(this, empty);
             full.removeRepeats();
             return full;

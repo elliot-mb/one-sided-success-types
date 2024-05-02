@@ -356,12 +356,31 @@ export class Rule {
         return conclusn;
     }
 
+    static cTTopStmt = (r, empty) => {
+        const OkC1Constrs = Rule.addOkC1(empty.getAssms());
+        const X = new GenT(r.getFreshVar('X'));
+        const premise1 = r.typecheck(empty.asSubterm('M'));
+        const C1 = premise1.constrs;
+        const conclusn = empty.constrain(X);
+
+        conclusn.addToLast(C1);
+        conclusn.addToLast(new Constraint(premise1.termType, X));
+
+        if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOk(X));
+            if(!OkC1Constrs.isEmpty()){
+                conclusn.addAnder();
+                conclusn.addToLast(OkC1Constrs);
+            }
+        }
+
+        return conclusn;
+        // return r.typecheck(empty.asSubterm('M'));
+    }
+
     // M; E
     static cTExpSmt = (r, empty) => {
-        console.log(`ctexpstmt just looks at `);
-        console.log(empty.asSubterm('M').term);
-        console.log(`in`);
-        console.log(empty.term);
 
         const body = empty.asSubterm('M');
         const next = empty.asSubterm('E');
@@ -570,7 +589,8 @@ export class Rule {
     // //a rule to handle the case where 
     // static cTCompoTop 
 
-    static expSmt = 'M;';
+    static topStmt = 'M;';
+    static stmt = 'M; E';
     static var = 'x';
     static num = 'n';
     static op = 'M o N';
@@ -590,7 +610,8 @@ export class Rule {
         ruleFor[Rule.abs] = Rule.cTAbsInf;
         ruleFor[Rule.app] = Rule.cTApp;
         ruleFor[Rule.iflz] = Rule.cTIfZ;
-        ruleFor[Rule.expSmt] = Rule.cTExpSmt;
+        ruleFor[Rule.topStmt] = Rule.cTTopStmt;
+        ruleFor[Rule.stmt] = Rule.cTExpSmt;
         ruleFor[Rule.block] = Rule.cTBlock;
         ruleFor[Rule.ret] = Rule.cTRet;
         ruleFor[Rule.compo] = Rule.cTCompo;

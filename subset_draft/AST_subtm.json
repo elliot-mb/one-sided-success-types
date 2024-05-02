@@ -68,6 +68,10 @@
     "ExpressionStatement": {
         "M;": {
             "M": ["expression"]
+        },
+        "M; E":{
+            "M": ["expression"],
+            "E": ["next"]
         }
     }
 }
