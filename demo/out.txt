@@ -1,58 +1,35 @@
-const stop = 0;  
-const treeNode = lft => val => rgt => lftValRgt => lftValRgt(lft)(val)(rgt);
-const emptyTree = val => treeNode(stop)(val)(stop);
-const pft120 = treeNode
-    (treeNode
-        (emptyTree(3))
-        (12)
-        (treeNode
-            (emptyTree(2))
-            (4)
-            (emptyTree(2))))
-    (120)
-    (treeNode
-        (emptyTree(5))
-        (10)
-        (emptyTree(2)));
-const pft65 = treeNode
-        (emptyTree(13))
-    (65)
-        (emptyTree(5));
-const pft65Inline = treeNode
-        (treeNode(stop)(13)(stop))
-    (65)
-        (treeNode(stop)(5)(stop));
-const pft2 = emptyTree(2);
-const lft = t => u => v => t;
-const rgt = t => u => v => v;
-const val = t => u => v => u;
-//const factorTwiceLeft = pft120(lft)(lft)(val);
-//const factorOffTree = pft120(rgt)(lft)(rgt)(lft)(val);
-
-//const factorTwiceLeft2 = pft2(lft)(lft)(val);
-const factorThriceLeft65 = pft65Inline(lft)(lft)(lft)(val);
-// const factorOffTreeInline = 
-//     (treeNode
-//             (emptyTree(3))
-//         (12)
-//             (treeNode
-//                     (emptyTree(2))
-//                 (4)
-//                     (emptyTree(2))))
-//     (120)
-//         (treeNode
-//             (emptyTree(5))
-//         (10)
-//             (emptyTree(2)))(rgt)(lft)(rgt)(lft)(val);
-	stop : Untypable
-	treeNode : Untypable
-	emptyTree : Untypable
-	pft120 : Untypable
-	pft65 : Untypable
-	pft65Inline : Untypable
-	pft2 : Untypable
-	lft : Untypable
-	rgt : Untypable
-	val : Untypable
-	factorThriceLeft65 : Untypable
-Inconclusive
+ctexpstmt just looks at 
+Node {
+  type: 'ArrowFunctionExpression',
+  start: 26,
+  end: 32,
+  id: null,
+  expression: true,
+  generator: false,
+  async: false,
+  params: [ Node { type: 'Identifier', start: 26, end: 27, name: 'z' } ],
+  body: Node { type: 'Identifier', start: 31, end: 32, name: 'z' }
+}
+in
+Node {
+  type: 'ExpressionStatement',
+  start: 25,
+  end: 34,
+  expression: Node {
+    type: 'ArrowFunctionExpression',
+    start: 26,
+    end: 32,
+    id: null,
+    expression: true,
+    generator: false,
+    async: false,
+    params: [ [Node] ],
+    body: Node { type: 'Identifier', start: 31, end: 32, name: 'z' }
+  },
+  next: Node {
+    type: 'ReturnStatement',
+    start: 39,
+    end: 48,
+    argument: Node { type: 'Literal', start: 46, end: 47, value: 0, raw: '0' }
+  }
+}
