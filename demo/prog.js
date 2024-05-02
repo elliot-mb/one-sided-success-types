@@ -1,6 +1,7 @@
 
-const zero = x => {
-    (z => z);
-    return 0;
+const delayed = go => {
+    (f => x => f(x)(f(x)))(x => 0);
+    return go;
 }
-const g = zero(0) + 0;
+const normalRunThis = x => 0;
+const shouldFail = delayed(0);

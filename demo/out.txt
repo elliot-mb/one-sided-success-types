@@ -1,35 +1,104 @@
+[Function: cTAbsInf]
+[Function: cTBlock]
+[Function: cTExpSmt]
 ctexpstmt just looks at 
 Node {
-  type: 'ArrowFunctionExpression',
-  start: 26,
-  end: 32,
-  id: null,
-  expression: true,
-  generator: false,
-  async: false,
-  params: [ Node { type: 'Identifier', start: 26, end: 27, name: 'z' } ],
-  body: Node { type: 'Identifier', start: 31, end: 32, name: 'z' }
-}
-in
-Node {
-  type: 'ExpressionStatement',
-  start: 25,
-  end: 34,
-  expression: Node {
+  type: 'CallExpression',
+  start: 29,
+  end: 59,
+  callee: Node {
     type: 'ArrowFunctionExpression',
-    start: 26,
-    end: 32,
+    start: 30,
+    end: 50,
     id: null,
     expression: true,
     generator: false,
     async: false,
     params: [ [Node] ],
-    body: Node { type: 'Identifier', start: 31, end: 32, name: 'z' }
+    body: Node {
+      type: 'ArrowFunctionExpression',
+      start: 35,
+      end: 50,
+      id: null,
+      expression: true,
+      generator: false,
+      async: false,
+      params: [Array],
+      body: [Node]
+    }
+  },
+  arguments: [
+    Node {
+      type: 'ArrowFunctionExpression',
+      start: 52,
+      end: 58,
+      id: null,
+      expression: true,
+      generator: false,
+      async: false,
+      params: [Array],
+      body: [Node]
+    }
+  ],
+  optional: false
+}
+in
+Node {
+  type: 'ExpressionStatement',
+  start: 29,
+  end: 60,
+  expression: Node {
+    type: 'CallExpression',
+    start: 29,
+    end: 59,
+    callee: Node {
+      type: 'ArrowFunctionExpression',
+      start: 30,
+      end: 50,
+      id: null,
+      expression: true,
+      generator: false,
+      async: false,
+      params: [Array],
+      body: [Node]
+    },
+    arguments: [ [Node] ],
+    optional: false
   },
   next: Node {
     type: 'ReturnStatement',
-    start: 39,
-    end: 48,
-    argument: Node { type: 'Literal', start: 46, end: 47, value: 0, raw: '0' }
+    start: 65,
+    end: 75,
+    argument: Node { type: 'Identifier', start: 72, end: 74, name: 'go' }
   }
 }
+[Function: cTApp]
+[Function: cTAbsInf]
+[Function: cTAbsInf]
+[Function: cTApp]
+[Function: cTApp]
+[Function: cTVar]
+[Function: cTVar]
+[Function: cTApp]
+[Function: cTVar]
+[Function: cTVar]
+[Function: cTAbsInf]
+[Function: cTNum]
+[Function: cTRet]
+[Function: cTVar]
+[Function: cTAbsInf]
+[Function: cTNum]
+[Function: cTApp]
+[Function: cTVar]
+[Function: cTNum]
+
+const delayed = go => {
+    (f => x => f(x)(f(x)))(x => 0);
+    return go;
+}
+const normalRunThis = x => 0;
+const shouldFail = delayed(0);
+	delayed : Untypable
+	normalRunThis : Untypable
+	shouldFail : Untypable
+Inconclusive
