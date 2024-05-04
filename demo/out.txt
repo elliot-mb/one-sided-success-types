@@ -5,12 +5,12 @@ cTAbsInf
 [([([(XF == YE) v (XF == Ok) v (YE == !(Ok))] ∧ XD == YE -> XF) v (XD == Ok)] ∧ XD == TB -> TC)]
 cTApp
 	cTVar
-		[(XH == TB -> TC) v (XH == Ok)]
+		[(XK == TB -> TC) v (XK == Ok)]
 	cTNum
-		[(XI == Num) v (XI == Ok)]
-	[([(XH == TB -> TC) v (XH == Ok)] ∧ [(XI == Num) v (XI == Ok)] ∧ XH == XI -> XG) v (XG == Ok) v ([(XH == Num ∧ (!(Ok)) -> XG == ZJ -> WK) v (XH == ZJ -> WK ∧ (!(Ok)) -> XG == Num) v (XH == !((!(Ok)) -> XG)) v (!(XH) == (!(Ok)) -> XG)] ∧ [(XH == TB -> TC) v (XH == Ok)]) v (XI == !(Ok) ∧ [(XI == Num) v (XI == Ok)])]
-[([(XH == TB -> TC) v (XH == Ok)] ∧ [(XI == Num) v (XI == Ok)] ∧ XH == XI -> XG) v (XG == Ok) v ([(XH == Num ∧ (!(Ok)) -> XG == ZJ -> WK) v (XH == ZJ -> WK ∧ (!(Ok)) -> XG == Num) v (XH == !((!(Ok)) -> XG)) v (!(XH) == (!(Ok)) -> XG)] ∧ [(XH == TB -> TC) v (XH == Ok)]) v ([(XI == Num) v (XI == Ok)] ∧ XI == !(Ok))]
-[([([(XH == TB -> TC) v (XH == Ok)] ∧ [(XI == Num) v (XI == Ok)] ∧ XH == XI -> XG) v (XG == Ok) v ([(XH == Num ∧ (!(Ok)) -> XG == ZJ -> WK) v (XH == ZJ -> WK ∧ (!(Ok)) -> XG == Num) v (XH == !((!(Ok)) -> XG)) v (!(XH) == (!(Ok)) -> XG)] ∧ [(XH == TB -> TC) v (XH == Ok)]) v ([(XI == Num) v (XI == Ok)] ∧ XI == !(Ok))] ∧ [([(XF == YE) v (XF == Ok) v (YE == !(Ok))] ∧ XD == YE -> XF) v (XD == Ok)] ∧ XD == TB -> TC)]
+		[(XL == Num) v (XL == Ok)]
+	[([(XK == TB -> TC) v (XK == Ok)] ∧ [(XL == Num) v (XL == Ok)] ∧ XK == XL -> XJ) v (XJ == Ok) v ([(XK == Num ∧ (!(Ok)) -> XJ == ZM -> WN) v (XK == ZM -> WN ∧ (!(Ok)) -> XJ == Num) v (XK == !((!(Ok)) -> XJ)) v (!(XK) == (!(Ok)) -> XJ)] ∧ [(XK == TB -> TC) v (XK == Ok)]) v (XL == !(Ok) ∧ [(XL == Num) v (XL == Ok)])]
+[([([(XK == TB -> TC) v (XK == Ok)] ∧ [(XL == Num) v (XL == Ok)] ∧ XK == XL -> XJ) v (XJ == Ok) v ([(XK == Num ∧ (!(Ok)) -> XJ == ZM -> WN) v (XK == ZM -> WN ∧ (!(Ok)) -> XJ == Num) v (XK == !((!(Ok)) -> XJ)) v (!(XK) == (!(Ok)) -> XJ)] ∧ [(XK == TB -> TC) v (XK == Ok)]) v ([(XL == Num) v (XL == Ok)] ∧ XL == !(Ok))] ∧ XJ == TI)]
+[([([(XK == TB -> TC) v (XK == Ok)] ∧ [(XL == Num) v (XL == Ok)] ∧ XK == XL -> XJ) v (XJ == Ok) v ([(XK == Num ∧ (!(Ok)) -> XJ == ZM -> WN) v (XK == ZM -> WN ∧ (!(Ok)) -> XJ == Num) v (XK == !((!(Ok)) -> XJ)) v (!(XK) == (!(Ok)) -> XJ)] ∧ [(XK == TB -> TC) v (XK == Ok)]) v ([(XL == Num) v (XL == Ok)] ∧ XL == !(Ok))] ∧ XJ == TI ∧ [([(XF == YE) v (XF == Ok) v (YE == !(Ok))] ∧ XD == YE -> XF) v (XD == Ok)] ∧ XD == TB -> TC)]
 const id = (x => x);
 id(0);
 	id : Untypable

@@ -28,6 +28,7 @@ export class Reconstructor{
 
     getFreshVar(pfix) {
         this.lastUsedVar = Utils.nextFreeTypeName(this.lastUsedVar);
+        
         return `${pfix}${this.lastUsedVar}`;
     }
 
@@ -129,17 +130,17 @@ export class Reconstructor{
         for(let i = 0; i < exps.length; i++){
             const exp = exps[i];
             const isEval = evalIdents[`${i}`] !== undefined;
+            const isAbs = termShape(exp) === Rule.compoAbs;
             let conclusionTy;
             const conclusionTyName = `T`;
-            if(!isEval){
-                const tyNameA = this.getFreshVar(conclusionTyName);
-                const tyNameB = this.getFreshVar(conclusionTyName);
-                conclusionTy = termShape(exp) === Rule.compoAbs 
-                    ? new ArrowT(new GenT(tyNameA), new GenT(tyNameB), GenT.ArrowT, true)
-                    : new GenT(this.getFreshVar(conclusionTyName), true); //a type insterted into assums to reference the assignment 
-                
-                assAccumulator.add(idents[`${i}`], conclusionTy);
-            }
+
+            const tyNameA = this.getFreshVar(conclusionTyName);
+            const tyNameB = this.getFreshVar(conclusionTyName);
+            conclusionTy = termShape(exp) === Rule.compoAbs 
+                ? new ArrowT(new GenT(tyNameA), new GenT(tyNameB), GenT.ArrowT, true)
+                : new GenT(this.getFreshVar(conclusionTyName), true); //a type insterted into assums to reference the assignment 
+            
+            if(isAbs) assAccumulator.add(idents[`${i}`], conclusionTy);
 
             const thisTermsAssms = assAccumulator.deepCopy();
 
@@ -152,11 +153,10 @@ export class Reconstructor{
             const full = this.typecheck(empty.asSubterm('M')); 
             
             //the type we generated for this is equal to the resultant type 
-            if(!isEval){
-                full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, conclusionTy)))]); 
-            }else{
-                assEvalAccumulator.add(evalIdents[`${i}`], full.termType); //combine these at the end to scrutinise all the types in the program
-            }
+            full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, conclusionTy)))]); 
+            if(!isEval && !isAbs) assAccumulator.add(idents[`${i}`], conclusionTy);
+            if(isEval) assEvalAccumulator.add(evalIdents[`${i}`], conclusionTy); //combine these at the end to scrutinise all the types in the program
+            
             if(Reconstructor.SHOUTY) console.log(full.constrs.show());
 
             const justThisFullConstrCopy = new Orer(); 
