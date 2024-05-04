@@ -32,10 +32,11 @@ const parse = (prog) => Parser.parse(prog, {ecmaVersion: 2023});
 const PROGRAM_T = 'Program';
 
 // writes the tree output as a nicely spaced string
-export const pretty = json => `{\r\n${pret(json, '  ')}\r\n}`;
+export const pretty = json => `${pret(json, '')}`;
+
 const pret = (json, whitespace = '') => {  // gives an array of lines to the tree_file
     if(json === undefined) throw Utils.makeErr(`pret: json not defined`);
-
+    //if(json.length !== undefined) return `[\n${json.map(x => pret(x, whitespace)).reduce((acc, x) => `${acc},\n${x}`)}]`;
     const isArr = Array.isArray(json); //a flag to stop us printing object key names if we are an array(array indices)
     
     const ks = Object.keys(json);
@@ -47,16 +48,16 @@ const pret = (json, whitespace = '') => {  // gives an array of lines to the tre
     const lines = ks //just the lines that show all the nested objects
         .map(key => json[key]) //the nested objects
         .map((value, i) => Array.isArray(value) //is this value an array
-            ? [`${whitespace}${toKey(i)}[\r\n`] + pret(value, whitespace + `  `) + [`\r\n${whitespace}],`]
+            ? [`${whitespace}${toKey(i)}\r\n`] + pret(value, whitespace + `  `) + [`\r\n${whitespace},`]
             : typeof(value) === 'object' && value !== null
-                ? [`${whitespace}${toKey(i)}{\r\n`] + pret(value, whitespace + `  `) + [`\r\n${whitespace}},`]
+                ? [`${whitespace}${toKey(i)}\r\n`] + pret(value, whitespace + `  `) + [`\r\n${whitespace},`]
                 : `${whitespace}${toKey(i)}${JSON.stringify(value)},`); //stringify handles whether we need quotes
             // : typeof(value) === 'array' 
             //     ?  
             
     const blockString = lines.reduce((acc, x) => `${acc}\r\n${x}`).slice(0, -1); //in a block of terms there is a single comma on the end, remove this 
 
-    return blockString;
+    return isArr ? `${whitespace}[\r\n${blockString}\r\n${whitespace}]` : `${whitespace}{\r\n${blockString}\r\n${whitespace}}`;
 };
 
 //a map from AST types to maps from subterm names (M, N, P, m, n) to their 
@@ -413,7 +414,8 @@ export const toASTTrees = (program, justFirstExpression = false, enforceGrammar 
     // 
     if(enforceGrammar) ret.map(x => checkGrammar(x, true));
     if(justFirstExpression) ret = ret[0]['expression'];
-    
+    //console.log(ret);
+    //writeFileSync('./last_tree.json', pretty(ret));
     return ret;
 }
 

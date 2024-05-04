@@ -1,3 +1,25 @@
+[
+  Node {
+    type: 'VariableDeclaration',
+    start: 0,
+    end: 20,
+    declarations: [ [Node] ],
+    kind: 'const'
+  },
+  Node {
+    type: 'ExpressionStatement',
+    start: 21,
+    end: 27,
+    expression: Node {
+      type: 'CallExpression',
+      start: 21,
+      end: 26,
+      callee: [Node],
+      arguments: [Array],
+      optional: false
+    }
+  }
+]
 cTAbsInf
 	cTVar
 		[(XF == YE) v (XF == Ok) v (YE == !(Ok))]
