@@ -13,10 +13,13 @@ import {Ander} from './ander.js';
 export class Reconstructor{
     static type = 'reconstructor';
     static SYNTACTIC_DEFN_EXCLUSION = false; // it only partly fixed the issue of false positives in program lines, so keep false 
+    static SHOUTY = true;
 
     constructor(){ //making a new one just resets the variable names (but there are an infinite number anyway)
         this.lastUsedVar = String.fromCharCode(Utils.firstCharCode);
+        this.depth = 0; //tree indentation test
         this.type = Reconstructor.type;
+
     } 
 
     rstFreshVar(){
@@ -32,6 +35,12 @@ export class Reconstructor{
         return `${pfix}${Utils.nextFreeTypeName(this.lastUsedVar)}`;
     }
 
+    makeTabbing(){
+        let tabs = ``;
+        for(let i = 0; i < this.depth; i++) tabs += (`\t`);
+        return tabs;
+    }
+
     /**
      * regular non-success type checker
      * @param {*} EmptyJudgement Γ ⊢ M 
@@ -41,8 +50,11 @@ export class Reconstructor{
          
         const maybeRule = Rule.appliesTo[empty.shape];
         if(maybeRule !== undefined){
-            //console.log(maybeRule);
+            if(Reconstructor.SHOUTY) console.log(`${this.makeTabbing()}${maybeRule.name}`);
+            this.depth++;
             const full = maybeRule(this, empty);
+            if(Reconstructor.SHOUTY) console.log(`${this.makeTabbing()}${full.constrs.show()}`);
+            this.depth--;
             full.removeRepeats();
             return full;
         }
@@ -145,6 +157,7 @@ export class Reconstructor{
             }else{
                 assEvalAccumulator.add(evalIdents[`${i}`], full.termType); //combine these at the end to scrutinise all the types in the program
             }
+            if(Reconstructor.SHOUTY) console.log(full.constrs.show());
 
             const justThisFullConstrCopy = new Orer(); 
             full.constrs.xs.map(ander => justThisFullConstrCopy.add(ander));
@@ -161,11 +174,12 @@ export class Reconstructor{
         //////console.log(assEvalAccumulator.show());
         assAccumulator.addAll(assEvalAccumulator);
         //////console.log(constrAccumulator.map(x => `@@${x.show()}`));
-        ////console.log(finalFull.constrs.show());
+        if(Reconstructor.SHOUTY) console.log(finalFull.constrs.show());
          
         //const F = new GenT(this.getFreshVar('F'));
         //full.addToLast(new Constraint(full.termType, F));
         //console.log(finalFull.show());
+        
         return {
             'judgement': finalFull,
             'delta_assms': assAccumulator //represents how we type programs as type environments 

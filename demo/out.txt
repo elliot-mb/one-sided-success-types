@@ -1,104 +1,18 @@
-[Function: cTAbsInf]
-[Function: cTBlock]
-[Function: cTExpSmt]
-ctexpstmt just looks at 
-Node {
-  type: 'CallExpression',
-  start: 29,
-  end: 59,
-  callee: Node {
-    type: 'ArrowFunctionExpression',
-    start: 30,
-    end: 50,
-    id: null,
-    expression: true,
-    generator: false,
-    async: false,
-    params: [ [Node] ],
-    body: Node {
-      type: 'ArrowFunctionExpression',
-      start: 35,
-      end: 50,
-      id: null,
-      expression: true,
-      generator: false,
-      async: false,
-      params: [Array],
-      body: [Node]
-    }
-  },
-  arguments: [
-    Node {
-      type: 'ArrowFunctionExpression',
-      start: 52,
-      end: 58,
-      id: null,
-      expression: true,
-      generator: false,
-      async: false,
-      params: [Array],
-      body: [Node]
-    }
-  ],
-  optional: false
-}
-in
-Node {
-  type: 'ExpressionStatement',
-  start: 29,
-  end: 60,
-  expression: Node {
-    type: 'CallExpression',
-    start: 29,
-    end: 59,
-    callee: Node {
-      type: 'ArrowFunctionExpression',
-      start: 30,
-      end: 50,
-      id: null,
-      expression: true,
-      generator: false,
-      async: false,
-      params: [Array],
-      body: [Node]
-    },
-    arguments: [ [Node] ],
-    optional: false
-  },
-  next: Node {
-    type: 'ReturnStatement',
-    start: 65,
-    end: 75,
-    argument: Node { type: 'Identifier', start: 72, end: 74, name: 'go' }
-  }
-}
-[Function: cTApp]
-[Function: cTAbsInf]
-[Function: cTAbsInf]
-[Function: cTApp]
-[Function: cTApp]
-[Function: cTVar]
-[Function: cTVar]
-[Function: cTApp]
-[Function: cTVar]
-[Function: cTVar]
-[Function: cTAbsInf]
-[Function: cTNum]
-[Function: cTRet]
-[Function: cTVar]
-[Function: cTAbsInf]
-[Function: cTNum]
-[Function: cTApp]
-[Function: cTVar]
-[Function: cTNum]
-
-const delayed = go => {
-    (f => x => f(x)(f(x)))(x => 0);
-    return go;
-}
-const normalRunThis = x => 0;
-const shouldFail = delayed(0);
-	delayed : Untypable
-	normalRunThis : Untypable
-	shouldFail : Untypable
+cTAbsInf
+	cTVar
+		[(XF == YE) v (XF == Ok) v (YE == !(Ok))]
+	[([(XF == YE) v (XF == Ok) v (YE == !(Ok))] ∧ XD == YE -> XF) v (XD == Ok)]
+[([([(XF == YE) v (XF == Ok) v (YE == !(Ok))] ∧ XD == YE -> XF) v (XD == Ok)] ∧ XD == TB -> TC)]
+cTApp
+	cTVar
+		[(XH == TB -> TC) v (XH == Ok)]
+	cTNum
+		[(XI == Num) v (XI == Ok)]
+	[([(XH == TB -> TC) v (XH == Ok)] ∧ [(XI == Num) v (XI == Ok)] ∧ XH == XI -> XG) v (XG == Ok) v ([(XH == Num ∧ (!(Ok)) -> XG == ZJ -> WK) v (XH == ZJ -> WK ∧ (!(Ok)) -> XG == Num) v (XH == !((!(Ok)) -> XG)) v (!(XH) == (!(Ok)) -> XG)] ∧ [(XH == TB -> TC) v (XH == Ok)]) v (XI == !(Ok) ∧ [(XI == Num) v (XI == Ok)])]
+[([(XH == TB -> TC) v (XH == Ok)] ∧ [(XI == Num) v (XI == Ok)] ∧ XH == XI -> XG) v (XG == Ok) v ([(XH == Num ∧ (!(Ok)) -> XG == ZJ -> WK) v (XH == ZJ -> WK ∧ (!(Ok)) -> XG == Num) v (XH == !((!(Ok)) -> XG)) v (!(XH) == (!(Ok)) -> XG)] ∧ [(XH == TB -> TC) v (XH == Ok)]) v ([(XI == Num) v (XI == Ok)] ∧ XI == !(Ok))]
+[([([(XH == TB -> TC) v (XH == Ok)] ∧ [(XI == Num) v (XI == Ok)] ∧ XH == XI -> XG) v (XG == Ok) v ([(XH == Num ∧ (!(Ok)) -> XG == ZJ -> WK) v (XH == ZJ -> WK ∧ (!(Ok)) -> XG == Num) v (XH == !((!(Ok)) -> XG)) v (!(XH) == (!(Ok)) -> XG)] ∧ [(XH == TB -> TC) v (XH == Ok)]) v ([(XI == Num) v (XI == Ok)] ∧ XI == !(Ok))] ∧ [([(XF == YE) v (XF == Ok) v (YE == !(Ok))] ∧ XD == YE -> XF) v (XD == Ok)] ∧ XD == TB -> TC)]
+const id = (x => x);
+id(0);
+	id : Untypable
+	eval#0 : Untypable
 Inconclusive
