@@ -414,6 +414,7 @@ export const toASTTrees = (program, justFirstExpression = false, enforceGrammar 
     // 
     if(enforceGrammar) ret.map(x => checkGrammar(x, true));
     if(justFirstExpression) ret = ret[0]['expression'];
+   
     //console.log(ret);
     //writeFileSync('./last_tree.json', pretty(ret));
     return ret;

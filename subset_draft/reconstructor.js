@@ -13,7 +13,7 @@ import {Ander} from './ander.js';
 export class Reconstructor{
     static type = 'reconstructor';
     static SYNTACTIC_DEFN_EXCLUSION = false; // it only partly fixed the issue of false positives in program lines, so keep false 
-    static SHOUTY = true;
+    static SHOUTY = false;
 
     constructor(){ //making a new one just resets the variable names (but there are an infinite number anyway)
         this.lastUsedVar = String.fromCharCode(Utils.firstCharCode);
