@@ -85,6 +85,7 @@ export class Solver{
             console.log('empty program');
             return NO_LINES;
         }
+        console.log(`generated`);
         const judgement = judgementAndEnv['judgement'];
         //const ignoredJudgements = judgementAndEnv['ignored']; 
         const env = judgementAndEnv['delta_assms'];
@@ -126,7 +127,7 @@ export class Solver{
         if(anyFails.length !== 0) console.log(`Ill-typed and fails at: ${anyFails.map(n => lineNames[n])}`);
         else console.log(`Inconclusive`); //we dont handle the case where individual terms evalute without assignment
 
-        //console.log(result['sol']);
+        console.log(judgement.show());
 
         //if(anyFails.length !== 0) console.log(`First fails on line ${anyFails[0]}`);
         return anyFails;

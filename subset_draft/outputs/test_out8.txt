@@ -139,13 +139,13 @@ Inconclusive
                 const factorTwiceLeft = pft120(lft)(lft)(val);
                 const factorOffTree = pft120(rgt)(lft)(rgt)(lft)(val);
                 const factorOffTreeInline = 
-                    (treeNode
+                    	(treeNode
                             (emptyTree(3))
                         (12)
                             (treeNode
-                                    (emptyTree(2))
-                                (4)
-                                    (emptyTree(2))))
+								(emptyTree(2))
+							(4)
+								(emptyTree(2))))
                     (120)
                         (treeNode
                             (emptyTree(5))
@@ -714,16 +714,15 @@ Solution
 Ill-typed and fails at: mul
 
             const pair = m => n => p => p(m)(n);
-            const div = n => d => q => {
+            const quot = n => d => q => {
                 const r = n - d; 
-                return r + 1 <= 0 ? pair(q)(n) : div(r)(d)(q + 1);
+                return r + 1 <= 0 ? pair(q)(n) : quot(r)(d)(q + 1);
             }
-            
-            const badResult = div(x => x)(10)(0);
+            const badResult = quot(x => x)(10)(0);
         
 Solution
 	pair : (Comp(Ok) -> (Num -> (Num -> Num)))
-	div : ((Comp(Ok) -> Num) -> (Ok -> (Ok -> Comp(Ok))))
+	quot : ((Comp(Ok) -> Num) -> (Ok -> (Ok -> Comp(Ok))))
 	badResult : Comp(Ok)
 Ill-typed and fails at: badResult
 
