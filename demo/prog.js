@@ -63,22 +63,24 @@
 // const twoInfinityAndBeyond = mul(2)(3);
 
 
-const treeNode = lft => val => rgt => lftValRgt => lftValRgt(lft)(val)(rgt);
-const pft120 = treeNode
-    (treeNode
-                (3)
-            (12)
-    (treeNode       (2)
-                (4)
-                    (2)))
-        (120)
-    (treeNode   (5)
-            (10)
-                (2));
-const lft = t => u => v => v;
-const rgt = t => u => v => t;
-const factorLR = pft120(lft)(rgt); //5
-const factorRLR = pft120(rgt)(lft)(rgt); //2
+// const treeNode = lft => val => rgt => lftValRgt => lftValRgt(lft)(val)(rgt);
+// const pft120 = treeNode
+//     (treeNode
+//                 (3)
+//             (12)
+//     (treeNode       (2)
+//                 (4)
+//                     (2)))
+//         (120)
+//     (treeNode   (5)
+//             (10)
+//                 (2));
+// const lft = t => u => v => v;
+// const rgt = t => u => v => t;
+// const factorLR = pft120(lft)(rgt); //5
+// const factorRLR = pft120(rgt)(lft)(rgt); //2
+
+
 
 // console.log(factorLR);
 // console.log(factorRLR);
@@ -91,3 +93,19 @@ const factorRLR = pft120(rgt)(lft)(rgt); //2
 // console.log(mulNat(239)(458)); //109462
 
 // (x => x)(x => x)(x => x);
+
+// // const id = x => x;
+const treeNode = lft => val => rgt => lftValRgt => lftValRgt(lft)(val)(rgt);
+const lft = t => u => v => v;
+const rgt = t => u => v => t;
+const pft120 = treeNode
+    (treeNode
+                (3)
+            (12)
+    (treeNode       (2)
+                (4)
+                    (2)))
+        (120)
+    (treeNode   (5)
+            (10)
+                (2))(rgt)(lft)(rgt);

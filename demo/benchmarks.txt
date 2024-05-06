@@ -1,0 +1,147 @@
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 ▓▒░                                                ░▒▓ 20:23:18 
+❯ ./benchme.sh "./demo"
+679
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 ▓▒░                                                ░▒▓ 20:23:31 
+❯ ./benchme.sh "echo hi"
+./benchme.sh:3: command not found: echo hi
+3
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 ▓▒░                                                ░▒▓ 20:23:37 
+❯ ./benchme.sh "./demo" 
+684
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 ▓▒░                                                ░▒▓ 20:23:43 
+❯ ./benchme.sh "./demo"
+722
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 ▓▒░                                                ░▒▓ 20:23:45 
+❯ ./benchme.sh "./demo"
+663
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 ▓▒░                                                ░▒▓ 20:23:47 
+❯ ./benchme.sh "./demo"
+690
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 ▓▒░                                                ░▒▓ 20:23:49 
+❯ ./benchme.sh "./demo"
+669
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 ▓▒░                                                ░▒▓ 20:23:51 
+❯ ./benchme.sh "./demo"
+687
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 ▓▒░                                                ░▒▓ 20:23:52 
+❯ ./benchme.sh "./demo"
+675
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 ▓▒░                                                ░▒▓ 20:23:53 
+❯ ./benchme.sh "./demo"
+663
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 ▓▒░                                                ░▒▓ 20:23:55 
+❯ ./benchme.sh "./demo"
+681
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 ▓▒░                                                ░▒▓ 20:23:56 
+❯ ./benchme.sh "./demo"
+165
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:26:53 
+❯ ./benchme.sh "./demo"
+184
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:26:54 
+❯ ./benchme.sh "./demo"
+184
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:26:56 
+❯ ./benchme.sh "./demo"
+162
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:27:04 
+❯ ./benchme.sh "./demo"
+197
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:27:05 
+❯ ./benchme.sh "./demo"
+175
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:27:11 
+❯ ./benchme.sh "./demo"
+170
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:27:12 
+❯ ./benchme.sh "./demo"
+^[[A176
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:27:14 
+❯ ./benchme.sh "./demo"
+175
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:27:15 
+❯ ./benchme.sh "./demo"
+195
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:27:27 
+❯ ./benchme.sh "./demo"
+215
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:27:28 
+❯ ./benchme.sh "./demo"
+192
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:27:29 
+❯ ./benchme.sh "./demo"
+file:///home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/solver.js:47
+        const resp = await Solver.sendConstraints(JSON.stringify(constraints));
+                                                       ^
+
+RangeError: Invalid string length
+    at JSON.stringify (<anonymous>)
+    at Function.sendConstrsToObj (file:///home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/solver.js:47:56)
+    at Function.whereTypableAsOkC (file:///home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/solver.js:97:37)
+    at file:///home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/demo/demo.js:8:28
+    at ModuleJob.run (node:internal/modules/esm/module_job:197:25)
+    at async Promise.all (index 0)
+    at async ESMLoader.import (node:internal/modules/esm/loader:337:24)
+    at async loadESM (node:internal/process/esm_loader:88:5)
+    at async handleMainPromise (node:internal/modules/run_main:61:12)
+29871
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                        ░▒▓ 30s  20:28:07 
+❯ ./benchme.sh "./demo"
+168
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:34:33 
+❯ ./benchme.sh "./demo"
+186
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:34:34 
+❯ ./benchme.sh "./demo"
+195
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:34:35 
+❯ ./benchme.sh "./demo"
+166
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:34:35 
+❯ ./benchme.sh "./demo"
+513
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:35:34 
+❯ ./benchme.sh "./demo"
+533
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:35:36 
+❯ ./benchme.sh "./demo"
+
+node:internal/process/esm_loader:94
+    internalBinding('errors').triggerUncaughtException(
+                              ^
+Error: typecheck: term variable 'treeNode' is free; unbound in function
+    at Function.makeErr (file:///home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/utils.js:11:35)
+    at EmptyJudgement.variableType (file:///home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/judgement.js:34:48)
+    at cTVar (file:///home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/rule.js:175:35)
+    at Reconstructor.typecheck (file:///home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/reconstructor.js:56:26)
+    at cTApp (file:///home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/rule.js:290:28)
+    at Reconstructor.typecheck (file:///home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/reconstructor.js:56:26)
+    at cTApp (file:///home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/rule.js:290:28)
+    at Reconstructor.typecheck (file:///home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/reconstructor.js:56:26)
+    at cTApp (file:///home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/rule.js:290:28)
+    at Reconstructor.typecheck (file:///home/elliot/Documents/computer-science/year-3/tb2/individual-project/ast/subset_draft/reconstructor.js:56:26)
+(Use `node --trace-uncaught ...` to show where the exception was thrown)
+71
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:35:57 
+❯ ./benchme.sh "./demo"
+15091
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                        ░▒▓ 15s  20:36:31 
+❯ ./benchme.sh "./demo"
+1175
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:36:46 
+❯ ./benchme.sh "./demo"
+2926
+ ~/Documents/computer-science/year-3/tb2/individual-project/ast/demo  feature-statement-rule *1 !3 ▓▒░                                             ░▒▓ 20:41:18 
+❯ ./benchme.sh "./demo" && ./benchme.sh "./demo" && ./benchme.sh "./demo" && ./benchme.sh "./demo" && ./benchme.sh "./demo" && ./benchme.sh "./demo" && ./benchme.sh "./demo" && ./benchme.sh "./demo" && ./benchme.sh "./demo" && ./benchme.sh "./demo" && ./benchme.sh "./demo" && ./benchme.sh "./demo"    
+2946
+2951
+2971
+3008
+3001
+2952
+2974
+3000
+2954
+2956
+3023
+2981
