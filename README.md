@@ -3,9 +3,9 @@
 # CompaSS, an Automated Proof of Incorrectness System For JSS
 
 One may show that a term 'goes wrong' or diverges by deriving a proof tree 
-typing that term as the complement of all values. With this we create a type
+typing that term as the complement of all values, supplied success semantics. With this we create a type
 system to prove incorrectness; when something 'type checks' it is guarenteed to
-go wrong. Yet when it does not it may yet still go wrong. 
+go wrong, diverge or use undesired behaviour. Yet when it does not we make no guarantees. 
 
 # Run CompaSS
 
