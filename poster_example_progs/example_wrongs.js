@@ -45,8 +45,22 @@ const showThing = x => {
     console.log(JSON.stringify({"asLiteral": x}));
 }
 
-showThing((x => x) - (x => x));
-showThing(0 - (x => x));
-showThing((x => x));
-showThing((x => x) + (y => y));
-showThing(new Promise(x => x).then(r => 0));
+let n = 0;
+let a = (x => x);
+let b = (y => y);
+
+showThing(n + a);
+showThing(n - a);
+showThing(a + n);
+showThing(a - n);
+showThing(a + b);
+showThing(a - b);
+
+showThing(a <= 0);
+
+// showThing((x => x) - 0);
+// showThing((x => x) - (x => x));
+// showThing(0 - (x => x));
+// showThing((x => x));
+// showThing((x => x) + (y => y));
+// showThing(new Promise(x => x).then(r => 0));

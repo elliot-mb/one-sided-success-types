@@ -356,8 +356,7 @@ export class Rule {
         return conclusn;
     }
 
-    // M; get subterm M
-    static cTExpSmt = (r, empty) => {
+    static cTTopStmt = (r, empty) => {
         const OkC1Constrs = Rule.addOkC1(empty.getAssms());
         const X = new GenT(r.getFreshVar('X'));
         const premise1 = r.typecheck(empty.asSubterm('M'));
@@ -368,6 +367,42 @@ export class Rule {
         conclusn.addToLast(new Constraint(premise1.termType, X));
 
         if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(Rule.addOk(X));
+            if(!OkC1Constrs.isEmpty()){
+                conclusn.addAnder();
+                conclusn.addToLast(OkC1Constrs);
+            }
+        }
+
+        return conclusn;
+        // return r.typecheck(empty.asSubterm('M'));
+    }
+
+    // M; E
+    static cTExpSmt = (r, empty) => {
+
+        const body = empty.asSubterm('M');
+        const next = empty.asSubterm('E');
+
+        const OkC1Constrs = Rule.addOkC1(empty.getAssms());
+        const X = new GenT(r.getFreshVar('X'));
+        const premise1 = r.typecheck(body);
+        const premise2 = r.typecheck(next);
+        const C1 = premise1.constrs;
+        const C2 = premise2.constrs;
+        const T1 = premise1.termType;
+        const T2 = premise2.termType;
+        const conclusn = empty.constrain(X);
+
+        conclusn.addToLast(C1);
+        conclusn.addToLast(C2);
+        conclusn.addToLast(new Constraint(T2, X));
+
+        if(Rule.disjunctiveRules){
+            conclusn.addAnder();
+            conclusn.addToLast(C1);
+            conclusn.addToLast(new Constraint(T1, Rule.okC())); //or the statement goes wrong
             conclusn.addAnder();
             conclusn.addToLast(Rule.addOk(X));
             if(!OkC1Constrs.isEmpty()){
@@ -554,7 +589,8 @@ export class Rule {
     // //a rule to handle the case where 
     // static cTCompoTop 
 
-    static expSmt = 'M;';
+    static topStmt = 'M;';
+    static stmt = 'M; E';
     static var = 'x';
     static num = 'n';
     static op = 'M o N';
@@ -574,7 +610,8 @@ export class Rule {
         ruleFor[Rule.abs] = Rule.cTAbsInf;
         ruleFor[Rule.app] = Rule.cTApp;
         ruleFor[Rule.iflz] = Rule.cTIfZ;
-        ruleFor[Rule.expSmt] = Rule.cTExpSmt;
+        ruleFor[Rule.topStmt] = Rule.cTTopStmt;
+        ruleFor[Rule.stmt] = Rule.cTExpSmt;
         ruleFor[Rule.block] = Rule.cTBlock;
         ruleFor[Rule.ret] = Rule.cTRet;
         ruleFor[Rule.compo] = Rule.cTCompo;

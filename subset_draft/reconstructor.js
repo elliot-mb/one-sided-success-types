@@ -13,10 +13,13 @@ import {Ander} from './ander.js';
 export class Reconstructor{
     static type = 'reconstructor';
     static SYNTACTIC_DEFN_EXCLUSION = false; // it only partly fixed the issue of false positives in program lines, so keep false 
+    static SHOUTY = false;
 
     constructor(){ //making a new one just resets the variable names (but there are an infinite number anyway)
         this.lastUsedVar = String.fromCharCode(Utils.firstCharCode);
+        this.depth = 0; //tree indentation test
         this.type = Reconstructor.type;
+
     } 
 
     rstFreshVar(){
@@ -25,11 +28,18 @@ export class Reconstructor{
 
     getFreshVar(pfix) {
         this.lastUsedVar = Utils.nextFreeTypeName(this.lastUsedVar);
+        
         return `${pfix}${this.lastUsedVar}`;
     }
 
     peekNextVar(pfix) {
         return `${pfix}${Utils.nextFreeTypeName(this.lastUsedVar)}`;
+    }
+
+    makeTabbing(){
+        let tabs = ``;
+        for(let i = 0; i < this.depth; i++) tabs += (`\t`);
+        return tabs;
     }
 
     /**
@@ -41,7 +51,11 @@ export class Reconstructor{
          
         const maybeRule = Rule.appliesTo[empty.shape];
         if(maybeRule !== undefined){
+            if(Reconstructor.SHOUTY) console.log(`${this.makeTabbing()}${maybeRule.name}`);
+            this.depth++;
             const full = maybeRule(this, empty);
+            if(Reconstructor.SHOUTY) console.log(`${this.makeTabbing()}${full.constrs.show()}`);
+            this.depth--;
             full.removeRepeats();
             return full;
         }
@@ -116,17 +130,17 @@ export class Reconstructor{
         for(let i = 0; i < exps.length; i++){
             const exp = exps[i];
             const isEval = evalIdents[`${i}`] !== undefined;
+            const isAbs = termShape(exp) === Rule.compoAbs;
             let conclusionTy;
             const conclusionTyName = `T`;
-            if(!isEval){
-                const tyNameA = this.getFreshVar(conclusionTyName);
-                const tyNameB = this.getFreshVar(conclusionTyName);
-                conclusionTy = termShape(exp) === Rule.compoAbs 
-                    ? new ArrowT(new GenT(tyNameA), new GenT(tyNameB), GenT.ArrowT, true)
-                    : new GenT(this.getFreshVar(conclusionTyName), true); //a type insterted into assums to reference the assignment 
-                
-                assAccumulator.add(idents[`${i}`], conclusionTy);
-            }
+
+            const tyNameA = this.getFreshVar(conclusionTyName);
+            const tyNameB = this.getFreshVar(conclusionTyName);
+            conclusionTy = termShape(exp) === Rule.compoAbs 
+                ? new ArrowT(new GenT(tyNameA), new GenT(tyNameB), GenT.ArrowT, true)
+                : new GenT(this.getFreshVar(conclusionTyName), true); //a type insterted into assums to reference the assignment 
+            
+            if(isAbs) assAccumulator.add(idents[`${i}`], conclusionTy);
 
             const thisTermsAssms = assAccumulator.deepCopy();
 
@@ -139,11 +153,11 @@ export class Reconstructor{
             const full = this.typecheck(empty.asSubterm('M')); 
             
             //the type we generated for this is equal to the resultant type 
-            if(!isEval){
-                full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, conclusionTy)))]); 
-            }else{
-                assEvalAccumulator.add(evalIdents[`${i}`], full.termType); //combine these at the end to scrutinise all the types in the program
-            }
+            full.conjoinOrer([new Orer(new Ander(new Constraint(full.termType, conclusionTy)))]); 
+            if(!isEval && !isAbs) assAccumulator.add(idents[`${i}`], conclusionTy);
+            if(isEval) assEvalAccumulator.add(evalIdents[`${i}`], conclusionTy); //combine these at the end to scrutinise all the types in the program
+            
+            if(Reconstructor.SHOUTY) console.log(full.constrs.show());
 
             const justThisFullConstrCopy = new Orer(); 
             full.constrs.xs.map(ander => justThisFullConstrCopy.add(ander));
@@ -160,11 +174,12 @@ export class Reconstructor{
         //////console.log(assEvalAccumulator.show());
         assAccumulator.addAll(assEvalAccumulator);
         //////console.log(constrAccumulator.map(x => `@@${x.show()}`));
-        ////console.log(finalFull.constrs.show());
+        if(Reconstructor.SHOUTY) console.log(finalFull.constrs.show());
          
         //const F = new GenT(this.getFreshVar('F'));
         //full.addToLast(new Constraint(full.termType, F));
         //console.log(finalFull.show());
+        
         return {
             'judgement': finalFull,
             'delta_assms': assAccumulator //represents how we type programs as type environments 

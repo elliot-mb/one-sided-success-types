@@ -1,0 +1,40 @@
+\code{The problem I have had with Z3 is that it isnt something i can understand very well or exercise much control over. Try as i might there are few resouces online that tell me how to force an interpretation of a total datatype argument 'function'. When constraints are solved they can be solved by some model that z3 provides. We can use this model to add further constraints that force it to reassign at least one type variable which is fine because then it will start going through all the solutions, one might think. However, by virtue of us using datatypes with non-zero arity, z3 allows itself to start interpreting those arguments as functions which in turn causes some strange solutions that include syntactic transformations inside these datatypes. it didnt seem to give a strange output, as in all the things it could and couldnt type all seemed fine. the strange part lies just in the assignments it chose assigning to 'lft' and 'rgt' in arrows and 'comp' in complements. It assigned them functions like }
+
+\code{lft: '[To(Comp(Ok), Comp(Ok)) -> Comp(Ok), To(Comp(Num), Comp(Ok)) -> Comp(Num), To(Comp(Ok), Num) -> Comp(Ok), To(To(Num, Num), Ok) -> To(Num, Num), To(Comp(Ok), Ok) -> Comp(Ok), To(Comp(Num), Ok) -> Comp(Num), To(Num, Num) -> Num, else -> Ok]',
+    }
+
+\code{rgt: '[To(Comp(Ok), Comp(Ok)) -> Comp(Ok), To(Comp(Num), Comp(Ok)) -> Comp(Ok), To(Ok, Comp(Num)) -> Comp(Num), To(Comp(Ok), Num) -> Num, To(Ok, Num) -> Num, To(Num, Num) -> Num, else -> Ok]'
+  }
+
+    \code{comp: '[Comp(Ok) -> Ok, Comp(Num) -> Num, Comp(To(Comp(Ok), To(Ok, Ok))) -> To(Comp(Ok), To(Ok, Ok)), Comp(To(Comp(Ok), To(To(Num, Num), To(Num, Num)))) -> To(Comp(Ok), To(To(Num, Num), To(Num, Num))), Comp(To(Comp(Ok), Comp(Num))) -> To(Comp(Ok), Comp(Num)), Comp(To(Comp(Ok), Comp(Ok))) -> To(Comp(Ok), Comp(Ok)), Comp(To(Comp(Ok), Comp(To(Num, Num)))) -> To(Comp(Ok), Comp(To(Num, Num))), Comp(To(Comp(Ok), Ok)) -> To(Comp(Ok), Ok), To(Ok, To(Num, Num)) -> Ok, Comp(To(Num, Ok)) -> To(Num, Ok), else -> To(Num, Num)]'
+ }
+\code{I wanted the only type that lft, rgt and comp had to be lft: [ A -> A ], rgt: [A -> A] and comp: [A -> A]. They should not change the syntax! It makes no sense for in a constraint to say that an arrow can transform its first argument?? like the example for left says if i have a constraint like XH == ((Num -> Num) -> Num) we actually get XH == (Num -> Num) which is a totally different type! The results of leaving this on were that it seemed we could show everything wrong about the program in one run, e.g. the following program}
+\\
+\\
+\code{
+                const id = x => x;\\
+                const mightFail = x => {\\
+                    return x <= 0 ? 1 : 2(3);\\
+                }\\
+                const guardFail = x => {\\
+                    return (y => y) + x ? 1 : 2;\\
+                }\\
+                const willFail = x => {\\
+                    return x <= 0 ? (0 <= 0 ? 0(0) : 0(0)) : id + id; \\
+                }\\
+                const mgw = mightFail(guardFail(willFail));\\
+                const gmw = guardFail(mightFail(willFail));\\
+                const wgm = willFail(guardFail(mightFail));\\
+                const mNum = mightFail(0-1);\\
+                const gNum = guardFail(0); \\
+                const wNum = willFail(0); \\
+we were able to detect all percieved failures; \\
+(see dubiousout.txt)\\
+Ill-typed and fails at: mgw,gmw,wgm,gNum,wNum\\
+}
+
+\code{Honestly though, the same could be achieved if this program were used as a debugging tool as is a secondary aim of this project. This can be seen even if we imagine CompaSS only ever detecting exactly one definite failure. We go to where this failure is, diagnose it, run CompaSS again and find that we have a failure somewhere else, if we succesfully fix the first one. This method of report fix report fix is obviously more labour intensive than fixing all the bugs if they were reported at once. But ulitmately we still get the same expressiveness, except by failing the constraint solver when we see such nonesense assignments as the ones above, we are making sure we still fully grasp what is going on and there is no strange syntactic sloppiness being introduced which may be poisoning inference in a subtle and terrible way the likes of which our testing has not laid bare.}
+
+\code{Now i have the problem of, since removing this weird behaviour, that my solutions are fickle and random on some of the test programs, its not able to prove some simple things anymore and it seems to switch what it can prove based on the variable names????????? This was fixed by lowering the relevancy optimisation. nevermind. nevermind x2. putting relevancy to zero seems to be unaffected by changing the type variable name lengths! huzzah!}
+
+\code{there is a unique quirk that i have found where we arent able to get the same expressability with the rules if we do an assignment first and then use it later instead of doing it all in-line. why woudl this be? }

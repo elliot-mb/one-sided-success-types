@@ -1,0 +1,96 @@
+[
+
+  {
+  "type": "VariableDeclaration",
+  "start": 0,
+  "end": 20,
+  "declarations": 
+    [
+    
+      {
+      "type": "VariableDeclarator",
+      "start": 6,
+      "end": 19,
+      "id": 
+        {
+        "type": "Identifier",
+        "start": 6,
+        "end": 8,
+        "name": "id"
+        }
+      ,
+      "init": 
+        {
+        "type": "ArrowFunctionExpression",
+        "start": 12,
+        "end": 18,
+        "id": null,
+        "expression": true,
+        "generator": false,
+        "async": false,
+        "params": 
+          [
+          
+            {
+            "type": "Identifier",
+            "start": 12,
+            "end": 13,
+            "name": "x"
+            }
+          
+          ]
+        ,
+        "body": 
+          {
+          "type": "Identifier",
+          "start": 17,
+          "end": 18,
+          "name": "x"
+          }
+        
+        }
+      
+      }
+    
+    ]
+  ,
+  "kind": "const"
+  }
+,
+
+  {
+  "type": "ExpressionStatement",
+  "start": 21,
+  "end": 27,
+  "expression": 
+    {
+    "type": "CallExpression",
+    "start": 21,
+    "end": 26,
+    "callee": 
+      {
+      "type": "Identifier",
+      "start": 21,
+      "end": 23,
+      "name": "id"
+      }
+    ,
+    "arguments": 
+      [
+      
+        {
+        "type": "Literal",
+        "start": 24,
+        "end": 25,
+        "value": 0,
+        "raw": "0"
+        }
+      
+      ]
+    ,
+    "optional": false
+    }
+  
+  }
+
+]

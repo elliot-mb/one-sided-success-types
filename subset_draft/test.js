@@ -48,7 +48,7 @@ export class Test {
         await this.falsePositivesWeCantShowWrong();
         await this.showSimpleRights();
         await this.testProgramsRun();
-
+        await this.testBlockStmtsDontGiveIncorrectType();
 
         this.showFailures();
     }
@@ -440,9 +440,9 @@ export class Test {
                 const mgw = mightFail(guardFail(willFail));
                 const gmw = guardFail(mightFail(willFail));
                 const wgm = willFail(guardFail(mightFail));
-                const mNum = mightFail(0-1); //
-                const gNum = guardFail(0); //interesting it doesnt fail here 
-                const wNum = willFail(0);  //nor here 
+                const mNum = mightFail(0-1);
+                const gNum = guardFail(0); 
+                const wNum = willFail(0);  
                 `
             ), 
             [4, 5, 6, 8, 9]
@@ -551,6 +551,12 @@ export class Test {
         //         0;
         //     }
         // `)));
+        this.assert(await Solver.isTypableAsOkC(`
+            const fst = x => y => x;
+            const pair = m => n => p => 10(m)(n); 
+            const listZeros = pair(0)(pair(0)(pair(0)(pair(0)(0))));
+            listZeros(fst);
+        `));
     }
 
     async testProgramsRun(){
@@ -639,6 +645,38 @@ export class Test {
         `)) === 2);
     }
 
+    async testBlockStmtsDontGiveIncorrectType(){
+        this.assert(await Solver.isTypableAsOkC(`
+            const zero = x => {
+                (z => z);
+                0(0);
+                return 0;
+            }
+            const g = zero(0) + 0;
+        `));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const zero = x => {
+                (z => z);
+                return 0;
+            }
+            const g = zero(0) + 0;
+        `)));
+        this.assert(!(await Solver.isTypableAsOkC(`
+            const what = x => {
+                (z => z);
+                const succ = y => {
+                    (w => w);
+                    const h = y + 1;
+                    (k => k);
+                    return h;
+                }
+                (l => l);
+                return succ(x);
+            }
+            const g = what(0) + 0;
+        `)));
+    }
+
     async falsePositivesWeCantShowWrong(){
 
         this.assert(!(await Solver.isTypableAsOkC(`
@@ -661,6 +699,8 @@ export class Test {
         `)));
     }
 }
+
+
 
 const runTests = async () => {
     const tester = new Test();
