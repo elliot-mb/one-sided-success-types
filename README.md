@@ -5,6 +5,23 @@ typing that term as the complement of all values. With this we create a type
 system to prove incorrectness; when something 'type checks' it is guarenteed to
 go wrong. Yet when it does not it may yet still go wrong. 
 
+# Run CompaSS
+
+## Requirements
+- NodeJS v16.14.2
+- Python 3.10.12
+
+## Ill-type a single program:
+We use ``$ <command>`` to display a command in the terminal.\
+We use ``./path`` to reference a path relative to the root of the git repository.
+
+### Instructions
+- Change working directory to ``./demo`` (``$ cd demo #from project root``).
+- ``$ vim proj.js`` allows you to write your JSS program (consult the grammar for valid syntax).
+- ``$ chmod 700 ./demo && ./demo && cat out.txt``  if you are in a *zsh* terminal. \
+    If you are not, run ``$ node demo.js`` instead, or ``$ node demo.js > out.txt && cat out.txt`` to save your input.
+
+
 # Run scripts
 
 Initially Bun was used to run these scripts, but issues with using Z3 bindings for JavaScript ([npm package](https://www.npmjs.com/package/z3-solver)) meant that for now I have to switch to Node to use it, due to an (as of 20/02/24) [unsolved bug with file path length](https://github.com/denoland/deno/issues/21695). This post is for another new local JavaScript runtime Deno, but a similar issue arises with Bun. 

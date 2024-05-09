@@ -94,18 +94,19 @@
 
 // (x => x)(x => x)(x => x);
 
-// // const id = x => x;
-const treeNode = lft => val => rgt => lftValRgt => lftValRgt(lft)(val)(rgt);
-const lft = t => u => v => v;
-const rgt = t => u => v => t;
-const pft120 = treeNode
-    (treeNode
-                (3)
-            (12)
-    (treeNode       (2)
-                (4)
-                    (2)))
-        (120)
-    (treeNode   (5)
-            (10)
-                (2))(rgt)(lft)(rgt);
+// // // const id = x => x;
+// const treeNode = lft => val => rgt => lftValRgt => lftValRgt(lft)(val)(rgt);
+// const lft = t => u => v => v;
+// const rgt = t => u => v => t;
+// const pft120 = treeNode
+//     (treeNode
+//                 (3)
+//             (12)
+//     (treeNode       (2)
+//                 (4)
+//                     (2)))
+//         (120)
+//     (treeNode   (5)
+//             (10)
+//                 (2))(rgt)(lft)(rgt);
+
