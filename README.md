@@ -21,6 +21,12 @@ We use ``./path`` to reference a path relative to the root of the git repository
 - ``$ chmod 700 ./demo && ./demo && cat out.txt``  if you are in a *zsh* terminal. \
     If you are not, run ``$ node demo.js`` instead, or ``$ node demo.js > out.txt && cat out.txt`` to save your input.
 
+## Run test suite
+The test suite contains unit tests and different kinds of ill-typing tests for CompaSS to complete, and takes around thirty seconds to a minute to run.
+
+### Instructions
+- Change working directory to ``./subset_draft`` (``$cd compass #from project root``).
+- ``$ node test`` with give general print statements and a report at the end indicating successes and failures.
 
 # Run scripts
 
