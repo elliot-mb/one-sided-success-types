@@ -8,7 +8,7 @@ const prog = readFileSync('./prog.js').toString();
 try{
     const fails = await Solver.whereTypableAsOkC(prog);
 }catch(err){
-    console.log(`Error`);
+    console.log(`Error (Inconclusive)`);
     throw err;
 }
 
