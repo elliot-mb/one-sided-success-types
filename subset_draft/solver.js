@@ -98,7 +98,7 @@ export class Solver{
         const result = await Solver.sendConstrsToObj(envAndConstrs);
         const varAssignments = result['term_type_assignments'];
         const anyFails = result['fails_at'];
-        console.log(`${program}`);
+        console.log(`${program}\n.......................................`);
         for(let i = 0; i < anyFails.length; i++){
             console.log(`Solution`)
             Object.keys(varAssignments)

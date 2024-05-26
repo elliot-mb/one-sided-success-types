@@ -105,7 +105,7 @@ export const termShape = (term) => {
     const SND = 1;
     let select = FST;
     if(term.type === undefined) throw Utils.makeErr(`termShape: term has no 'type' field`);
-    if( typeToGrammar[term.type] === undefined) throw new Error(`termShape: term of AST sort '${term.type}' is not included in JSS.`)
+    if( typeToGrammar[term.type] === undefined) throw Utils.makeErr(`termShape: term of AST sort '${term.type}' is not included in JSS.`)
     //we add an exception just for the AST which has two grammar shapes 
     let shapesByAST = typeToGrammar[term.type];
     if(shapesByAST[select] === Rule.compo){
