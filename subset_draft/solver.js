@@ -83,7 +83,7 @@ export class Solver{
         //const program = '0 <= 0 ? (x => x) : 0';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
         const judgementAndEnv = r.reconstruct(program);
         if(judgementAndEnv === null){
-            console.log('empty program');
+            console.log('Empty Program');
             return NO_LINES;
         }
         if(Solver.SHOUTY) console.log(`generated`);
