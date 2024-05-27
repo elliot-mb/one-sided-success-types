@@ -1,13 +1,10 @@
-const addOrId = selector => {
-    const add = x => y => x + y;
-    const id = x => x;
-    return selector <= 0 ? add : id;
+const pair = m => n => p => p(m)(n);
+const getQuot = s => t => s;
+const getRmdr = s => t => t;
+const intDivide = n => d => q => {
+    const r = n - d;
+    return r + 1 <= 0
+        ? pair(q)(n)
+        : intDivide(r)(d)(q + 1);
 }
-const addAddAddId = addOrId(1)(addOrId(0)(addOrId(0)(3)(2))(addOrId(0)(3)(4)));
-const idIdIdAdd   = addOrId(1)(addOrId(1)(addOrId(1)(addOrId(0)(2)(3))));
-const towardsZ = x => x <= 0 ? x + 1 : x - 1;
-const use = towardsZ(x => 0);
-const addOrIdAddOrId = addOrId(towardsZ);
-
-// console.log(addAddAddId);
-// console.log(idIdIdAdd);
+const quot = intDivide(120)(10)(0)(getQuot);

@@ -7,11 +7,4 @@ const intDivide = n => d => q => {
         ? pair(q)(n)
         : intDivide(r)(d)(q + 1);
 }
-const quot = intDivide(120)(10)(0)(getQuot);
-.......................................
-	pair : Untypable
-	getQuot : Untypable
-	getRmdr : Untypable
-	intDivide : Untypable
-	quot : Untypable
-Inconclusive
+const quot = intDivide(120)(getQuot)(10);
