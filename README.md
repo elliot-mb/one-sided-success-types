@@ -1,3 +1,16 @@
+# University Thesis Project 2023/24, University of Bristol for BSc Computer Science with First Class Honors
+I achieved **89** marks in this unit, with such comments from my markers (both experts at the forefront of their areas of research, with my supervisor attending POPL'23 to present [the work on which this paper was based](https://arxiv.org/abs/2307.06928)):
+- ***"This would be a very impressive project even for a masters level student, and so it is all the more so for a third year."***
+- *"A huge amount of work has gone into this project, and all of it has been done to an exemplary standard."*
+- *"The writing is consistently of a very high standard, and in particular, the technical writing is clear and precise and more consistent with what I would expect from a graduate student."*
+- *"The type system design is excellent and the rules are exactly what I would expect to see in a research paper on this topic."*
+- *"There are numerous excellent examples to illustrate the work, which makes the technical material more accessible."*
+- *"A very well designed implementation allows for easy experimentation and feedback and has allowed the student to get some data on the scalability of constraint solving."*
+- *"The evaluation presents, by careful choice of examples, a solid appraisal of the main strengths and weaknesses of the work.  A number of practical advantages and distadvantages of the type system are noted and some limiting factors of the subset of Javascript that it targets."*
+- *"A substantial and highly non-trivial proof shows the constraint rules to be sound and complete with respect to the rules of the type system."*
+
+Many such comments are made about the write-up, the PDF of which is available in this repository. It will also be made available on my website. 
+
 ![CompaSS logo](compass.png "CompaSS")
 
 # CompaSS, an Automated Proof of Incorrectness System For JSS
