@@ -1,1 +1,10 @@
-empty program
+const mul = n => m => {
+    const nNext = n - 1;
+    return mul(nNext)(m);
+}
+const twoInfinityAndBeyond = mul(2)(3);
+.......................................
+Solution
+	mul : (Ok -> (Num -> Comp(Ok)))
+	twoInfinityAndBeyond : Comp(Ok)
+Ill-typed and fails at: twoInfinityAndBeyond

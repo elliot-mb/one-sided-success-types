@@ -83,7 +83,7 @@ export class Solver{
         //const program = '0 <= 0 ? (x => x) : 0';//'x => x(0)';//'x => (x <= 0 ? (x => x) : (y => y(x => x)))';
         const judgementAndEnv = r.reconstruct(program);
         if(judgementAndEnv === null){
-            console.log('empty program');
+            console.log('Empty Program');
             return NO_LINES;
         }
         if(Solver.SHOUTY) console.log(`generated`);
@@ -98,7 +98,7 @@ export class Solver{
         const result = await Solver.sendConstrsToObj(envAndConstrs);
         const varAssignments = result['term_type_assignments'];
         const anyFails = result['fails_at'];
-        console.log(`${program}`);
+        console.log(`${program}\n.......................................`);
         for(let i = 0; i < anyFails.length; i++){
             console.log(`Solution`)
             Object.keys(varAssignments)

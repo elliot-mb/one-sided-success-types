@@ -8,7 +8,7 @@ export class Utils{
      * @param {*} message 
      * @returns a useful error with the stack trace!
      */
-    static makeErr = (message) => new Error(message).stack;
+    static makeErr = (message) => message;//.stack;
 
     static firstCharCode = 'A'.charCodeAt(0);
     static lastCharCode = 'Z'.charCodeAt(0);
