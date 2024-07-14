@@ -11,6 +11,8 @@ I achieved **89** marks in this unit, with such comments from my markers (both e
 
 Many such comments are made about the write-up, the PDF of which is available in this repository. It will also be made available on my website. 
 
+# Read the [report](https://github.com/elliot-mb/one-sided-success-types/blob/main/Report.pdf)
+
 ![CompaSS logo](compass.png "CompaSS")
 
 # CompaSS, an Automated Proof of Incorrectness System For JSS
